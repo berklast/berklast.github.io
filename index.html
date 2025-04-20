@@ -178,7 +178,7 @@
             color: #777;
             font-size: 12px;
         }
-        .search-results {
+        .user-list {
             max-height: 300px;
             overflow-y: auto;
             border: 1px solid #ddd;
@@ -186,14 +186,13 @@
             margin-top: 10px;
             display: none;
         }
-        .search-result-item {
+        .user-item {
             display: flex;
             align-items: center;
             padding: 10px;
             border-bottom: 1px solid #eee;
-            cursor: pointer;
         }
-        .search-result-item:hover {
+        .user-item:hover {
             background-color: #f5f5f5;
         }
         @media (max-width: 768px) {
@@ -275,9 +274,8 @@
                 <div class="dashboard">
                     <div class="sidebar">
                         <h3>Arkadaş Ekle</h3>
-                        <input type="text" id="friendUsername" class="form-control" placeholder="Kullanıcı adı girin" oninput="searchUsers()">
-                        <div id="searchResults" class="search-results"></div>
-                        <button onclick="sendFriendRequest()" class="btn btn-primary" style="margin-top: 10px;">Arkadaş Ekle</button>
+                        <button onclick="showAllUsers()" class="btn btn-primary">Arkadaş Ekle</button>
+                        <div id="allUsersList" class="user-list"></div>
                         
                         <h3 style="margin-top: 20px;">Arkadaş İstekleri</h3>
                         <div id="friendRequestsList"></div>
@@ -597,38 +595,35 @@
             }
         }
 
-        // Kullanıcı arama
-        function searchUsers() {
-            const searchTerm = document.getElementById('friendUsername').value.trim().toLowerCase();
-            const resultsContainer = document.getElementById('searchResults');
+        // Tüm kullanıcıları göster
+        function showAllUsers() {
+            const container = document.getElementById('allUsersList');
+            container.innerHTML = '';
             
-            if (searchTerm.length < 1) {
-                resultsContainer.style.display = 'none';
-                return;
-            }
-            
+            // Mevcut kullanıcı ve arkadaşları hariç tüm kullanıcıları listele
             const filteredUsers = users.filter(user => 
-                user.username.toLowerCase().includes(searchTerm) && 
                 user.username !== currentUser.username &&
                 !currentUser.friends.includes(user.username)
             );
             
-            resultsContainer.innerHTML = '';
-            
             if (filteredUsers.length === 0) {
-                resultsContainer.innerHTML = '<div class="search-result-item">Kullanıcı bulunamadı</div>';
+                container.innerHTML = '<div class="user-item">Eklenebilecek kullanıcı yok</div>';
             } else {
                 filteredUsers.forEach(user => {
                     const userElement = document.createElement('div');
-                    userElement.className = 'search-result-item';
-                    userElement.onclick = () => selectUserForFriendRequest(user.username);
+                    userElement.className = 'user-item';
                     
                     if (user.profilePic) {
                         userElement.innerHTML = `
                             <div style="background-image: url(${user.profilePic}); 
                                 width: 30px; height: 30px; border-radius: 50%; 
                                 background-size: cover; margin-right: 10px;"></div>
-                            ${user.username}
+                            <span>${user.username}</span>
+                            <button onclick="sendFriendRequest('${user.username}')" 
+                                style="margin-left: auto; background: var(--primary-color); 
+                                color: white; border: none; border-radius: 4px; padding: 5px 10px;">
+                                İstek Gönder
+                            </button>
                         `;
                     } else {
                         userElement.innerHTML = `
@@ -637,31 +632,24 @@
                                 display: flex; align-items: center; justify-content: center;">
                                 <i class="fas fa-user" style="font-size: 12px; color: #777;"></i>
                             </div>
-                            ${user.username}
+                            <span>${user.username}</span>
+                            <button onclick="sendFriendRequest('${user.username}')" 
+                                style="margin-left: auto; background: var(--primary-color); 
+                                color: white; border: none; border-radius: 4px; padding: 5px 10px;">
+                                İstek Gönder
+                            </button>
                         `;
                     }
                     
-                    resultsContainer.appendChild(userElement);
+                    container.appendChild(userElement);
                 });
             }
             
-            resultsContainer.style.display = 'block';
+            container.style.display = container.style.display === 'block' ? 'none' : 'block';
         }
 
-        function selectUserForFriendRequest(username) {
-            document.getElementById('friendUsername').value = username;
-            document.getElementById('searchResults').style.display = 'none';
-        }
-
-        // Arkadaş işlemleri
-        function sendFriendRequest() {
-            const friendUsername = document.getElementById('friendUsername').value.trim();
-            
-            if (!friendUsername) {
-                alert("Lütfen bir kullanıcı adı girin!");
-                return;
-            }
-            
+        // Arkadaşlık isteği gönderme
+        function sendFriendRequest(friendUsername) {
             if (friendUsername.toLowerCase() === currentUser.username.toLowerCase()) {
                 alert("Kendinize arkadaşlık isteği gönderemezsiniz!");
                 return;
@@ -680,20 +668,15 @@
                 return;
             }
             
-            if (!friend.friendRequests) friend.friendRequests = [];
-            
-            // Eğer zaten istek gönderilmişse
             if (friend.friendRequests.includes(currentUser.username)) {
-                alert("Bu kullanıcıya zaten arkadaşlık isteği gönderdiniz!");
+                alert("Bu kullanıcıya zaten istek gönderdiniz!");
                 return;
             }
             
             friend.friendRequests.push(currentUser.username);
             localStorage.setItem('users', JSON.stringify(users));
-            alert("Arkadaşlık isteği gönderildi!");
-            document.getElementById('friendUsername').value = '';
-            document.getElementById('searchResults').style.display = 'none';
-            syncCurrentUser();
+            alert(`${friend.username} kullanıcısına arkadaşlık isteği gönderildi!`);
+            document.getElementById('allUsersList').style.display = 'none';
             loadFriendRequests();
         }
 
@@ -787,16 +770,9 @@
         }
 
         function rejectFriendRequest(username) {
-            // İsteği kaldır
             currentUser.friendRequests = currentUser.friendRequests.filter(u => u !== username);
             localStorage.setItem('users', JSON.stringify(users));
-            syncCurrentUser();
             loadFriendRequests();
-        }
-
-        function syncCurrentUser() {
-            const updated = users.find(u => u.username === currentUser.username);
-            if (updated) currentUser = updated;
         }
 
         function loadFriendsList() {
@@ -842,7 +818,6 @@
             currentChatFriend = friendUsername;
             currentUser.lastChattedWith = friendUsername;
             localStorage.setItem('users', JSON.stringify(users));
-            syncCurrentUser();
             
             document.getElementById('defaultChatView').style.display = 'none';
             document.getElementById('chatContainer').style.display = 'block';
@@ -905,7 +880,6 @@
             }
             
             localStorage.setItem('users', JSON.stringify(users));
-            syncCurrentUser();
             
             // Mesajı ekrana ekle
             const messageArea = document.getElementById('messageArea');
@@ -971,7 +945,6 @@
             }
             
             localStorage.setItem('users', JSON.stringify(users));
-            syncCurrentUser();
             
             // Ana ekrandaki bilgileri güncelle
             document.getElementById('currentUsernameDisplay').textContent = currentUser.nickname || currentUser.username;
@@ -1005,7 +978,6 @@
             
             currentUser.password = newPass;
             localStorage.setItem('users', JSON.stringify(users));
-            syncCurrentUser();
             alert("Şifreniz başarıyla değiştirildi!");
             
             // Alanları temizle
