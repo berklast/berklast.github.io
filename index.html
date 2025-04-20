@@ -208,6 +208,8 @@
         <header>
             <h1><i class="fas fa-comments"></i> Mesajlaşma Portalı</h1>
         </header>
+
+        <!-- Giriş Formu -->
         <div class="card" id="loginForm">
             <h2>Giriş Yap</h2>
             <div id="loginMessage" class="alert" style="display: none;"></div>
@@ -220,6 +222,8 @@
                 <a onclick="showForgotPasswordForm()" style="color: var(--primary-color); cursor: pointer;">Şifremi Unuttum</a>
             </div>
         </div>
+
+        <!-- Kayıt Formu -->
         <div class="card" id="registerForm" style="display: none;">
             <h2>Kayıt Ol</h2>
             <div id="registerMessage" class="alert" style="display: none;"></div>
@@ -233,6 +237,8 @@
                 <a onclick="showLoginForm()" style="color: var(--primary-color); cursor: pointer;">Giriş Yap</a>
             </div>
         </div>
+
+        <!-- Şifremi Unuttum Formu -->
         <div class="card" id="forgotPasswordForm" style="display: none;">
             <h2>Şifremi Unuttum</h2>
             <div id="forgotPasswordMessage" class="alert" style="display: none;"></div>
@@ -251,6 +257,8 @@
                 <a onclick="showLoginForm()" style="color: var(--primary-color); cursor: pointer;">Giriş Sayfasına Dön</a>
             </div>
         </div>
+
+        <!-- Kullanıcı Paneli -->
         <div id="userContent" style="display: none;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <div style="display: flex; align-items: center;">
@@ -293,6 +301,8 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Ayarlar Paneli -->
             <div id="settingsPanel" style="display: none;">
                 <button onclick="backToDashboard()" class="btn btn-primary">Geri Dön</button>
                 <div class="settings-menu">
@@ -324,6 +334,7 @@
             </div>
         </div>
     </div>
+
     <script>
         // Kullanıcı verileri
         let users = JSON.parse(localStorage.getItem('users')) || [];
@@ -332,6 +343,7 @@
         let tempUserForReset = null;
         let profilePicBase64 = null;
         let settingsProfilePicBase64 = null;
+
         // Örnek kullanıcılar ekleme (test için)
         function initializeSampleUsers() {
             if (users.length === 0) {
@@ -376,6 +388,7 @@
                 localStorage.setItem('users', JSON.stringify(users));
             }
         }
+
         // Sayfa yüklendiğinde
         document.addEventListener('DOMContentLoaded', function() {
             initializeSampleUsers();
@@ -391,6 +404,7 @@
                 handleImageUpload(e, 'settingsProfilePicPreview');
             });
         });
+
         // Kullanıcıları yükle
         function loadUsers() {
             const savedUsers = localStorage.getItem('users');
@@ -398,6 +412,7 @@
                 users = JSON.parse(savedUsers);
             }
         }
+
         // Form göster/gizle
         function showLoginForm() {
             document.getElementById('loginForm').style.display = 'block';
@@ -407,6 +422,7 @@
             document.getElementById('loginUsername').value = '';
             document.getElementById('loginPassword').value = '';
         }
+
         function showRegisterForm() {
             document.getElementById('loginForm').style.display = 'none';
             document.getElementById('registerForm').style.display = 'block';
@@ -418,6 +434,7 @@
             document.getElementById('profilePicPreview').innerHTML = '<i class="fas fa-user"></i>';
             profilePicBase64 = null;
         }
+
         function showForgotPasswordForm() {
             document.getElementById('loginForm').style.display = 'none';
             document.getElementById('registerForm').style.display = 'none';
@@ -432,6 +449,7 @@
             document.getElementById('verifyBtn').style.display = 'block';
             document.getElementById('resetBtn').style.display = 'none';
         }
+
         function showUserContent() {
             document.getElementById('loginForm').style.display = 'none';
             document.getElementById('registerForm').style.display = 'none';
@@ -456,6 +474,7 @@
             loadFriendsList();
             loadFriendRequests();
         }
+
         // Resim yükleme işlemi
         function handleImageUpload(event, previewElementId) {
             const file = event.target.files[0];
@@ -476,6 +495,7 @@
             };
             reader.readAsDataURL(file);
         }
+
         // Kayıt olma
         function register() {
             const username = document.getElementById('registerUsername').value.trim();
@@ -516,6 +536,7 @@
             currentUser = newUser;
             showUserContent();
         }
+
         // Giriş yapma
         function login() {
             const username = document.getElementById('loginUsername').value.trim();
@@ -530,6 +551,7 @@
                 alert("Hatalı kullanıcı adı veya şifre!");
             }
         }
+
         // Şifre sıfırlama
         function verifyUser() {
             const username = document.getElementById('forgotUsername').value.trim();
@@ -544,6 +566,7 @@
             document.getElementById('lastChatContainer').style.display = 'block';
             document.getElementById('verifyBtn').onclick = verifyLastChatUser;
         }
+
         function verifyLastChatUser() {
             const lastChatUser = document.getElementById('lastChatUser').value.trim();
             
@@ -555,6 +578,7 @@
                 alert("En son mesajlaştığınız kullanıcı bilgisi hatalı!");
             }
         }
+
         function resetPassword() {
             const newPassword = document.getElementById('newPassword').value;
             const newPasswordConfirm = document.getElementById('newPasswordConfirm').value;
@@ -572,6 +596,7 @@
                 showLoginForm();
             }
         }
+
         // Kullanıcı arama
         function searchUsers() {
             const searchTerm = document.getElementById('friendUsername').value.trim().toLowerCase();
@@ -622,10 +647,12 @@
             
             resultsContainer.style.display = 'block';
         }
+
         function selectUserForFriendRequest(username) {
             document.getElementById('friendUsername').value = username;
             document.getElementById('searchResults').style.display = 'none';
         }
+
         // Arkadaş işlemleri
         function sendFriendRequest() {
             const friendUsername = document.getElementById('friendUsername').value.trim();
@@ -667,6 +694,7 @@
             document.getElementById('searchResults').style.display = 'none';
             loadFriendRequests();
         }
+
         function loadFriendRequests() {
             const container = document.getElementById('friendRequestsList');
             container.innerHTML = '';
@@ -724,41 +752,42 @@
                     }
                 });
             } else {
-                container.innerHTML = '<p>Hiç arkadaşlık isteğiniz yok.</p>';
+                container.innerHTML = '<p>Bekleyen arkadaşlık isteğiniz yok</p>';
             }
         }
-        function acceptFriendRequest(requesterUsername) {
-            const requesterIndex = users.findIndex(u => u.username === requesterUsername);
-            const currentUserIndex = users.findIndex(u => u.username === currentUser.username);
+
+        function acceptFriendRequest(username) {
+            // Arkadaş listesine ekle
+            if (!currentUser.friends.includes(username)) {
+                currentUser.friends.push(username);
+            }
             
-            if (requesterIndex !== -1 && currentUserIndex !== -1) {
-                // Karşılıklı arkadaşlık ekle
-                users[currentUserIndex].friends.push(requesterUsername);
-                users[requesterIndex].friends.push(currentUser.username);
-                
-                // İsteği sil
-                users[currentUserIndex].friendRequests = users[currentUserIndex].friendRequests.filter(u => u !== requesterUsername);
-                
-                localStorage.setItem('users', JSON.stringify(users));
-                loadFriendRequests();
-                loadFriendsList();
-                alert(`${requesterUsername} arkadaş olarak eklendi!`);
-            }
-        }
-        function rejectFriendRequest(requesterUsername) {
-            const currentUserIndex = users.findIndex(u => u.username === currentUser.username);
+            // İsteği kaldır
+            currentUser.friendRequests = currentUser.friendRequests.filter(u => u !== username);
             
-            if (currentUserIndex !== -1) {
-                users[currentUserIndex].friendRequests = users[currentUserIndex].friendRequests.filter(u => u !== requesterUsername);
-                localStorage.setItem('users', JSON.stringify(users));
-                loadFriendRequests();
+            // Diğer kullanıcının da arkadaş listesine ekle
+            const friend = users.find(u => u.username === username);
+            if (friend && !friend.friends.includes(currentUser.username)) {
+                friend.friends.push(currentUser.username);
             }
+            
+            localStorage.setItem('users', JSON.stringify(users));
+            loadFriendsList();
+            loadFriendRequests();
         }
+
+        function rejectFriendRequest(username) {
+            // İsteği kaldır
+            currentUser.friendRequests = currentUser.friendRequests.filter(u => u !== username);
+            localStorage.setItem('users', JSON.stringify(users));
+            loadFriendRequests();
+        }
+
         function loadFriendsList() {
             const container = document.getElementById('friendsList');
             container.innerHTML = '';
             
-            if (currentUser.friends.length > 0) {
+            if (currentUser.friends && currentUser.friends.length > 0) {
                 currentUser.friends.forEach(friendUsername => {
                     const friend = users.find(u => u.username === friendUsername);
                     if (friend) {
@@ -771,7 +800,7 @@
                                 <div style="background-image: url(${friend.profilePic}); 
                                     width: 30px; height: 30px; border-radius: 50%; 
                                     background-size: cover; margin-right: 10px;"></div>
-                                <span>${friend.username}</span>
+                                ${friend.username}
                             `;
                         } else {
                             friendElement.innerHTML = `
@@ -780,7 +809,7 @@
                                     display: flex; align-items: center; justify-content: center;">
                                     <i class="fas fa-user" style="font-size: 12px; color: #777;"></i>
                                 </div>
-                                <span>${friend.username}</span>
+                                ${friend.username}
                             `;
                         }
                         
@@ -788,203 +817,209 @@
                     }
                 });
             } else {
-                container.innerHTML = '<p>Henüz arkadaşınız yok.</p>';
+                container.innerHTML = '<p>Henüz arkadaşınız yok</p>';
             }
         }
+
         // Mesajlaşma
         function openChat(friendUsername) {
-            const friend = users.find(u => u.username === friendUsername);
-            if (!friend) return;
-            
-            currentChatFriend = friend;
-            document.getElementById('chatContainer').style.display = 'block';
-            document.getElementById('defaultChatView').style.display = 'none';
-            document.getElementById('chatWithUser').textContent = friend.nickname || friend.username;
-            
-             // Arkadaş profil resmini göster
-            const chatFriendProfilePicElement = document.getElementById('chatFriendProfilePic');
-            if (friend.profilePic) {
-                chatFriendProfilePicElement.innerHTML = '';
-                chatFriendProfilePicElement.style.backgroundImage = `url(${friend.profilePic})`;
-                chatFriendProfilePicElement.style.backgroundSize = 'cover';
-            } else {
-                chatFriendProfilePicElement.innerHTML = '<i class="fas fa-user"></i>';
-                chatFriendProfilePicElement.style.backgroundImage = 'none';
-            }
-            
-            loadMessages();
-            
-            // En son mesajlaşılan kişiyi güncelle
-            const currentUserIndex = users.findIndex(u => u.username === currentUser.username);
-            if (currentUserIndex !== -1) {
-                users[currentUserIndex].lastChattedWith = friend.username;
-                localStorage.setItem('users', JSON.stringify(users));
-            }
-        }
-        function sendMessage() {
-            const messageInput = document.getElementById('messageInput').value.trim();
-            if (!messageInput) return;
-            
-            const senderUsername = currentUser.username;
-            const receiverUsername = currentChatFriend.username;
-            
-            // Mesajı gönderen kullanıcının mesajlarına ekle
-            if (!currentUser.messages[receiverUsername]) {
-                currentUser.messages[receiverUsername] = [];
-            }
-            currentUser.messages[receiverUsername].push({
-                sender: senderUsername,
-                text: messageInput,
-                timestamp: new Date()
-            });
-            
-            // Mesajı alan kullanıcının mesajlarına ekle
-            const receiverUser = users.find(u => u.username === receiverUsername);
-            if (receiverUser) {
-                if (!receiverUser.messages[senderUsername]) {
-                    receiverUser.messages[senderUsername] = [];
-                }
-                receiverUser.messages[senderUsername].push({
-                    sender: senderUsername,
-                    text: messageInput,
-                    timestamp: new Date()
-                });
-            }
-            
+            currentChatFriend = friendUsername;
+            currentUser.lastChattedWith = friendUsername;
             localStorage.setItem('users', JSON.stringify(users));
-            document.getElementById('messageInput').value = '';
-            loadMessages();
-        }
-        function loadMessages() {
+            
+            document.getElementById('defaultChatView').style.display = 'none';
+            document.getElementById('chatContainer').style.display = 'block';
+            document.getElementById('chatWithUser').textContent = friendUsername;
+            
+            // Profil resmini göster
+            const friend = users.find(u => u.username === friendUsername);
+            if (friend && friend.profilePic) {
+                document.getElementById('chatFriendProfilePic').innerHTML = '';
+                document.getElementById('chatFriendProfilePic').style.backgroundImage = `url(${friend.profilePic})`;
+                document.getElementById('chatFriendProfilePic').style.backgroundSize = 'cover';
+            } else {
+                document.getElementById('chatFriendProfilePic').innerHTML = '<i class="fas fa-user"></i>';
+                document.getElementById('chatFriendProfilePic').style.backgroundImage = 'none';
+            }
+            
             const messageArea = document.getElementById('messageArea');
             messageArea.innerHTML = '';
             
-            const messages = currentUser.messages[currentChatFriend.username] || [];
+            if (currentUser.messages && currentUser.messages[friendUsername]) {
+                currentUser.messages[friendUsername].forEach(msg => {
+                    const messageDiv = document.createElement('div');
+                    messageDiv.className = `message ${msg.sender === currentUser.username ? 'sent' : 'received'}`;
+                    messageDiv.textContent = msg.text;
+                    messageArea.appendChild(messageDiv);
+                });
+            }
             
-            messages.forEach(message => {
-                const messageElement = document.createElement('div');
-                messageElement.className = `message ${message.sender === currentUser.username ? 'sent' : 'received'}`;
-                messageElement.textContent = message.text;
-                messageArea.appendChild(messageElement);
-            });
-            
-            // Mesajları en alta kaydır
             messageArea.scrollTop = messageArea.scrollHeight;
         }
+
+        function sendMessage() {
+            const messageText = document.getElementById('messageInput').value.trim();
+            if (!messageText) return;
+            
+            // Gönderenin mesaj geçmişini güncelle
+            if (!currentUser.messages[currentChatFriend]) {
+                currentUser.messages[currentChatFriend] = [];
+            }
+            currentUser.messages[currentChatFriend].push({
+                sender: currentUser.username,
+                text: messageText,
+                date: new Date().toISOString()
+            });
+            
+            // Alıcının mesaj geçmişini güncelle
+            const friend = users.find(u => u.username === currentChatFriend);
+            if (friend) {
+                if (!friend.messages[currentUser.username]) {
+                    friend.messages[currentUser.username] = [];
+                }
+                friend.messages[currentUser.username].push({
+                    sender: currentUser.username,
+                    text: messageText,
+                    date: new Date().toISOString()
+                });
+                
+                // Son mesajlaşılan kişiyi güncelle
+                friend.lastChattedWith = currentUser.username;
+            }
+            
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            // Mesajı ekrana ekle
+            const messageArea = document.getElementById('messageArea');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message sent';
+            messageDiv.textContent = messageText;
+            messageArea.appendChild(messageDiv);
+            document.getElementById('messageInput').value = '';
+            messageArea.scrollTop = messageArea.scrollHeight;
+        }
+
         // Ayarlar
         function showSettings() {
             document.getElementById('mainDashboard').style.display = 'none';
             document.getElementById('settingsPanel').style.display = 'block';
             
-             // Profil resmini göster
-            const settingsProfilePicElement = document.getElementById('settingsProfilePicPreview');
-            if (currentUser.profilePic) {
-                settingsProfilePicElement.innerHTML = '';
-                settingsProfilePicElement.style.backgroundImage = `url(${currentUser.profilePic})`;
-                settingsProfilePicElement.style.backgroundSize = 'cover';
-            } else {
-                settingsProfilePicElement.innerHTML = '<i class="fas fa-user"></i>';
-                settingsProfilePicElement.style.backgroundImage = 'none';
-            }
-            
-            // Mevcut profil bilgilerini forma doldur
+            // Profil bilgilerini doldur
             document.getElementById('profileNickname').value = currentUser.nickname || '';
             document.getElementById('profileEmail').value = currentUser.email || '';
             document.getElementById('profileAge').value = currentUser.age || '';
             
-            // Sekmeleri sıfırla
-            document.querySelectorAll('.settings-tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.settings-content').forEach(content => content.classList.remove('active'));
-            
-            // İlk sekmeyi aktif yap
-            document.querySelector('.settings-tab:first-child').classList.add('active');
-            document.querySelector('.settings-content:first-child').classList.add('active');
-        }
-        function openSettingsTab(tabName) {
-            document.querySelectorAll('.settings-tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.settings-content').forEach(content => content.classList.remove('active'));
-            
-            document.querySelector(`.settings-tab[onclick="openSettingsTab('${tabName}')"]`).classList.add('active');
-            document.getElementById(tabName).classList.add('active');
-        }
-        function saveProfile() {
-            const newNickname = document.getElementById('profileNickname').value.trim();
-            const newEmail = document.getElementById('profileEmail').value.trim();
-            const newAge = parseInt(document.getElementById('profileAge').value);
-            
-            const currentUserIndex = users.findIndex(u => u.username === currentUser.username);
-            
-            if (currentUserIndex !== -1) {
-                users[currentUserIndex].nickname = newNickname;
-                users[currentUserIndex].email = newEmail;
-                users[currentUserIndex].age = newAge;
-                
-                if (settingsProfilePicBase64) {
-                    users[currentUserIndex].profilePic = settingsProfilePicBase64;
-                }
-                
-                localStorage.setItem('users', JSON.stringify(users));
-                alert("Profiliniz başarıyla güncellendi!");
-                
-                // Kullanıcı adını güncelle
-                document.getElementById('currentUsernameDisplay').textContent = newNickname || currentUser.username;
-                
-                 // Profil resmini güncelle
-                const currentUserProfilePicElement = document.getElementById('currentUserProfilePic');
-                if (users[currentUserIndex].profilePic) {
-                    currentUserProfilePicElement.innerHTML = '';
-                    currentUserProfilePicElement.style.backgroundImage = `url(${users[currentUserIndex].profilePic})`;
-                    currentUserProfilePicElement.style.backgroundSize = 'cover';
-                } else {
-                    currentUserProfilePicElement.innerHTML = '<i class="fas fa-user"></i>';
-                    currentUserProfilePicElement.style.backgroundImage = 'none';
-                }
-                
-                backToDashboard();
-            }
-        }
-        function changePassword() {
-            const currentPassword = document.getElementById('currentPassword').value;
-            const newPassword = document.getElementById('newPasswordSettings').value;
-            const confirmNewPassword = document.getElementById('confirmNewPassword').value;
-            
-            if (currentPassword !== currentUser.password) {
-                alert("Mevcut şifreniz hatalı!");
-                return;
+            // Profil resmini göster
+            if (currentUser.profilePic) {
+                document.getElementById('settingsProfilePicPreview').innerHTML = '';
+                document.getElementById('settingsProfilePicPreview').style.backgroundImage = `url(${currentUser.profilePic})`;
+                document.getElementById('settingsProfilePicPreview').style.backgroundSize = 'cover';
+            } else {
+                document.getElementById('settingsProfilePicPreview').innerHTML = '<i class="fas fa-user"></i>';
+                document.getElementById('settingsProfilePicPreview').style.backgroundImage = 'none';
             }
             
-            if (newPassword !== confirmNewPassword) {
-                alert("Yeni şifreler eşleşmiyor!");
-                return;
-            }
-            
-            const currentUserIndex = users.findIndex(u => u.username === currentUser.username);
-            
-            if (currentUserIndex !== -1) {
-                users[currentUserIndex].password = newPassword;
-                localStorage.setItem('users', JSON.stringify(users));
-                alert("Şifreniz başarıyla değiştirildi!");
-                backToDashboard();
-            }
+            settingsProfilePicBase64 = currentUser.profilePic;
         }
-        function deleteAccount() {
-            const confirmation = confirm("Hesabınızı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.");
-            if (!confirmation) return;
-            
-            const currentUserIndex = users.findIndex(u => u.username === currentUser.username);
-            
-            if (currentUserIndex !== -1) {
-                users.splice(currentUserIndex, 1);
-                localStorage.setItem('users', JSON.stringify(users));
-                currentUser = null;
-                alert("Hesabınız silindi!");
-                showLoginForm();
-            }
-        }
+
         function backToDashboard() {
             document.getElementById('mainDashboard').style.display = 'block';
             document.getElementById('settingsPanel').style.display = 'none';
         }
+
+        function openSettingsTab(tabId) {
+            // Tüm tab içeriklerini gizle
+            document.querySelectorAll('.settings-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Tüm tab başlıklarını pasif yap
+            document.querySelectorAll('.settings-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Seçilen tab'ı aktif yap
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function saveProfile() {
+            currentUser.nickname = document.getElementById('profileNickname').value;
+            currentUser.email = document.getElementById('profileEmail').value;
+            currentUser.age = document.getElementById('profileAge').value;
+            
+            if (settingsProfilePicBase64) {
+                currentUser.profilePic = settingsProfilePicBase64;
+            }
+            
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            // Ana ekrandaki bilgileri güncelle
+            document.getElementById('currentUsernameDisplay').textContent = currentUser.nickname || currentUser.username;
+            
+            if (currentUser.profilePic) {
+                document.getElementById('currentUserProfilePic').innerHTML = '';
+                document.getElementById('currentUserProfilePic').style.backgroundImage = `url(${currentUser.profilePic})`;
+                document.getElementById('currentUserProfilePic').style.backgroundSize = 'cover';
+            } else {
+                document.getElementById('currentUserProfilePic').innerHTML = '<i class="fas fa-user"></i>';
+                document.getElementById('currentUserProfilePic').style.backgroundImage = 'none';
+            }
+            
+            alert("Profil bilgileri kaydedildi!");
+        }
+
+        function changePassword() {
+            const currentPass = document.getElementById('currentPassword').value;
+            const newPass = document.getElementById('newPasswordSettings').value;
+            const confirmPass = document.getElementById('confirmNewPassword').value;
+            
+            if (currentPass !== currentUser.password) {
+                alert("Mevcut şifre hatalı!");
+                return;
+            }
+            
+            if (newPass !== confirmPass) {
+                alert("Yeni şifreler eşleşmiyor!");
+                return;
+            }
+            
+            currentUser.password = newPass;
+            localStorage.setItem('users', JSON.stringify(users));
+            alert("Şifreniz başarıyla değiştirildi!");
+            
+            // Alanları temizle
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPasswordSettings').value = '';
+            document.getElementById('confirmNewPassword').value = '';
+        }
+
+        function deleteAccount() {
+            if (confirm("Hesabınızı silmek istediğinize emin misiniz? Bu işlem geri alınamaz!")) {
+                // Kullanıcıyı listeden kaldır
+                users = users.filter(u => u.username !== currentUser.username);
+                
+                // Diğer kullanıcılardan bu kullanıcıyı arkadaş listelerinden ve mesajlardan kaldır
+                users.forEach(user => {
+                    user.friends = user.friends.filter(friend => friend !== currentUser.username);
+                    user.friendRequests = user.friendRequests.filter(req => req !== currentUser.username);
+                    
+                    if (user.messages[currentUser.username]) {
+                        delete user.messages[currentUser.username];
+                    }
+                    
+                    if (user.lastChattedWith === currentUser.username) {
+                        user.lastChattedWith = null;
+                    }
+                });
+                
+                localStorage.setItem('users', JSON.stringify(users));
+                currentUser = null;
+                showLoginForm();
+                alert("Hesabınız başarıyla silindi.");
+            }
+        }
+
         // Çıkış yap
         function logout() {
             currentUser = null;
