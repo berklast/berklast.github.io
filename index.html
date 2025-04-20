@@ -6,6 +6,7 @@
     <title>Mesajlaşma Portalı</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
+        /* CSS kodu aynı kalabilir */
         :root {
             --primary-color: #4361ee;
             --secondary-color: #3f37c9;
@@ -292,7 +293,7 @@
                                 <h3 style="margin: 0;" id="chatWithUser"></h3>
                             </div>
                             <div id="messageArea" class="chat-messages"></div>
-                            <input type="text" id="messageInput" class="form-control" placeholder="Mesaj yazın...">
+                            <input type="text" id="messageInput" class="form-control" placeholder="Mesaj yazın..." onkeypress="handleKeyPress(event)">
                             <button onclick="sendMessage()" class="btn btn-primary">Gönder</button>
                         </div>
                         <div id="defaultChatView">
@@ -347,7 +348,7 @@
         // Örnek kullanıcılar ekleme (test için)
         function initializeSampleUsers() {
             if (users.length === 0) {
-                users = [
+                const sampleUsers = [
                     {
                         username: "Berklast",
                         password: "123456",
@@ -355,10 +356,19 @@
                         email: "berk@example.com",
                         age: 25,
                         profilePic: null,
-                        friends: [],
+                        friends: ["Ahmet", "Ayse"],
                         friendRequests: [],
-                        messages: {},
-                        lastChattedWith: null
+                        messages: {
+                            "Ahmet": [
+                                {sender: "Berklast", text: "Merhaba Ahmet!", date: new Date().toISOString()},
+                                {sender: "Ahmet", text: "Selam Berklast!", date: new Date().toISOString()}
+                            ],
+                            "Ayse": [
+                                {sender: "Berklast", text: "Nasılsın Ayşe?", date: new Date().toISOString()},
+                                {sender: "Ayse", text: "İyiyim, teşekkürler!", date: new Date().toISOString()}
+                            ]
+                        },
+                        lastChattedWith: "Ahmet"
                     },
                     {
                         username: "Ahmet",
@@ -367,10 +377,15 @@
                         email: "ahmet@example.com",
                         age: 30,
                         profilePic: null,
-                        friends: [],
+                        friends: ["Berklast"],
                         friendRequests: [],
-                        messages: {},
-                        lastChattedWith: null
+                        messages: {
+                            "Berklast": [
+                                {sender: "Berklast", text: "Merhaba Ahmet!", date: new Date().toISOString()},
+                                {sender: "Ahmet", text: "Selam Berklast!", date: new Date().toISOString()}
+                            ]
+                        },
+                        lastChattedWith: "Berklast"
                     },
                     {
                         username: "Ayse",
@@ -379,12 +394,19 @@
                         email: "ayse@example.com",
                         age: 28,
                         profilePic: null,
-                        friends: [],
+                        friends: ["Berklast"],
                         friendRequests: [],
-                        messages: {},
-                        lastChattedWith: null
+                        messages: {
+                            "Berklast": [
+                                {sender: "Berklast", text: "Nasılsın Ayşe?", date: new Date().toISOString()},
+                                {sender: "Ayse", text: "İyiyim, teşekkürler!", date: new Date().toISOString()}
+                            ]
+                        },
+                        lastChattedWith: "Berklast"
                     }
                 ];
+                
+                users = sampleUsers;
                 localStorage.setItem('users', JSON.stringify(users));
             }
         }
@@ -462,17 +484,23 @@
             document.getElementById('currentUsernameDisplay').textContent = currentUser.nickname || currentUser.username;
             
             // Profil resmini göster
-            if (currentUser.profilePic) {
-                document.getElementById('currentUserProfilePic').innerHTML = '';
-                document.getElementById('currentUserProfilePic').style.backgroundImage = `url(${currentUser.profilePic})`;
-                document.getElementById('currentUserProfilePic').style.backgroundSize = 'cover';
-            } else {
-                document.getElementById('currentUserProfilePic').innerHTML = '<i class="fas fa-user"></i>';
-                document.getElementById('currentUserProfilePic').style.backgroundImage = 'none';
-            }
+            updateProfilePicture('currentUserProfilePic', currentUser.profilePic);
             
             loadFriendsList();
             loadFriendRequests();
+        }
+
+        // Profil resmini güncelle
+        function updateProfilePicture(elementId, picture) {
+            const element = document.getElementById(elementId);
+            if (picture) {
+                element.innerHTML = '';
+                element.style.backgroundImage = `url(${picture})`;
+                element.style.backgroundSize = 'cover';
+            } else {
+                element.innerHTML = '<i class="fas fa-user"></i>';
+                element.style.backgroundImage = 'none';
+            }
         }
 
         // Resim yükleme işlemi
@@ -501,6 +529,11 @@
             const username = document.getElementById('registerUsername').value.trim();
             const password = document.getElementById('registerPassword').value;
             const passwordConfirm = document.getElementById('registerPasswordConfirm').value;
+            
+            if (!username || !password) {
+                alert("Kullanıcı adı ve şifre boş olamaz!");
+                return;
+            }
             
             if (username.includes(' ')) {
                 alert("Kullanıcı adı boşluk içeremez!");
@@ -542,6 +575,11 @@
             const username = document.getElementById('loginUsername').value.trim();
             const password = document.getElementById('loginPassword').value;
             
+            if (!username || !password) {
+                alert("Kullanıcı adı ve şifre boş olamaz!");
+                return;
+            }
+            
             const user = users.find(u => u.username.toLowerCase() === username.toLowerCase() && u.password === password);
             
             if (user) {
@@ -570,6 +608,11 @@
         function verifyLastChatUser() {
             const lastChatUser = document.getElementById('lastChatUser').value.trim();
             
+            if (!lastChatUser) {
+                alert("Lütfen en son mesajlaştığınız kullanıcıyı girin!");
+                return;
+            }
+            
             if (lastChatUser.toLowerCase() === tempUserForReset.lastChattedWith?.toLowerCase()) {
                 document.getElementById('newPasswordContainer').style.display = 'block';
                 document.getElementById('verifyBtn').style.display = 'none';
@@ -582,6 +625,11 @@
         function resetPassword() {
             const newPassword = document.getElementById('newPassword').value;
             const newPasswordConfirm = document.getElementById('newPasswordConfirm').value;
+            
+            if (!newPassword || !newPasswordConfirm) {
+                alert("Şifre alanları boş olamaz!");
+                return;
+            }
             
             if (newPassword !== newPasswordConfirm) {
                 alert("Şifreler eşleşmiyor!");
@@ -609,7 +657,7 @@
             
             const filteredUsers = users.filter(user => 
                 user.username.toLowerCase().includes(searchTerm) && 
-                user.username !== currentUser.username &&
+                user.username.toLowerCase() !== currentUser.username.toLowerCase() &&
                 !currentUser.friends.includes(user.username)
             );
             
@@ -623,29 +671,33 @@
                     userElement.className = 'search-result-item';
                     userElement.onclick = () => selectUserForFriendRequest(user.username);
                     
-                    if (user.profilePic) {
-                        userElement.innerHTML = `
-                            <div style="background-image: url(${user.profilePic}); 
-                                width: 30px; height: 30px; border-radius: 50%; 
-                                background-size: cover; margin-right: 10px;"></div>
-                            ${user.username}
-                        `;
-                    } else {
-                        userElement.innerHTML = `
-                            <div style="width: 30px; height: 30px; border-radius: 50%; 
-                                background-color: #ddd; margin-right: 10px; 
-                                display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-user" style="font-size: 12px; color: #777;"></i>
-                            </div>
-                            ${user.username}
-                        `;
-                    }
+                    updateProfilePictureInElement(userElement, user);
                     
-                    resultsContainer.appendChild(userElement);
+                    container.appendChild(userElement);
                 });
             }
             
             resultsContainer.style.display = 'block';
+        }
+
+        function updateProfilePictureInElement(element, user) {
+            if (user.profilePic) {
+                element.innerHTML = `
+                    <div style="background-image: url(${user.profilePic}); 
+                        width: 30px; height: 30px; border-radius: 50%; 
+                        background-size: cover; margin-right: 10px;"></div>
+                    ${user.username}
+                `;
+            } else {
+                element.innerHTML = `
+                    <div style="width: 30px; height: 30px; border-radius: 50%; 
+                        background-color: #ddd; margin-right: 10px; 
+                        display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-user" style="font-size: 12px; color: #777;"></i>
+                    </div>
+                    ${user.username}
+                `;
+            }
         }
 
         function selectUserForFriendRequest(username) {
@@ -706,24 +758,45 @@
                         const requestElement = document.createElement('div');
                         requestElement.className = 'friend-item';
                         
+                        updateProfilePictureInElement(requestElement, requester);
+                        
+                        // Butonları ekle
+                        const buttonsDiv = document.createElement('div');
+                        buttonsDiv.style.marginLeft = 'auto';
+                        
+                        const acceptBtn = document.createElement('button');
+                        acceptBtn.innerHTML = 'Kabul';
+                        acceptBtn.onclick = () => acceptFriendRequest(requester.username);
+                        acceptBtn.style.background = 'var(--success-color)';
+                        acceptBtn.style.color = 'white';
+                        acceptBtn.style.border = 'none';
+                        acceptBtn.style.borderRadius = '4px';
+                        acceptBtn.style.padding = '5px 10px';
+                        acceptBtn.style.marginRight = '5px';
+                        
+                        const rejectBtn = document.createElement('button');
+                        rejectBtn.innerHTML = 'Reddet';
+                        rejectBtn.onclick = () => rejectFriendRequest(requester.username);
+                        rejectBtn.style.background = 'var(--danger-color)';
+                        rejectBtn.style.color = 'white';
+                        rejectBtn.style.border = 'none';
+                        rejectBtn.style.borderRadius = '4px';
+                        rejectBtn.style.padding = '5px 10px';
+                        
+                        buttonsDiv.appendChild(acceptBtn);
+                        buttonsDiv.appendChild(rejectBtn);
+                        
+                        // Kullanıcı adını ekle
+                        const usernameSpan = document.createElement('span');
+                        usernameSpan.textContent = requester.username;
+                        
+                        // Önce resmi, sonra kullanıcı adını, sonra butonları ekle
+                        requestElement.innerHTML = '';
                         if (requester.profilePic) {
                             requestElement.innerHTML = `
                                 <div style="background-image: url(${requester.profilePic}); 
                                     width: 30px; height: 30px; border-radius: 50%; 
                                     background-size: cover; margin-right: 10px;"></div>
-                                <span>${requester.username}</span>
-                                <div style="margin-left: auto;">
-                                    <button onclick="acceptFriendRequest('${requester.username}')" 
-                                        style="background: var(--success-color); color: white; border: none; 
-                                        border-radius: 4px; padding: 5px 10px; margin-right: 5px;">
-                                        Kabul
-                                    </button>
-                                    <button onclick="rejectFriendRequest('${requester.username}')" 
-                                        style="background: var(--danger-color); color: white; border: none; 
-                                        border-radius: 4px; padding: 5px 10px;">
-                                        Reddet
-                                    </button>
-                                </div>
                             `;
                         } else {
                             requestElement.innerHTML = `
@@ -732,21 +805,11 @@
                                     display: flex; align-items: center; justify-content: center;">
                                     <i class="fas fa-user" style="font-size: 12px; color: #777;"></i>
                                 </div>
-                                <span>${requester.username}</span>
-                                <div style="margin-left: auto;">
-                                    <button onclick="acceptFriendRequest('${requester.username}')" 
-                                        style="background: var(--success-color); color: white; border: none; 
-                                        border-radius: 4px; padding: 5px 10px; margin-right: 5px;">
-                                        Kabul
-                                    </button>
-                                    <button onclick="rejectFriendRequest('${requester.username}')" 
-                                        style="background: var(--danger-color); color: white; border: none; 
-                                        border-radius: 4px; padding: 5px 10px;">
-                                        Reddet
-                                    </button>
-                                </div>
                             `;
                         }
+                        
+                        requestElement.appendChild(usernameSpan);
+                        requestElement.appendChild(buttonsDiv);
                         
                         container.appendChild(requestElement);
                     }
@@ -795,23 +858,7 @@
                         friendElement.className = 'friend-item';
                         friendElement.onclick = () => openChat(friend.username);
                         
-                        if (friend.profilePic) {
-                            friendElement.innerHTML = `
-                                <div style="background-image: url(${friend.profilePic}); 
-                                    width: 30px; height: 30px; border-radius: 50%; 
-                                    background-size: cover; margin-right: 10px;"></div>
-                                ${friend.username}
-                            `;
-                        } else {
-                            friendElement.innerHTML = `
-                                <div style="width: 30px; height: 30px; border-radius: 50%; 
-                                    background-color: #ddd; margin-right: 10px; 
-                                    display: flex; align-items: center; justify-content: center;">
-                                    <i class="fas fa-user" style="font-size: 12px; color: #777;"></i>
-                                </div>
-                                ${friend.username}
-                            `;
-                        }
+                        updateProfilePictureInElement(friendElement, friend);
                         
                         container.appendChild(friendElement);
                     }
@@ -833,14 +880,7 @@
             
             // Profil resmini göster
             const friend = users.find(u => u.username === friendUsername);
-            if (friend && friend.profilePic) {
-                document.getElementById('chatFriendProfilePic').innerHTML = '';
-                document.getElementById('chatFriendProfilePic').style.backgroundImage = `url(${friend.profilePic})`;
-                document.getElementById('chatFriendProfilePic').style.backgroundSize = 'cover';
-            } else {
-                document.getElementById('chatFriendProfilePic').innerHTML = '<i class="fas fa-user"></i>';
-                document.getElementById('chatFriendProfilePic').style.backgroundImage = 'none';
-            }
+            updateProfilePicture('chatFriendProfilePic', friend?.profilePic);
             
             const messageArea = document.getElementById('messageArea');
             messageArea.innerHTML = '';
@@ -857,9 +897,15 @@
             messageArea.scrollTop = messageArea.scrollHeight;
         }
 
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
         function sendMessage() {
             const messageText = document.getElementById('messageInput').value.trim();
-            if (!messageText) return;
+            if (!messageText || !currentChatFriend) return;
             
             // Gönderenin mesaj geçmişini güncelle
             if (!currentUser.messages[currentChatFriend]) {
@@ -910,14 +956,7 @@
             document.getElementById('profileAge').value = currentUser.age || '';
             
             // Profil resmini göster
-            if (currentUser.profilePic) {
-                document.getElementById('settingsProfilePicPreview').innerHTML = '';
-                document.getElementById('settingsProfilePicPreview').style.backgroundImage = `url(${currentUser.profilePic})`;
-                document.getElementById('settingsProfilePicPreview').style.backgroundSize = 'cover';
-            } else {
-                document.getElementById('settingsProfilePicPreview').innerHTML = '<i class="fas fa-user"></i>';
-                document.getElementById('settingsProfilePicPreview').style.backgroundImage = 'none';
-            }
+            updateProfilePicture('settingsProfilePicPreview', currentUser.profilePic);
             
             settingsProfilePicBase64 = currentUser.profilePic;
         }
@@ -956,15 +995,7 @@
             
             // Ana ekrandaki bilgileri güncelle
             document.getElementById('currentUsernameDisplay').textContent = currentUser.nickname || currentUser.username;
-            
-            if (currentUser.profilePic) {
-                document.getElementById('currentUserProfilePic').innerHTML = '';
-                document.getElementById('currentUserProfilePic').style.backgroundImage = `url(${currentUser.profilePic})`;
-                document.getElementById('currentUserProfilePic').style.backgroundSize = 'cover';
-            } else {
-                document.getElementById('currentUserProfilePic').innerHTML = '<i class="fas fa-user"></i>';
-                document.getElementById('currentUserProfilePic').style.backgroundImage = 'none';
-            }
+            updateProfilePicture('currentUserProfilePic', currentUser.profilePic);
             
             alert("Profil bilgileri kaydedildi!");
         }
