@@ -8,7 +8,7 @@
     <style>
         :root {
             --primary-color: #4361ee;
-            --secondary-color: #3f37c9;
+            --secondary-color: #3f37c9; 
             --danger-color: #f72585;
             --success-color: #4cc9f0;
             --light-color: #f8f9fa;
@@ -342,54 +342,8 @@
         let profilePicBase64 = null;
         let settingsProfilePicBase64 = null;
 
-        // Örnek kullanıcılar ekleme (test için)
-        function initializeSampleUsers() {
-            if (users.length === 0) {
-                users = [
-                    {
-                        username: "Berklast",
-                        password: "123456",
-                        nickname: "Berklast",
-                        email: "berk@example.com",
-                        age: 25,
-                        profilePic: null,
-                        friends: [],
-                        friendRequests: [],
-                        messages: {},
-                        lastChattedWith: null
-                    },
-                    {
-                        username: "Ahmet",
-                        password: "123456",
-                        nickname: "Ahmet",
-                        email: "ahmet@example.com",
-                        age: 30,
-                        profilePic: null,
-                        friends: [],
-                        friendRequests: [],
-                        messages: {},
-                        lastChattedWith: null
-                    },
-                    {
-                        username: "Ayse",
-                        password: "123456",
-                        nickname: "Ayşe",
-                        email: "ayse@example.com",
-                        age: 28,
-                        profilePic: null,
-                        friends: [],
-                        friendRequests: [],
-                        messages: {},
-                        lastChattedWith: null
-                    }
-                ];
-                localStorage.setItem('users', JSON.stringify(users));
-            }
-        }
-
         // Sayfa yüklendiğinde
         document.addEventListener('DOMContentLoaded', function() {
-            initializeSampleUsers();
             loadUsers();
             showLoginForm();
             
@@ -618,7 +572,7 @@
                             <div style="background-image: url(${user.profilePic}); 
                                 width: 30px; height: 30px; border-radius: 50%; 
                                 background-size: cover; margin-right: 10px;"></div>
-                            <span>${user.username}</span>
+                            <span>${user.nickname || user.username}</span>
                             <button onclick="sendFriendRequest('${user.username}')" 
                                 style="margin-left: auto; background: var(--primary-color); 
                                 color: white; border: none; border-radius: 4px; padding: 5px 10px;">
@@ -632,7 +586,7 @@
                                 display: flex; align-items: center; justify-content: center;">
                                 <i class="fas fa-user" style="font-size: 12px; color: #777;"></i>
                             </div>
-                            <span>${user.username}</span>
+                            <span>${user.nickname || user.username}</span>
                             <button onclick="sendFriendRequest('${user.username}')" 
                                 style="margin-left: auto; background: var(--primary-color); 
                                 color: white; border: none; border-radius: 4px; padding: 5px 10px;">
@@ -675,7 +629,7 @@
             
             friend.friendRequests.push(currentUser.username);
             localStorage.setItem('users', JSON.stringify(users));
-            alert(`${friend.username} kullanıcısına arkadaşlık isteği gönderildi!`);
+            alert(`${friend.nickname || friend.username} kullanıcısına arkadaşlık isteği gönderildi!`);
             document.getElementById('allUsersList').style.display = 'none';
             loadFriendRequests();
         }
@@ -696,7 +650,7 @@
                                 <div style="background-image: url(${requester.profilePic}); 
                                     width: 30px; height: 30px; border-radius: 50%; 
                                     background-size: cover; margin-right: 10px;"></div>
-                                <span>${requester.username}</span>
+                                <span>${requester.nickname || requester.username}</span>
                                 <div style="margin-left: auto;">
                                     <button onclick="acceptFriendRequest('${requester.username}')" 
                                         style="background: var(--success-color); color: white; border: none; 
@@ -717,7 +671,7 @@
                                     display: flex; align-items: center; justify-content: center;">
                                     <i class="fas fa-user" style="font-size: 12px; color: #777;"></i>
                                 </div>
-                                <span>${requester.username}</span>
+                                <span>${requester.nickname || requester.username}</span>
                                 <div style="margin-left: auto;">
                                     <button onclick="acceptFriendRequest('${requester.username}')" 
                                         style="background: var(--success-color); color: white; border: none; 
@@ -763,7 +717,7 @@
                 currentUser = me;
                 loadFriendsList();
                 loadFriendRequests();
-                alert(`${requesterUsername} arkadaş olarak eklendi!`);
+                alert(`${requester.nickname || requester.username} arkadaş olarak eklendi!`);
             } else {
                 alert("Bir hata oluştu, kullanıcı bulunamadı.");
             }
@@ -792,7 +746,7 @@
                                 <div style="background-image: url(${friend.profilePic}); 
                                     width: 30px; height: 30px; border-radius: 50%; 
                                     background-size: cover; margin-right: 10px;"></div>
-                                ${friend.username}
+                                ${friend.nickname || friend.username}
                             `;
                         } else {
                             friendElement.innerHTML = `
@@ -801,7 +755,7 @@
                                     display: flex; align-items: center; justify-content: center;">
                                     <i class="fas fa-user" style="font-size: 12px; color: #777;"></i>
                                 </div>
-                                ${friend.username}
+                                ${friend.nickname || friend.username}
                             `;
                         }
                         
@@ -821,7 +775,7 @@
             
             document.getElementById('defaultChatView').style.display = 'none';
             document.getElementById('chatContainer').style.display = 'block';
-            document.getElementById('chatWithUser').textContent = friendUsername;
+            document.getElementById('chatWithUser').textContent = friend.nickname || friendUsername;
             
             // Profil resmini göster
             const friend = users.find(u => u.username === friendUsername);
