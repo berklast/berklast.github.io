@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kişisel Portal</title>
+    <title>En İyi Site - Kişisel Portal</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -14,7 +14,7 @@
             color: #333;
         }
         .container {
-            max-width: 800px;
+            max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
         }
@@ -25,6 +25,14 @@
             text-align: center;
             border-radius: 5px;
             margin-bottom: 20px;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        header p {
+            margin: 5px 0 0;
+            font-size: 1.2em;
         }
         .form-container {
             background: white;
@@ -89,13 +97,86 @@
             font-size: 0.8em;
             color: #7f8c8d;
         }
+        .profile-pic {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 10px auto;
+            display: block;
+            cursor: pointer;
+        }
+        .profile-pic-input {
+            display: none;
+        }
+        .user-panel {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .friends-list {
+            width: 30%;
+            padding-right: 20px;
+        }
+        .chat-area {
+            width: 70%;
+            border-left: 1px solid #ddd;
+            padding-left: 20px;
+        }
+        .friend-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+        .friend-item:hover {
+            background-color: #f9f9f9;
+        }
+        .message-area {
+            height: 300px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        .message {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 4px;
+            max-width: 70%;
+        }
+        .message.sent {
+            background-color: #e3f2fd;
+            margin-left: auto;
+        }
+        .message.received {
+            background-color: #f1f1f1;
+            margin-right: auto;
+        }
+        .add-friend-form {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .add-friend-form input {
+            flex: 1;
+            margin-right: 10px;
+        }
+        .friend-requests {
+            margin-top: 20px;
+        }
+        .friend-request-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Kişisel Portal</h1>
-            <p>Hesabınıza giriş yapın veya kayıt olun</p>
+            <h1>En İyi Site - Kişisel Portal</h1>
+            <p>Mesajlaşma platformuna hoş geldiniz</p>
         </header>
 
         <!-- Giriş Formu -->
@@ -117,24 +198,57 @@
             <input type="text" id="registerUsername" placeholder="Kullanıcı Adı">
             <input type="password" id="registerPassword" placeholder="Şifre">
             <input type="password" id="registerPasswordConfirm" placeholder="Şifre (Tekrar)">
+            
+            <label for="profilePicInput">
+                <img id="profilePicPreview" src="https://via.placeholder.com/100" class="profile-pic" alt="Profil Resmi">
+            </label>
+            <input type="file" id="profilePicInput" class="profile-pic-input" accept="image/*">
+            
             <button onclick="register()">Kayıt Ol</button>
             <div class="form-switch">
                 Zaten hesabınız var mı? <a onclick="showLoginForm()">Giriş Yapın</a>
             </div>
         </div>
 
-        <!-- Kullanıcı İçeriği -->
+        <!-- Kullanıcı Paneli -->
         <div class="content" id="userContent">
+            <div style="text-align: right;">
+                <button onclick="logout()" style="width: auto; background-color: #dc3545;">Çıkış Yap</button>
+            </div>
+            
             <h2>Hoş Geldiniz, <span id="userName"></span>!</h2>
+            <img id="userProfilePic" src="" class="profile-pic" alt="Profil Resminiz">
             
-            <h3>Kişisel Bilgiler</h3>
-            <p>Bu alanı kişisel bilgilerinizle doldurabilirsiniz.</p>
-            
-            <button onclick="logout()" style="background-color: #dc3545; margin-top: 20px;">Çıkış Yap</button>
+            <div class="user-panel">
+                <div class="friends-list">
+                    <h3>Arkadaşlar</h3>
+                    <div id="friendsContainer"></div>
+                    
+                    <h3>Arkadaş Ekle</h3>
+                    <div class="add-friend-form">
+                        <input type="text" id="friendUsername" placeholder="Kullanıcı adı girin">
+                        <button onclick="sendFriendRequest()" style="width: auto;">Ekle</button>
+                    </div>
+                    
+                    <div class="friend-requests">
+                        <h3>Arkadaşlık İstekleri</h3>
+                        <div id="friendRequestsContainer"></div>
+                    </div>
+                </div>
+                
+                <div class="chat-area">
+                    <h3>Mesajlar <span id="chatWithUser"></span></h3>
+                    <div id="messageArea" class="message-area"></div>
+                    <div style="display: flex;">
+                        <input type="text" id="messageInput" placeholder="Mesaj yazın...">
+                        <button onclick="sendMessage()" style="width: auto; margin-left: 10px;">Gönder</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <footer>
-            &copy; 2023 Kişisel Portal. Tüm hakları saklıdır.
+            &copy; 2023 En İyi Site - Kişisel Portal. Tüm hakları saklıdır.
         </footer>
     </div>
 
@@ -142,6 +256,8 @@
         // Kullanıcı verilerini saklamak için
         let users = JSON.parse(localStorage.getItem('users')) || [];
         let currentUser = null;
+        let currentChatFriend = null;
+        let profilePicBase64 = null;
 
         // Formları göster/gizle
         function showLoginForm() {
@@ -154,13 +270,33 @@
             document.getElementById('loginForm').style.display = 'none';
             document.getElementById('registerForm').style.display = 'block';
             clearMessages();
+            document.getElementById('profilePicPreview').src = "https://via.placeholder.com/100";
+            profilePicBase64 = null;
+            
+            // Profil resmi yükleme eventi
+            document.getElementById('profilePicInput').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        document.getElementById('profilePicPreview').src = event.target.result;
+                        profilePicBase64 = event.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
         }
 
         function showUserContent() {
             document.getElementById('loginForm').style.display = 'none';
             document.getElementById('registerForm').style.display = 'none';
             document.getElementById('userContent').style.display = 'block';
+            
             document.getElementById('userName').textContent = currentUser.username;
+            document.getElementById('userProfilePic').src = currentUser.profilePic || "https://via.placeholder.com/100";
+            
+            loadFriendsList();
+            loadFriendRequests();
         }
 
         function clearMessages() {
@@ -209,7 +345,11 @@
             // Kullanıcıyı kaydet
             const newUser = {
                 username: username,
-                password: password
+                password: password,
+                profilePic: profilePicBase64,
+                friends: [],
+                friendRequests: [],
+                messages: {}
             };
             
             users.push(newUser);
@@ -239,8 +379,201 @@
         // Çıkış işlemi
         function logout() {
             currentUser = null;
+            currentChatFriend = null;
             document.getElementById('userContent').style.display = 'none';
             showLoginForm();
+        }
+
+        // Arkadaş listesini yükle
+        function loadFriendsList() {
+            const container = document.getElementById('friendsContainer');
+            container.innerHTML = '';
+            
+            if (currentUser.friends && currentUser.friends.length > 0) {
+                currentUser.friends.forEach(friendUsername => {
+                    const friend = users.find(u => u.username === friendUsername);
+                    if (friend) {
+                        const friendElement = document.createElement('div');
+                        friendElement.className = 'friend-item';
+                        friendElement.innerHTML = `
+                            <img src="${friend.profilePic || 'https://via.placeholder.com/30'}" style="width: 30px; height: 30px; border-radius: 50%; vertical-align: middle;">
+                            <span style="margin-left: 10px;">${friend.username}</span>
+                        `;
+                        friendElement.onclick = () => openChat(friendUsername);
+                        container.appendChild(friendElement);
+                    }
+                });
+            } else {
+                container.innerHTML = '<p>Henüz arkadaşınız yok.</p>';
+            }
+        }
+
+        // Arkadaş isteklerini yükle
+        function loadFriendRequests() {
+            const container = document.getElementById('friendRequestsContainer');
+            container.innerHTML = '';
+            
+            if (currentUser.friendRequests && currentUser.friendRequests.length > 0) {
+                currentUser.friendRequests.forEach(request => {
+                    const requester = users.find(u => u.username === request.from);
+                    if (requester) {
+                        const requestElement = document.createElement('div');
+                        requestElement.className = 'friend-request-item';
+                        requestElement.innerHTML = `
+                            <div>
+                                <img src="${requester.profilePic || 'https://via.placeholder.com/30'}" style="width: 30px; height: 30px; border-radius: 50%; vertical-align: middle;">
+                                <span style="margin-left: 10px;">${requester.username}</span>
+                            </div>
+                            <div>
+                                <button onclick="acceptFriendRequest('${requester.username}')" style="width: auto; background-color: #28a745; margin-right: 5px;">Kabul</button>
+                                <button onclick="rejectFriendRequest('${requester.username}')" style="width: auto; background-color: #dc3545;">Red</button>
+                            </div>
+                        `;
+                        container.appendChild(requestElement);
+                    }
+                });
+            } else {
+                container.innerHTML = '<p>Henüz arkadaşlık isteği yok.</p>';
+            }
+        }
+
+        // Arkadaşlık isteği gönder
+        function sendFriendRequest() {
+            const friendUsername = document.getElementById('friendUsername').value.trim();
+            const messageElement = document.getElementById('registerMessage');
+            
+            if (!friendUsername) {
+                alert('Lütfen bir kullanıcı adı girin.');
+                return;
+            }
+            
+            if (friendUsername === currentUser.username) {
+                alert('Kendinize arkadaşlık isteği gönderemezsiniz.');
+                return;
+            }
+            
+            const friend = users.find(u => u.username === friendUsername);
+            if (!friend) {
+                alert('Kullanıcı bulunamadı.');
+                return;
+            }
+            
+            if (currentUser.friends && currentUser.friends.includes(friendUsername)) {
+                alert('Bu kullanıcı zaten arkadaşınız.');
+                return;
+            }
+            
+            // İstek zaten gönderilmiş mi kontrol et
+            if (friend.friendRequests && friend.friendRequests.some(req => req.from === currentUser.username)) {
+                alert('Bu kullanıcıya zaten arkadaşlık isteği gönderdiniz.');
+                return;
+            }
+            
+            // İsteği ekle
+            if (!friend.friendRequests) friend.friendRequests = [];
+            friend.friendRequests.push({
+                from: currentUser.username,
+                date: new Date().toISOString()
+            });
+            
+            localStorage.setItem('users', JSON.stringify(users));
+            alert('Arkadaşlık isteği gönderildi!');
+            document.getElementById('friendUsername').value = '';
+        }
+
+        // Arkadaşlık isteğini kabul et
+        function acceptFriendRequest(username) {
+            const requester = users.find(u => u.username === username);
+            
+            // Arkadaş listelerine ekle
+            if (!currentUser.friends) currentUser.friends = [];
+            if (!requester.friends) requester.friends = [];
+            
+            currentUser.friends.push(username);
+            requester.friends.push(currentUser.username);
+            
+            // İsteği kaldır
+            currentUser.friendRequests = currentUser.friendRequests.filter(req => req.from !== username);
+            
+            localStorage.setItem('users', JSON.stringify(users));
+            loadFriendsList();
+            loadFriendRequests();
+        }
+
+        // Arkadaşlık isteğini reddet
+        function rejectFriendRequest(username) {
+            currentUser.friendRequests = currentUser.friendRequests.filter(req => req.from !== username);
+            localStorage.setItem('users', JSON.stringify(users));
+            loadFriendRequests();
+        }
+
+        // Sohbeti aç
+        function openChat(friendUsername) {
+            currentChatFriend = friendUsername;
+            document.getElementById('chatWithUser').textContent = `- ${friendUsername}`;
+            
+            const messageArea = document.getElementById('messageArea');
+            messageArea.innerHTML = '';
+            
+            // Mesajları yükle
+            if (currentUser.messages && currentUser.messages[friendUsername]) {
+                currentUser.messages[friendUsername].forEach(msg => {
+                    const messageElement = document.createElement('div');
+                    messageElement.className = `message ${msg.sender === currentUser.username ? 'sent' : 'received'}`;
+                    messageElement.textContent = msg.text;
+                    messageArea.appendChild(messageElement);
+                });
+            }
+            
+            messageArea.scrollTop = messageArea.scrollHeight;
+        }
+
+        // Mesaj gönder
+        function sendMessage() {
+            if (!currentChatFriend) {
+                alert('Önce bir arkadaş seçin.');
+                return;
+            }
+            
+            const messageInput = document.getElementById('messageInput');
+            const messageText = messageInput.value.trim();
+            
+            if (!messageText) return;
+            
+            // Gönderenin mesajlarını güncelle
+            if (!currentUser.messages) currentUser.messages = {};
+            if (!currentUser.messages[currentChatFriend]) currentUser.messages[currentChatFriend] = [];
+            
+            currentUser.messages[currentChatFriend].push({
+                sender: currentUser.username,
+                text: messageText,
+                date: new Date().toISOString()
+            });
+            
+            // Alıcının mesajlarını güncelle
+            const friend = users.find(u => u.username === currentChatFriend);
+            if (friend) {
+                if (!friend.messages) friend.messages = {};
+                if (!friend.messages[currentUser.username]) friend.messages[currentUser.username] = [];
+                
+                friend.messages[currentUser.username].push({
+                    sender: currentUser.username,
+                    text: messageText,
+                    date: new Date().toISOString()
+                });
+            }
+            
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            // Mesaj kutusunu güncelle
+            const messageArea = document.getElementById('messageArea');
+            const messageElement = document.createElement('div');
+            messageElement.className = 'message sent';
+            messageElement.textContent = messageText;
+            messageArea.appendChild(messageElement);
+            
+            messageInput.value = '';
+            messageArea.scrollTop = messageArea.scrollHeight;
         }
 
         // Sayfa yüklendiğinde giriş formunu göster
