@@ -344,8 +344,54 @@
         let profilePicBase64 = null;
         let settingsProfilePicBase64 = null;
 
+        // Örnek kullanıcılar ekleme (test için)
+        function initializeSampleUsers() {
+            if (users.length === 0) {
+                users = [
+                    {
+                        username: "Berklast",
+                        password: "123456",
+                        nickname: "Berklast",
+                        email: "berk@example.com",
+                        age: 25,
+                        profilePic: null,
+                        friends: [],
+                        friendRequests: [],
+                        messages: {},
+                        lastChattedWith: null
+                    },
+                    {
+                        username: "Ahmet",
+                        password: "123456",
+                        nickname: "Ahmet",
+                        email: "ahmet@example.com",
+                        age: 30,
+                        profilePic: null,
+                        friends: [],
+                        friendRequests: [],
+                        messages: {},
+                        lastChattedWith: null
+                    },
+                    {
+                        username: "Ayse",
+                        password: "123456",
+                        nickname: "Ayşe",
+                        email: "ayse@example.com",
+                        age: 28,
+                        profilePic: null,
+                        friends: [],
+                        friendRequests: [],
+                        messages: {},
+                        lastChattedWith: null
+                    }
+                ];
+                localStorage.setItem('users', JSON.stringify(users));
+            }
+        }
+
         // Sayfa yüklendiğinde
         document.addEventListener('DOMContentLoaded', function() {
+            initializeSampleUsers();
             loadUsers();
             showLoginForm();
             
@@ -556,7 +602,7 @@
             const searchTerm = document.getElementById('friendUsername').value.trim().toLowerCase();
             const resultsContainer = document.getElementById('searchResults');
             
-            if (searchTerm.length < 2) {
+            if (searchTerm.length < 1) {
                 resultsContainer.style.display = 'none';
                 return;
             }
@@ -611,6 +657,11 @@
         function sendFriendRequest() {
             const friendUsername = document.getElementById('friendUsername').value.trim();
             
+            if (!friendUsername) {
+                alert("Lütfen bir kullanıcı adı girin!");
+                return;
+            }
+            
             if (friendUsername.toLowerCase() === currentUser.username.toLowerCase()) {
                 alert("Kendinize arkadaşlık isteği gönderemezsiniz!");
                 return;
@@ -619,7 +670,7 @@
             const friend = users.find(u => u.username.toLowerCase() === friendUsername.toLowerCase());
             
             if (!friend) {
-                alert("Kullanıcı bulunamadı!");
+                alert("Kullanıcı bulunamadı! Lütfen doğru yazdığınızdan emin olun.");
                 return;
             }
             
@@ -640,6 +691,8 @@
             localStorage.setItem('users', JSON.stringify(users));
             alert("Arkadaşlık isteği gönderildi!");
             document.getElementById('friendUsername').value = '';
+            document.getElementById('searchResults').style.display = 'none';
+            loadFriendRequests();
         }
 
         function loadFriendRequests() {
