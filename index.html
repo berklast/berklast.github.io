@@ -667,12 +667,13 @@
                 return;
             }
             
-            const friend = users.find(u => u.username.toLowerCase() === friendUsername.toLowerCase());
-            
-            if (!friend) {
-                alert("Kullanıcı bulunamadı! Lütfen doğru yazdığınızdan emin olun.");
+            const friendIndex = users.findIndex(u => u.username.toLowerCase() === friendUsername.toLowerCase());
+            if (friendIndex === -1) {
+                alert("Kullanıcı bulunamadı!");
                 return;
             }
+
+            const friend = users[friendIndex];
             
             if (currentUser.friends.includes(friend.username)) {
                 alert("Bu kullanıcı zaten arkadaşınız!");
@@ -692,6 +693,7 @@
             alert("Arkadaşlık isteği gönderildi!");
             document.getElementById('friendUsername').value = '';
             document.getElementById('searchResults').style.display = 'none';
+            syncCurrentUser();
             loadFriendRequests();
         }
 
@@ -756,31 +758,45 @@
             }
         }
 
-        function acceptFriendRequest(username) {
-            // Arkadaş listesine ekle
-            if (!currentUser.friends.includes(username)) {
-                currentUser.friends.push(username);
+        function acceptFriendRequest(requesterUsername) {
+            const requesterIndex = users.findIndex(u => u.username === requesterUsername);
+            const currentUserIndex = users.findIndex(u => u.username === currentUser.username);
+
+            if (requesterIndex !== -1 && currentUserIndex !== -1) {
+                const requester = users[requesterIndex];
+                const me = users[currentUserIndex];
+
+                if (!me.friends.includes(requesterUsername)) {
+                    me.friends.push(requesterUsername);
+                }
+
+                if (!requester.friends.includes(currentUser.username)) {
+                    requester.friends.push(currentUser.username);
+                }
+
+                me.friendRequests = me.friendRequests.filter(u => u !== requesterUsername);
+
+                localStorage.setItem('users', JSON.stringify(users));
+                currentUser = me;
+                loadFriendsList();
+                loadFriendRequests();
+                alert(`${requesterUsername} arkadaş olarak eklendi!`);
+            } else {
+                alert("Bir hata oluştu, kullanıcı bulunamadı.");
             }
-            
-            // İsteği kaldır
-            currentUser.friendRequests = currentUser.friendRequests.filter(u => u !== username);
-            
-            // Diğer kullanıcının da arkadaş listesine ekle
-            const friend = users.find(u => u.username === username);
-            if (friend && !friend.friends.includes(currentUser.username)) {
-                friend.friends.push(currentUser.username);
-            }
-            
-            localStorage.setItem('users', JSON.stringify(users));
-            loadFriendsList();
-            loadFriendRequests();
         }
 
         function rejectFriendRequest(username) {
             // İsteği kaldır
             currentUser.friendRequests = currentUser.friendRequests.filter(u => u !== username);
             localStorage.setItem('users', JSON.stringify(users));
+            syncCurrentUser();
             loadFriendRequests();
+        }
+
+        function syncCurrentUser() {
+            const updated = users.find(u => u.username === currentUser.username);
+            if (updated) currentUser = updated;
         }
 
         function loadFriendsList() {
@@ -826,6 +842,7 @@
             currentChatFriend = friendUsername;
             currentUser.lastChattedWith = friendUsername;
             localStorage.setItem('users', JSON.stringify(users));
+            syncCurrentUser();
             
             document.getElementById('defaultChatView').style.display = 'none';
             document.getElementById('chatContainer').style.display = 'block';
@@ -888,6 +905,7 @@
             }
             
             localStorage.setItem('users', JSON.stringify(users));
+            syncCurrentUser();
             
             // Mesajı ekrana ekle
             const messageArea = document.getElementById('messageArea');
@@ -953,6 +971,7 @@
             }
             
             localStorage.setItem('users', JSON.stringify(users));
+            syncCurrentUser();
             
             // Ana ekrandaki bilgileri güncelle
             document.getElementById('currentUsernameDisplay').textContent = currentUser.nickname || currentUser.username;
@@ -986,6 +1005,7 @@
             
             currentUser.password = newPass;
             localStorage.setItem('users', JSON.stringify(users));
+            syncCurrentUser();
             alert("Şifreniz başarıyla değiştirildi!");
             
             // Alanları temizle
