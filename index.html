@@ -1,12 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Renk Topları Oyunu</title>
+    <title>Kare Fırlatma Oyunu</title>
     <link rel="stylesheet" href="style.css">
-</head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> </head>
 <body>
-    <canvas id="oyunAlani" width="400" height="600"></canvas>
-    <div id="skor">Skor: 0</div>
+    <canvas id="oyunAlani"></canvas>
+    <div id="bilgiAlani">
+        <div id="siradakiKare">Sıradaki: <span id="siradakiRenk"></span></div>
+        <div id="gucBar"></div>
+        <div id="skor">Skor: 0</div>
+    </div>
     <script src="script.js"></script>
 </body>
 </html>
