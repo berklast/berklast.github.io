@@ -1,0 +1,16 @@
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: sans-serif;
+}
+
+#oyunAlani {
+    border: 5px solid black;
+    background-color: green; /* Çimen rengi */
+}
+
+#skor {
+    margin-top: 20px;
+    font-size: 1.5em;
+}
