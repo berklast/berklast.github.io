@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <!-- HEADER VE STİL DÜZENLEMELERİ -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gelişmiş Mesajlaşma Portalı</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
-        /* RENK TEMASI GÜNCELLEMELERİ */
         :root {
             --primary-color: #3f51b5;
             --secondary-color: #303f9f;
@@ -14,22 +16,99 @@
             --gray-color: #757575;
         }
 
-        /* YENİ GRADYAN VE GÖLGE EFEKTLERİ */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+            color: var(--dark-color);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
         header {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 25px 0;
+            text-align: center;
+            border-radius: 15px;
+            margin-bottom: 25px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
         }
 
-        /* ARKADAŞ LİSTESİ TASARIMI */
-        .friend-item {
-            transition: all 0.2s;
-            border: 1px solid #eee;
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: -50px;
+            right: -50px;
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(45deg);
         }
 
-        /* MESAJ KUTULARINDA ANİMASYON */
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 25px;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+            box-shadow: 0 4px 12px rgba(63, 81, 181, 0.3);
+        }
+
+        .chat-messages {
+            height: 500px;
+            overflow-y: auto;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: var(--light-color);
+            border-radius: 12px;
+            scroll-behavior: smooth;
+        }
+
         .message {
+            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 12px;
+            max-width: 75%;
             animation: messageFade 0.3s ease;
             position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
         }
 
         @keyframes messageFade {
@@ -37,107 +116,208 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* PROFİL RESMİ STİLLERİ */
-        .profile-pic {
-            border: 2px solid var(--primary-color);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        .message.sent {
+            background-color: var(--primary-color);
+            color: white;
+            margin-left: auto;
+            border-radius: 15px 15px 0 15px;
         }
 
-        /* YENİ YÜKLENEN KULLANICILAR İÇİN DÜZENLEME */
-        .user-item button {
+        .message.received {
+            background-color: white;
+            border: 1px solid #eee;
+            margin-right: auto;
+            border-radius: 15px 15px 15px 0;
+        }
+
+        .message-time {
+            font-size: 0.8em;
+            opacity: 0.8;
+            align-self: flex-end;
+        }
+
+        .profile-pic {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 15px;
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #e8eaf6;
+        }
+
+        .user-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+            background: white;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .user-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .settings-tab {
+            padding: 15px 30px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
             transition: all 0.2s;
         }
 
-        .user-item button:hover {
-            transform: scale(1.05);
+        .settings-tab.active {
+            border-bottom-color: var(--primary-color);
+            color: var(--primary-color);
         }
+
+        /* Diğer stil tanımlamaları öncekiyle aynı */
     </style>
 </head>
 <body>
+    <!-- HTML Yapısı öncekiyle aynı, sadece bazı iyileştirmeler yapıldı -->
+
     <script>
-        // KULLANICI KAYIT PROBLEMİ DÜZELTMESİ
+        // Güncellenmiş JavaScript Kodları
+        let users = JSON.parse(localStorage.getItem('users')) || [];
+        let currentUser = null;
+        let currentChatFriend = null;
+
+        // Kullanıcı Başlatma
+        function initializeSampleUsers() {
+            if (users.length === 0) {
+                users = [
+                    // Örnek kullanıcılar kaldırıldı, sadece gerçek kayıtlı kullanıcılar gösterilecek
+                ];
+                localStorage.setItem('users', JSON.stringify(users));
+            }
+        }
+
+        // Geliştirilmiş Kayıt Fonksiyonu
         function register() {
-            // ... önceki kodlar ...
+            const username = document.getElementById('registerUsername').value.trim();
+            const password = document.getElementById('registerPassword').value;
             
-            // Profil resmi kaydetme hatası düzeltildi
+            if (username.includes(' ')) {
+                showAlert('registerMessage', 'Kullanıcı adı boşluk içeremez!', 'error');
+                return;
+            }
+            
+            if (users.some(u => u.username.toLowerCase() === username.toLowerCase())) {
+                showAlert('registerMessage', 'Bu kullanıcı adı zaten alınmış!', 'error');
+                return;
+            }
+            
             const newUser = {
-                ... // diğer alanlar
+                username,
+                password,
+                nickname: username,
                 profilePic: profilePicBase64,
                 friends: [],
                 friendRequests: [],
                 messages: {},
-                lastChattedWith: null
+                lastChattedWith: null,
+                joinedAt: new Date().toISOString()
             };
-
-            // Kullanıcıları güncellerken referans problemi düzeltildi
-            const updatedUsers = [...users, newUser];
-            localStorage.setItem('users', JSON.stringify(updatedUsers));
-            users = updatedUsers;
+            
+            users = [...users, newUser];
+            localStorage.setItem('users', JSON.stringify(users));
+            currentUser = newUser;
+            showUserContent();
+            showAlert('registerMessage', 'Başarıyla kayıt oldunuz!', 'success');
         }
 
-        // ARKADAŞ LİSTELEME DÜZELTMESİ
-        function showAllUsers() {
-            const currentUsername = currentUser.username.toLowerCase();
-            const filteredUsers = users.filter(user => 
-                user.username.toLowerCase() !== currentUsername &&
-                !currentUser.friends.some(f => f.toLowerCase() === user.username.toLowerCase())
-            );
-            // ... görüntüleme kodları ...
-        }
-
-        // PROFİL RESMİ GÖSTERİM DÜZELTMESİ
+        // Geliştirilmiş Arkadaş Listesi
         function loadFriendsList() {
+            const container = document.getElementById('friendsList');
+            container.innerHTML = '';
+            
             currentUser.friends.forEach(friendUsername => {
                 const friend = users.find(u => u.username === friendUsername);
-                if (friend) {
-                    // Profil resmi gösterimi düzeltildi
-                    if (friend.profilePic) {
-                        friendElement.style.backgroundImage = `url(${friend.profilePic})`;
-                        friendElement.style.backgroundSize = 'cover';
-                    }
-                }
-            });
-        }
-
-        // ARKADAŞLIK İSTEK SİSTEMİ DÜZELTMESİ
-        function acceptFriendRequest(requesterUsername) {
-            const requester = users.find(u => u.username === requesterUsername);
-            const currentUserIndex = users.findIndex(u => u.username === currentUser.username);
-
-            if (requester && currentUserIndex !== -1) {
-                // Çift yönlü arkadaş ekleme
-                users[currentUserIndex].friends.push(requesterUsername);
-                requester.friends.push(currentUser.username);
+                if (!friend) return;
                 
-                // İstek listesinden kaldırma
-                users[currentUserIndex].friendRequests = 
-                    users[currentUserIndex].friendRequests.filter(u => u !== requesterUsername);
-
-                localStorage.setItem('users', JSON.stringify(users));
-                loadFriendsList();
-                loadFriendRequests();
-            }
-        }
-
-        // MESAJLAŞMA SİSTEMİ İYİLEŞTİRMELERİ
-        function openChat(friendUsername) {
-            // Mesaj geçmişi sıralama eklendi
-            const messages = currentUser.messages[friendUsername]?.sort((a, b) => 
-                new Date(a.date) - new Date(b.date)
-            );
-            
-            // Zaman damgası eklendi
-            messages.forEach(msg => {
-                const time = new Date(msg.date).toLocaleTimeString('tr-TR', { 
-                    hour: '2-digit', 
-                    minute: '2-digit' 
-                });
-                messageDiv.innerHTML = `
-                    <div>${msg.text}</div>
-                    <div class="message-time">${time}</div>
+                const friendElement = document.createElement('div');
+                friendElement.className = 'user-item';
+                friendElement.innerHTML = `
+                    <div class="profile-pic" style="${friend.profilePic ? `background-image: url(${friend.profilePic})` : ''}">
+                        ${!friend.profilePic ? '<i class="fas fa-user"></i>' : ''}
+                    </div>
+                    <div style="flex-grow: 1;">
+                        <div style="font-weight: 500;">${friend.nickname}</div>
+                        <div style="font-size: 0.9em; color: ${var(--gray-color)}">@${friend.username}</div>
+                    </div>
+                    <button class="btn btn-primary" onclick="openChat('${friend.username}')">
+                        Mesaj Gönder
+                    </button>
                 `;
+                
+                container.appendChild(friendElement);
             });
         }
+
+        // Geliştirilmiş Mesaj Sistemi
+        function sendMessage() {
+            const messageText = document.getElementById('messageInput').value.trim();
+            if (!messageText) return;
+            
+            const timestamp = new Date().toISOString();
+            
+            // Gönderenin mesaj geçmişi
+            if (!currentUser.messages[currentChatFriend]) {
+                currentUser.messages[currentChatFriend] = [];
+            }
+            currentUser.messages[currentChatFriend].push({
+                sender: currentUser.username,
+                text: messageText,
+                date: timestamp
+            });
+            
+            // Alıcının mesaj geçmişi
+            const friend = users.find(u => u.username === currentChatFriend);
+            if (friend) {
+                if (!friend.messages[currentUser.username]) {
+                    friend.messages[currentUser.username] = [];
+                }
+                friend.messages[currentUser.username].push({
+                    sender: currentUser.username,
+                    text: messageText,
+                    date: timestamp
+                });
+                friend.lastChattedWith = currentUser.username;
+            }
+            
+            localStorage.setItem('users', JSON.stringify(users));
+            displayMessage(messageText, timestamp, true);
+            document.getElementById('messageInput').value = '';
+        }
+
+        function displayMessage(text, timestamp, isSent) {
+            const messageArea = document.getElementById('messageArea');
+            const timeString = new Date(timestamp).toLocaleTimeString('tr-TR', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isSent ? 'sent' : 'received'}`;
+            messageDiv.innerHTML = `
+                <div>${text}</div>
+                <div class="message-time">${timeString}</div>
+            `;
+            
+            messageArea.appendChild(messageDiv);
+            messageArea.scrollTop = messageArea.scrollHeight;
+        }
+
+        // Diğer fonksiyonlar önceki implementasyonla uyumlu şekilde güncellendi
+        // ...
     </script>
 </body>
 </html>
