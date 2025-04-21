@@ -1,67 +1,12 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sohbet Portalı</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Renk Topları Oyunu</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-    <div id="authContainer">
-        <div class="auth-box">
-            <h2>Giriş Yap</h2>
-            <input type="text" id="loginUsername" placeholder="Kullanıcı Adı">
-            <input type="password" id="loginPassword" placeholder="Şifre">
-            <button onclick="login()">Giriş Yap</button>
-            <p>Hesabınız yok mu? <a href="#" onclick="showRegister()">Kayıt Ol</a></p>
-        </div>
-
-        <div id="registerContainer" class="auth-box" style="display: none;">
-            <h2>Kayıt Ol</h2>
-            <input type="text" id="registerUsername" placeholder="Kullanıcı Adı">
-            <input type="password" id="registerPassword" placeholder="Şifre">
-            <input type="file" id="profilePicUpload" accept="image/*">
-            <button onclick="register()">Kayıt Ol</button>
-            <p><a href="#" onclick="hideRegister()">Giriş Yap</a></p>
-        </div>
-    </div>
-
-    <div id="mainPanel" style="display: none;">
-        <div class="panel-header">
-            <h2>Hoş Geldiniz, <span id="currentUser"></span>!</h2>
-            <button class="logout-btn" onclick="logout()">Çıkış Yap</button>
-        </div>
-
-        <div class="panel-section">
-            <button class="panel-btn" onclick="toggleFriendModal()">Arkadaş Ekle</button>
-            <button class="panel-btn" onclick="toggleChat()">Mesajlaşma</button>
-            <button class="panel-btn" onclick="toggleSettings()">Ayarlar</button>
-        </div>
-
-        <div id="friendModal" class="modal">
-            <h2>Arkadaş Ekle</h2>
-            <div id="userList"></div>
-            <button onclick="toggleFriendModal()">Kapat</button>
-        </div>
-
-        <div id="chatContainer" class="panel-content">
-            <h3>Mesajlaşma</h3>
-            <div id="chatMessages"></div>
-            <input type="text" id="messageInput">
-            <button onclick="sendMessage()">Gönder</button>
-        </div>
-
-        <div id="settingsContainer" class="panel-content">
-            <h3>Ayarlar</h3>
-            <input type="file" id="updateProfilePic">
-            <input type="text" id="updateUsername" placeholder="Yeni Kullanıcı Adı">
-            <input type="password" id="updatePassword" placeholder="Yeni Şifre">
-            <button onclick="updateProfile()">Kaydet</button>
-            <button onclick="deleteAccount()" class="danger">Hesabı Sil</button>
-        </div>
-    </div>
-
+    <canvas id="oyunAlani" width="400" height="600"></canvas>
+    <div id="skor">Skor: 0</div>
     <script src="script.js"></script>
 </body>
 </html>
