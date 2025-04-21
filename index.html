@@ -1,31 +1,100 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
-    <title>Basit Oyun</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galaksi Savaşları</title>
     <style>
-        canvas { border: 1px solid black; }
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+            background: url('https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+            background-size: cover;
+            color: white;
+        }
+        #login-screen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        #game-container {
+            display: none;
+        }
+        #players-count {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 5px;
+        }
+        #game-canvas {
+            display: block;
+            margin: 0 auto;
+            background: black;
+        }
+        #market-button, #start-button {
+            position: absolute;
+            bottom: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #market-button {
+            left: 20px;
+            background: #4CAF50;
+        }
+        #start-button {
+            right: 20px;
+            background: #f44336;
+        }
+        #market {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+            z-index: 100;
+        }
+        .item {
+            margin: 10px;
+            padding: 10px;
+            background: #333;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
-    <canvas id="gameCanvas" width="400" height="400"></canvas>
-    <script>
-        const canvas = document.getElementById("gameCanvas");
-        const ctx = canvas.getContext("2d");
-        let x = 50, y = 50;
-        
-        function drawPlayer() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "red";
-            ctx.fillRect(x, y, 30, 30);
-        }
-        
-        document.addEventListener("keydown", (e) => {
-            if (e.key === "ArrowRight") x += 10;
-            if (e.key === "ArrowLeft") x -= 10;
-            drawPlayer();
-        });
-        
-        drawPlayer();
-    </script>
+    <div id="login-screen">
+        <h1>Galaksi Savaşları</h1>
+        <input type="text" id="player-name" placeholder="İsminizi girin" required>
+        <button onclick="startGame()">Oyuna Başla</button>
+    </div>
+
+    <div id="game-container">
+        <div id="players-count">Oyuncular: <span id="count">1</span></div>
+        <canvas id="game-canvas" width="800" height="600"></canvas>
+        <button id="market-button" onclick="openMarket()">Market</button>
+        <button id="start-button" onclick="startRound()">Raunt Başlat</button>
+    </div>
+
+    <div id="market">
+        <h2>Market</h2>
+        <div class="item" onclick="buyItem('shield', 50)">Kalkan (50 Gold)</div>
+        <div class="item" onclick="buyItem('weapon', 100)">Lazer Silahı (100 Gold)</div>
+        <div class="item" onclick="buyItem('health', 30)">Can Doldur (30 Gold)</div>
+        <button onclick="closeMarket()">Kapat</button>
+    </div>
+
+    <script src="game.js"></script>
 </body>
 </html>
