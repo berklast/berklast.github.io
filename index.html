@@ -8,15 +8,16 @@
 </head>
 <body>
 
-    <!-- Giriş ve Kayıt Formu -->
     <div id="authContainer">
-        <h2>Giriş Yap</h2>
-        <input type="text" id="loginUsername" placeholder="Kullanıcı Adı">
-        <input type="password" id="loginPassword" placeholder="Şifre">
-        <button onclick="login()">Giriş Yap</button>
-        <p><a href="#" onclick="showRegister()">Kayıt Ol</a></p>
+        <div class="auth-box">
+            <h2>Giriş Yap</h2>
+            <input type="text" id="loginUsername" placeholder="Kullanıcı Adı">
+            <input type="password" id="loginPassword" placeholder="Şifre">
+            <button onclick="login()">Giriş Yap</button>
+            <p>Hesabınız yok mu? <a href="#" onclick="showRegister()">Kayıt Ol</a></p>
+        </div>
 
-        <div id="registerContainer" style="display: none;">
+        <div id="registerContainer" class="auth-box" style="display: none;">
             <h2>Kayıt Ol</h2>
             <input type="text" id="registerUsername" placeholder="Kullanıcı Adı">
             <input type="password" id="registerPassword" placeholder="Şifre">
@@ -26,28 +27,32 @@
         </div>
     </div>
 
-    <!-- Ana Panel -->
     <div id="mainPanel" style="display: none;">
-        <h2>Hoş Geldiniz, <span id="currentUser"></span>!</h2>
-        <button onclick="logout()">Çıkış Yap</button>
-
-        <div id="friendContainer">
-            <button onclick="toggleFriendModal()">Arkadaş Ekle</button>
-            <div id="friendModal" class="modal">
-                <h2>Arkadaş Ekle</h2>
-                <div id="userList"></div>
-                <button onclick="toggleFriendModal()">Kapat</button>
-            </div>
+        <div class="panel-header">
+            <h2>Hoş Geldiniz, <span id="currentUser"></span>!</h2>
+            <button class="logout-btn" onclick="logout()">Çıkış Yap</button>
         </div>
 
-        <div id="chatContainer">
+        <div class="panel-section">
+            <button class="panel-btn" onclick="toggleFriendModal()">Arkadaş Ekle</button>
+            <button class="panel-btn" onclick="toggleChat()">Mesajlaşma</button>
+            <button class="panel-btn" onclick="toggleSettings()">Ayarlar</button>
+        </div>
+
+        <div id="friendModal" class="modal">
+            <h2>Arkadaş Ekle</h2>
+            <div id="userList"></div>
+            <button onclick="toggleFriendModal()">Kapat</button>
+        </div>
+
+        <div id="chatContainer" class="panel-content">
             <h3>Mesajlaşma</h3>
             <div id="chatMessages"></div>
             <input type="text" id="messageInput">
             <button onclick="sendMessage()">Gönder</button>
         </div>
 
-        <div id="settingsContainer">
+        <div id="settingsContainer" class="panel-content">
             <h3>Ayarlar</h3>
             <input type="file" id="updateProfilePic">
             <input type="text" id="updateUsername" placeholder="Yeni Kullanıcı Adı">
