@@ -1,6 +1,3 @@
-Sorununuzu anlıyorum. İşte düzgün çalışan, tüm fonksiyonları içeren ve görsel arayüzü geliştirilmiş tam bir HTML dosyası:
-
-```html
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -865,4 +862,115 @@ Sorununuzu anlıyorum. İşte düzgün çalışan, tüm fonksiyonları içeren v
                 document.getElementById('settingsProfilePicPreview').style.backgroundSize = 'cover';
             } else {
                 document.getElementById('settingsProfilePicPreview').innerHTML = '<i class="fas fa-user"></i>';
-                document.getElementById('settingsProfilePicPreview').style.backgroundImage = '
+                document.getElementById('settingsProfilePicPreview').style.backgroundImage = 'none';
+            }
+            
+            settingsProfilePicBase64 = currentUser.profilePic;
+        }
+
+        function backToDashboard() {
+            document.getElementById('mainDashboard').style.display = 'block';
+            document.getElementById('settingsPanel').style.display = 'none';
+        }
+
+        function openSettingsTab(tabId) {
+            // Tüm tab içeriklerini gizle
+            document.querySelectorAll('.settings-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Tüm tab başlıklarını pasif yap
+            document.querySelectorAll('.settings-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Seçilen tab'ı aktif yap
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function saveProfile() {
+            currentUser.nickname = document.getElementById('profileNickname').value;
+            currentUser.email = document.getElementById('profileEmail').value;
+            currentUser.age = document.getElementById('profileAge').value;
+            
+            if (settingsProfilePicBase64) {
+                currentUser.profilePic = settingsProfilePicBase64;
+            }
+            
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            // Ana ekrandaki bilgileri güncelle
+            document.getElementById('currentUsernameDisplay').textContent = currentUser.nickname || currentUser.username;
+            
+            if (currentUser.profilePic) {
+                document.getElementById('currentUserProfilePic').innerHTML = '';
+                document.getElementById('currentUserProfilePic').style.backgroundImage = `url(${currentUser.profilePic})`;
+                document.getElementById('currentUserProfilePic').style.backgroundSize = 'cover';
+            } else {
+                document.getElementById('currentUserProfilePic').innerHTML = '<i class="fas fa-user"></i>';
+                document.getElementById('currentUserProfilePic').style.backgroundImage = 'none';
+            }
+            
+            alert("Profil bilgileri kaydedildi!");
+        }
+
+        function changePassword() {
+            const currentPass = document.getElementById('currentPassword').value;
+            const newPass = document.getElementById('newPasswordSettings').value;
+            const confirmPass = document.getElementById('confirmNewPassword').value;
+            
+            if (currentPass !== currentUser.password) {
+                alert("Mevcut şifre hatalı!");
+                return;
+            }
+            
+            if (newPass !== confirmPass) {
+                alert("Yeni şifreler eşleşmiyor!");
+                return;
+            }
+            
+            currentUser.password = newPass;
+            localStorage.setItem('users', JSON.stringify(users));
+            alert("Şifreniz başarıyla değiştirildi!");
+            
+            // Alanları temizle
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPasswordSettings').value = '';
+            document.getElementById('confirmNewPassword').value = '';
+        }
+
+        function deleteAccount() {
+            if (confirm("Hesabınızı silmek istediğinize emin misiniz? Bu işlem geri alınamaz!")) {
+                // Kullanıcıyı listeden kaldır
+                users = users.filter(u => u.username !== currentUser.username);
+                
+                // Diğer kullanıcılardan bu kullanıcıyı arkadaş listelerinden ve mesajlardan kaldır
+                users.forEach(user => {
+                    user.friends = user.friends.filter(friend => friend !== currentUser.username);
+                    user.friendRequests = user.friendRequests.filter(req => req !== currentUser.username);
+                    
+                    if (user.messages[currentUser.username]) {
+                        delete user.messages[currentUser.username];
+                    }
+                    
+                    if (user.lastChattedWith === currentUser.username) {
+                        user.lastChattedWith = null;
+                    }
+                });
+                
+                localStorage.setItem('users', JSON.stringify(users));
+                currentUser = null;
+                showLoginForm();
+                alert("Hesabınız başarıyla silindi.");
+            }
+        }
+
+        // Çıkış yap
+        function logout() {
+            currentUser = null;
+            showLoginForm();
+        }
+    </script>
+</body>
+</html>
