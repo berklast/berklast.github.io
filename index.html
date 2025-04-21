@@ -69,107 +69,7 @@
         // Oyun değişkenleri
         const canvas = document.getElementById('game-canvas');
         const ctx = canvas.getContext('2d');
-        
-        // Resimler
-        const images = {
-            player: new Image(),
-            enemy: new Image(),
-            boss: new Image(),
-            background: new Image()
-        };
-        
-        // Varsayılan resimler (PNG'ler yüklenmezse)
-        function createDefaultImages() {
-            // Oyuncu gemisi (basit üçgen)
-            const playerCanvas = document.createElement('canvas');
-            playerCanvas.width = 50;
-            playerCanvas.height = 50;
-            const playerCtx = playerCanvas.getContext('2d');
-            playerCtx.fillStyle = '#00ffff';
-            playerCtx.beginPath();
-            playerCtx.moveTo(25, 0);
-            playerCtx.lineTo(50, 50);
-            playerCtx.lineTo(0, 50);
-            playerCtx.closePath();
-            playerCtx.fill();
-            images.player.src = playerCanvas.toDataURL();
-            
-            // Düşman gemisi (basit üçgen)
-            const enemyCanvas = document.createElement('canvas');
-            enemyCanvas.width = 40;
-            enemyCanvas.height = 40;
-            const enemyCtx = enemyCanvas.getContext('2d');
-            enemyCtx.fillStyle = '#ff0000';
-            enemyCtx.beginPath();
-            enemyCtx.moveTo(20, 40);
-            enemyCtx.lineTo(40, 0);
-            enemyCtx.lineTo(0, 0);
-            enemyCtx.closePath();
-            enemyCtx.fill();
-            images.enemy.src = enemyCanvas.toDataURL();
-            
-            // Boss (basit kare)
-            const bossCanvas = document.createElement('canvas');
-            bossCanvas.width = 80;
-            bossCanvas.height = 60;
-            const bossCtx = bossCanvas.getContext('2d');
-            bossCtx.fillStyle = '#ff00ff';
-            bossCtx.fillRect(0, 0, 80, 60);
-            images.boss.src = bossCanvas.toDataURL();
-            
-            // Arka plan (basit yıldızlar)
-            const bgCanvas = document.createElement('canvas');
-            bgCanvas.width = 800;
-            bgCanvas.height = 600;
-            const bgCtx = bgCanvas.getContext('2d');
-            bgCtx.fillStyle = '#000';
-            bgCtx.fillRect(0, 0, 800, 600);
-            bgCtx.fillStyle = '#fff';
-            for(let i=0; i<200; i++) {
-                bgCtx.fillRect(
-                    Math.random()*800, 
-                    Math.random()*600, 
-                    Math.random()*2, 
-                    Math.random()*2
-                );
-            }
-            images.background.src = bgCanvas.toDataURL();
-            
-            // Resimler yüklendi say
-            imagesLoaded();
-        }
-        
-        // Gerçek resimleri yükleme denemesi
-        function loadImages() {
-            let loadedCount = 0;
-            const totalImages = 4;
-            
-            function checkLoaded() {
-                loadedCount++;
-                if(loadedCount === totalImages) {
-                    imagesLoaded();
-                }
-            }
-            
-            images.player.onload = checkLoaded;
-            images.player.src = 'player_ship.png';
-            
-            images.enemy.onload = checkLoaded;
-            images.enemy.src = 'enemy_ship.png';
-            
-            images.boss.onload = checkLoaded;
-            images.boss.src = 'boss.png';
-            
-            images.background.onload = checkLoaded;
-            images.background.src = 'background.png';
-            
-            // Resimler yüklenmezse 3 saniye sonra varsayılanları oluştur
-            setTimeout(() => {
-                if(loadedCount < totalImages) {
-                    createDefaultImages();
-                }
-            }, 3000);
-        }
+        const startBtn = document.getElementById('start-btn');
         
         // Oyun durumu
         let gameState = {
@@ -188,16 +88,45 @@
             enemiesCount: 10,
             keys: {},
             gameStarted: false,
-            lastShot: 0,
-            imagesReady: false
+            lastShot: 0
         };
-        
-        // Resimler yüklendiğinde
-        function imagesLoaded() {
-            gameState.imagesReady = true;
-            document.getElementById('start-btn').addEventListener('click', startGame);
+
+        // Basit şekillerle varsayılan grafikler
+        function drawPlayer() {
+            ctx.fillStyle = '#00ffff';
+            ctx.beginPath();
+            ctx.moveTo(gameState.player.x + gameState.player.width/2, gameState.player.y);
+            ctx.lineTo(gameState.player.x + gameState.player.width, gameState.player.y + gameState.player.height);
+            ctx.lineTo(gameState.player.x, gameState.player.y + gameState.player.height);
+            ctx.closePath();
+            ctx.fill();
         }
-        
+
+        function drawEnemy(x, y, width, height) {
+            ctx.fillStyle = '#ff0000';
+            ctx.beginPath();
+            ctx.moveTo(x + width/2, y + height);
+            ctx.lineTo(x + width, y);
+            ctx.lineTo(x, y);
+            ctx.closePath();
+            ctx.fill();
+        }
+
+        function drawBackground() {
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Yıldızlar
+            ctx.fillStyle = '#fff';
+            for(let i=0; i<100; i++) {
+                ctx.fillRect(
+                    Math.random()*canvas.width,
+                    Math.random()*canvas.height,
+                    1, 1
+                );
+            }
+        }
+
         // Oyunu başlat
         function startGame() {
             document.getElementById('start-screen').style.display = 'none';
@@ -205,7 +134,7 @@
             spawnEnemies();
             gameLoop();
         }
-        
+
         // Düşman oluştur
         function spawnEnemies() {
             gameState.enemies = [];
@@ -225,10 +154,10 @@
         
         // Oyun döngüsü
         function gameLoop() {
-            if (!gameState.gameStarted || !gameState.imagesReady) return;
+            if (!gameState.gameStarted) return;
             
             // Temizle
-            ctx.drawImage(images.background, 0, 0, canvas.width, canvas.height);
+            drawBackground();
             
             // Oyuncu güncelle
             updatePlayer();
@@ -355,11 +284,11 @@
         // Çizim fonksiyonu
         function renderGame() {
             // Oyuncu gemisi
-            ctx.drawImage(images.player, gameState.player.x, gameState.player.y, gameState.player.width, gameState.player.height);
+            drawPlayer();
             
             // Düşmanlar
             for (const enemy of gameState.enemies) {
-                ctx.drawImage(images.enemy, enemy.x, enemy.y, enemy.width, enemy.height);
+                drawEnemy(enemy.x, enemy.y, enemy.width, enemy.height);
             }
             
             // Mermiler
@@ -400,8 +329,8 @@
         document.addEventListener('keydown', (e) => gameState.keys[e.key] = true);
         document.addEventListener('keyup', (e) => gameState.keys[e.key] = false);
         
-        // Resimleri yüklemeye başla
-        loadImages();
+        // Başlatma
+        startBtn.addEventListener('click', startGame);
     </script>
 </body>
 </html>
