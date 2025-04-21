@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Galaktik Savaş Çok Oyunculu</title>
+    <title>Galaktik Savaş</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -82,34 +82,6 @@
             text-shadow: 0 0 15px #4cc9f0;
         }
         
-        #lobby-screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 10;
-            text-align: center;
-        }
-        
-        #lobby-screen h2 {
-            font-size: 3rem;
-            margin-bottom: 30px;
-            color: #f72585;
-            text-shadow: 0 0 10px #f72585;
-        }
-        
-        #ready-players {
-            font-size: 1.8rem;
-            margin-bottom: 30px;
-            color: #4cc9f0;
-        }
-        
         #countdown-screen {
             position: absolute;
             top: 0;
@@ -145,27 +117,6 @@
             color: #4cc9f0;
         }
         
-        #spectator-screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 10;
-            text-align: center;
-        }
-        
-        #spectator-screen h2 {
-            font-size: 3rem;
-            margin-bottom: 20px;
-            color: #f72585;
-        }
-        
         button {
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             color: white;
@@ -187,63 +138,6 @@
         button:active {
             transform: translateY(1px);
         }
-        
-        .ready-btn {
-            background: linear-gradient(135deg, var(--success-color), #2a9d8f);
-        }
-        
-        #player-list {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 20px;
-            margin-bottom: 30px;
-            max-width: 800px;
-        }
-        
-        .player-card {
-            background: rgba(67, 97, 238, 0.2);
-            border-radius: 10px;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-width: 150px;
-        }
-        
-        .player-card.ready {
-            background: rgba(76, 201, 240, 0.3);
-            border: 2px solid var(--success-color);
-        }
-        
-        .player-card.dead {
-            background: rgba(247, 37, 133, 0.2);
-            border: 2px solid var(--danger-color);
-            opacity: 0.7;
-        }
-        
-        .player-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background-color: #ddd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 10px;
-            font-size: 24px;
-            color: #777;
-        }
-        
-        .player-name {
-            font-size: 1.2rem;
-            margin-bottom: 5px;
-        }
-        
-        .player-status {
-            font-size: 0.9rem;
-            color: #aaa;
-        }
     </style>
 </head>
 <body>
@@ -262,41 +156,15 @@
                 <i class="fas fa-robot ui-icon" style="color: #4361ee;"></i>
                 <div>Düşman: <span id="enemies">10</span></div>
             </div>
-            <div class="ui-item">
-                <i class="fas fa-users ui-icon" style="color: #fff;"></i>
-                <div>Oyuncu: <span id="alive-players">1</span>/<span id="total-players">1</span></div>
-            </div>
         </div>
-        
         <div id="start-screen">
             <h1>GALAKTİK SAVAŞ</h1>
             <button id="start-btn">OYNA</button>
         </div>
-        
-        <div id="lobby-screen">
-            <h2>LOBBY</h2>
-            <div id="ready-players">Hazır: 1/5</div>
-            <div id="player-list">
-                <div class="player-card ready">
-                    <div class="player-avatar"><i class="fas fa-user"></i></div>
-                    <div class="player-name">Sen</div>
-                    <div class="player-status">Hazır</div>
-                </div>
-            </div>
-            <button id="ready-btn" class="ready-btn">HAZIR</button>
-        </div>
-        
         <div id="countdown-screen">
             <h2>OYUN BAŞLIYOR</h2>
-            <div id="countdown-timer">5</div>
-            <div id="players-count">5 oyuncu hazır</div>
-        </div>
-        
-        <div id="spectator-screen">
-            <h2>İZLEME MODU</h2>
-            <p>Diğer oyuncuların oyununu izliyorsunuz</p>
-            <p>Bölüm tamamlanınca yeniden doğacaksınız</p>
-            <div id="spectator-countdown">Yeniden doğma: <span>10</span>sn</div>
+            <div id="countdown-timer">3</div>
+            <div id="players-count">1 oyuncu hazır</div>
         </div>
     </div>
 
@@ -305,14 +173,9 @@
         const canvas = document.getElementById('game-canvas');
         const ctx = canvas.getContext('2d');
         const startBtn = document.getElementById('start-btn');
-        const readyBtn = document.getElementById('ready-btn');
-        const lobbyScreen = document.getElementById('lobby-screen');
         const countdownScreen = document.getElementById('countdown-screen');
         const countdownTimer = document.getElementById('countdown-timer');
         const playersCount = document.getElementById('players-count');
-        const readyPlayersDisplay = document.getElementById('ready-players');
-        const playerList = document.getElementById('player-list');
-        const spectatorScreen = document.getElementById('spectator-screen');
         
         // Canvas boyutunu ayarla
         function resizeCanvas() {
@@ -323,53 +186,16 @@
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
         
-        // Resim yüklemeleri
-        const images = {
-            background: new Image(),
-            player: new Image(),
-            enemy: new Image(),
-            bullet: new Image()
-        };
-        
-        images.background.src = 'backround.png';
-        images.player.src = 'player_ship.png';
-        images.enemy.src = 'enemy_ship.png';
-        images.bullet.src = 'bots.png';
-        
-        // Resim yükleme durumunu kontrol et
-        let imagesLoaded = 0;
-        const totalImages = Object.keys(images).length;
-        
-        Object.values(images).forEach(img => {
-            img.onload = () => {
-                imagesLoaded++;
-                if (imagesLoaded === totalImages) {
-                    console.log('Tüm resimler yüklendi');
-                }
-            };
-            img.onerror = () => {
-                console.error('Resim yüklenemedi:', img.src);
-            };
-        });
-        
         // Oyun durumu
         let gameState = {
             player: {
                 x: canvas.width / 2,
                 y: canvas.height - 100,
-                width: 60,
-                height: 60,
-                speed: 10,
+                width: 50,
+                height: 50,
+                speed: 8,
                 health: 100,
-                isAlive: true
             },
-            onlinePlayers: [
-                { id: 1, name: "Sen", ready: true, isAlive: true, x: canvas.width / 2 - 100, y: canvas.height - 100, health: 100 },
-                { id: 2, name: "Oyuncu2", ready: true, isAlive: true, x: canvas.width / 2 + 100, y: canvas.height - 100, health: 100 },
-                { id: 3, name: "Oyuncu3", ready: true, isAlive: true, x: canvas.width / 2 - 200, y: canvas.height - 100, health: 100 },
-                { id: 4, name: "Oyuncu4", ready: false, isAlive: false, x: 0, y: 0, health: 0 },
-                { id: 5, name: "Oyuncu5", ready: false, isAlive: false, x: 0, y: 0, health: 0 }
-            ],
             enemies: [],
             bullets: [],
             enemyBullets: [],
@@ -378,71 +204,16 @@
             keys: {},
             gameStarted: false,
             lastShot: 0,
-            countdown: 5,
-            lobbyCountdown: 10,
-            isSpectator: false,
-            respawnTime: 10
+            countdown: 3
         };
 
         // Oyun başlatma
         function startGame() {
             document.getElementById('start-screen').style.display = 'none';
-            lobbyScreen.style.display = 'flex';
-            updatePlayerList();
-        }
-        
-        // Lobby ekranını güncelle
-        function updatePlayerList() {
-            playerList.innerHTML = '';
-            
-            const readyCount = gameState.onlinePlayers.filter(p => p.ready).length;
-            const totalPlayers = gameState.onlinePlayers.length;
-            readyPlayersDisplay.textContent = `Hazır: ${readyCount}/${totalPlayers}`;
-            
-            gameState.onlinePlayers.forEach(player => {
-                const playerCard = document.createElement('div');
-                playerCard.className = 'player-card';
-                
-                if (player.ready) playerCard.classList.add('ready');
-                if (!player.isAlive) playerCard.classList.add('dead');
-                
-                playerCard.innerHTML = `
-                    <div class="player-avatar"><i class="fas fa-user"></i></div>
-                    <div class="player-name">${player.name}</div>
-                    <div class="player-status">${player.ready ? 'Hazır' : 'Hazır Değil'}</div>
-                `;
-                
-                playerList.appendChild(playerCard);
-            });
-        }
-        
-        // Hazır butonu
-        readyBtn.addEventListener('click', function() {
-            const player = gameState.onlinePlayers.find(p => p.id === 1);
-            player.ready = !player.ready;
-            updatePlayerList();
-            
-            if (player.ready) {
-                readyBtn.textContent = 'HAZIR DEĞİL';
-                
-                // Tüm oyuncular hazırsa oyunu başlat
-                const allReady = gameState.onlinePlayers.filter(p => p.id <= 3).every(p => p.ready);
-                if (allReady) {
-                    startGameCountdown();
-                }
-            } else {
-                readyBtn.textContent = 'HAZIR';
-            }
-        });
-        
-        // Oyun başlatma geri sayımı
-        function startGameCountdown() {
-            lobbyScreen.style.display = 'none';
             countdownScreen.style.display = 'flex';
+            playersCount.textContent = '1 oyuncu hazır';
             
-            const alivePlayers = gameState.onlinePlayers.filter(p => p.isAlive).length;
-            playersCount.textContent = `${alivePlayers} oyuncu hazır`;
-            
+            // Geri sayım
             const countdownInterval = setInterval(() => {
                 gameState.countdown--;
                 countdownTimer.textContent = gameState.countdown;
@@ -450,107 +221,52 @@
                 if (gameState.countdown <= 0) {
                     clearInterval(countdownInterval);
                     countdownScreen.style.display = 'none';
-                    startActualGame();
+                    gameState.gameStarted = true;
+                    spawnEnemies();
+                    gameLoop();
                 }
             }, 1000);
         }
-        
-        // Gerçek oyunu başlat
-        function startActualGame() {
-            gameState.gameStarted = true;
-            spawnEnemies();
-            gameLoop();
-        }
-        
-        // Resim çizme fonksiyonları
+
+        // Oyuncu çizimi
         function drawPlayer() {
-            if (images.player.complete) {
-                ctx.drawImage(
-                    images.player,
-                    gameState.player.x,
-                    gameState.player.y,
-                    gameState.player.width,
-                    gameState.player.height
-                );
-            } else {
-                // Resim yüklenmediyse basit şekil çiz
-                ctx.fillStyle = '#4cc9f0';
-                ctx.beginPath();
-                ctx.moveTo(gameState.player.x + gameState.player.width/2, gameState.player.y);
-                ctx.lineTo(gameState.player.x + gameState.player.width, gameState.player.y + gameState.player.height);
-                ctx.lineTo(gameState.player.x, gameState.player.y + gameState.player.height);
-                ctx.closePath();
-                ctx.fill();
-            }
+            ctx.fillStyle = '#4cc9f0';
+            ctx.beginPath();
+            ctx.moveTo(gameState.player.x + gameState.player.width/2, gameState.player.y);
+            ctx.lineTo(gameState.player.x + gameState.player.width, gameState.player.y + gameState.player.height);
+            ctx.lineTo(gameState.player.x, gameState.player.y + gameState.player.height);
+            ctx.closePath();
+            ctx.fill();
         }
-        
-        function drawOtherPlayers() {
-            gameState.onlinePlayers.forEach(player => {
-                if (player.id !== 1 && player.isAlive) {
-                    if (images.player.complete) {
-                        ctx.drawImage(
-                            images.player,
-                            player.x,
-                            player.y,
-                            gameState.player.width,
-                            gameState.player.height
-                        );
-                    } else {
-                        ctx.fillStyle = '#4cc9f0';
-                        ctx.beginPath();
-                        ctx.moveTo(player.x + gameState.player.width/2, player.y);
-                        ctx.lineTo(player.x + gameState.player.width, player.y + gameState.player.height);
-                        ctx.lineTo(player.x, player.y + gameState.player.height);
-                        ctx.closePath();
-                        ctx.fill();
-                    }
-                    
-                    // Sağlık çubuğu
-                    ctx.fillStyle = '#f72585';
-                    ctx.fillRect(
-                        player.x,
-                        player.y - 15,
-                        gameState.player.width * (player.health / 100),
-                        5
-                    );
-                }
-            });
-        }
-        
+
+        // Düşman çizimi
         function drawEnemy(x, y, width, height) {
-            if (images.enemy.complete) {
-                ctx.drawImage(images.enemy, x, y, width, height);
-            } else {
-                ctx.fillStyle = '#f72585';
-                ctx.beginPath();
-                ctx.moveTo(x + width/2, y + height);
-                ctx.lineTo(x + width, y);
-                ctx.lineTo(x, y);
-                ctx.closePath();
-                ctx.fill();
-            }
+            ctx.fillStyle = '#f72585';
+            ctx.beginPath();
+            ctx.moveTo(x + width/2, y + height);
+            ctx.lineTo(x + width, y);
+            ctx.lineTo(x, y);
+            ctx.closePath();
+            ctx.fill();
         }
-        
+
+        // Arkaplan çizimi
         function drawBackground() {
-            if (images.background.complete) {
-                ctx.drawImage(images.background, 0, 0, canvas.width, canvas.height);
-            } else {
-                ctx.fillStyle = '#000';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                
-                // Yıldızlar
-                ctx.fillStyle = '#fff';
-                for(let i=0; i<200; i++) {
-                    const size = Math.random() * 2 + 1;
-                    ctx.fillRect(
-                        Math.random()*canvas.width,
-                        Math.random()*canvas.height,
-                        size, size
-                    );
-                }
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Yıldızlar
+            ctx.fillStyle = '#fff';
+            for(let i=0; i<100; i++) {
+                const size = Math.random() * 2 + 1;
+                ctx.fillRect(
+                    Math.random()*canvas.width,
+                    Math.random()*canvas.height,
+                    size, size
+                );
             }
         }
-        
+
         // Düşman oluştur
         function spawnEnemies() {
             gameState.enemies = [];
@@ -558,9 +274,9 @@
                 gameState.enemies.push({
                     x: Math.random() * (canvas.width - 50),
                     y: Math.random() * 200 + 50,
-                    width: 50,
-                    height: 50,
-                    speed: 2 + gameState.level * 0.5,
+                    width: 40,
+                    height: 40,
+                    speed: 2,
                     health: 1,
                     lastShot: 0
                 });
@@ -570,16 +286,13 @@
         
         // Oyun döngüsü
         function gameLoop() {
-            if (!gameState.gameStarted || gameState.isSpectator) return;
+            if (!gameState.gameStarted) return;
             
             // Temizle
             drawBackground();
             
             // Oyuncu güncelle
             updatePlayer();
-            
-            // Diğer oyuncuları güncelle
-            updateOtherPlayers();
             
             // Düşmanları güncelle
             updateEnemies();
@@ -590,9 +303,6 @@
             // Çarpışma kontrolü
             checkCollisions();
             
-            // Canlı oyuncu sayısını güncelle
-            updateAlivePlayers();
-            
             // Çizim
             renderGame();
             
@@ -601,8 +311,6 @@
         
         // Oyuncu güncelleme
         function updatePlayer() {
-            if (!gameState.player.isAlive) return;
-            
             // Hareket
             if (gameState.keys['ArrowLeft']) gameState.player.x = Math.max(0, gameState.player.x - gameState.player.speed);
             if (gameState.keys['ArrowRight']) gameState.player.x = Math.min(canvas.width - gameState.player.width, gameState.player.x + gameState.player.speed);
@@ -614,43 +322,12 @@
                 gameState.bullets.push({
                     x: gameState.player.x + gameState.player.width / 2 - 2,
                     y: gameState.player.y,
-                    width: 10,
-                    height: 20,
-                    speed: 12,
-                    isPlayer: true
+                    width: 4,
+                    height: 10,
+                    speed: 10
                 });
                 gameState.lastShot = Date.now();
             }
-        }
-        
-        // Diğer oyuncuları güncelle (simülasyon)
-        function updateOtherPlayers() {
-            gameState.onlinePlayers.forEach(player => {
-                if (player.id !== 1 && player.isAlive) {
-                    // Basit AI hareketi
-                    if (Math.random() < 0.02) {
-                        player.x += (Math.random() - 0.5) * 10;
-                        player.y += (Math.random() - 0.5) * 5;
-                        
-                        // Sınır kontrolü
-                        player.x = Math.max(0, Math.min(canvas.width - gameState.player.width, player.x));
-                        player.y = Math.max(0, Math.min(canvas.height - gameState.player.height, player.y));
-                    }
-                    
-                    // Rastgele ateş etme
-                    if (Math.random() < 0.01 && Date.now() - gameState.lastShot > 500) {
-                        gameState.bullets.push({
-                            x: player.x + gameState.player.width / 2 - 2,
-                            y: player.y,
-                            width: 10,
-                            height: 20,
-                            speed: 12,
-                            isPlayer: true,
-                            playerId: player.id
-                        });
-                    }
-                }
-            });
         }
         
         // Düşman güncelleme
@@ -658,25 +335,18 @@
             for (let i = gameState.enemies.length - 1; i >= 0; i--) {
                 const enemy = gameState.enemies[i];
                 
-                // Rastgele hareket
-                if (Math.random() < 0.05) {
-                    enemy.x += (Math.random() - 0.5) * enemy.speed * 2;
-                }
-                
-                // Aşağı doğru hareket
-                enemy.y += enemy.speed * 0.2;
-                
-                // Sınır kontrolü
-                enemy.x = Math.max(0, Math.min(canvas.width - enemy.width, enemy.x));
+                // Oyuncuyu takip et
+                if (enemy.x < gameState.player.x) enemy.x += enemy.speed;
+                if (enemy.x > gameState.player.x) enemy.x -= enemy.speed;
                 
                 // Ateş etme
                 if (Date.now() - enemy.lastShot > 1000) {
                     gameState.enemyBullets.push({
                         x: enemy.x + enemy.width / 2 - 2,
                         y: enemy.y + enemy.height,
-                        width: 8,
-                        height: 15,
-                        speed: 6
+                        width: 4,
+                        height: 10,
+                        speed: 5
                     });
                     enemy.lastShot = Date.now();
                 }
@@ -684,17 +354,8 @@
                 // Ekran dışı kontrol
                 if (enemy.y > canvas.height) {
                     gameState.enemies.splice(i, 1);
-                    
-                    // Rastgele bir oyuncuya hasar ver
-                    const alivePlayers = gameState.onlinePlayers.filter(p => p.isAlive);
-                    if (alivePlayers.length > 0) {
-                        const randomPlayer = alivePlayers[Math.floor(Math.random() * alivePlayers.length)];
-                        randomPlayer.health -= 10;
-                        
-                        if (randomPlayer.id === 1) {
-                            document.getElementById('health').textContent = randomPlayer.health;
-                        }
-                    }
+                    gameState.player.health -= 10;
+                    document.getElementById('health').textContent = gameState.player.health;
                 }
             }
             
@@ -708,10 +369,8 @@
         function updateBullets() {
             // Oyuncu mermileri
             for (let i = gameState.bullets.length - 1; i >= 0; i--) {
-                const bullet = gameState.bullets[i];
-                bullet.y -= bullet.speed;
-                
-                if (bullet.y < 0) {
+                gameState.bullets[i].y -= gameState.bullets[i].speed;
+                if (gameState.bullets[i].y < 0) {
                     gameState.bullets.splice(i, 1);
                 }
             }
@@ -719,7 +378,6 @@
             // Düşman mermileri
             for (let i = gameState.enemyBullets.length - 1; i >= 0; i--) {
                 gameState.enemyBullets[i].y += gameState.enemyBullets[i].speed;
-                
                 if (gameState.enemyBullets[i].y > canvas.height) {
                     gameState.enemyBullets.splice(i, 1);
                 }
@@ -730,10 +388,8 @@
         function checkCollisions() {
             // Oyuncu mermileri ile düşmanlar
             for (let i = gameState.bullets.length - 1; i >= 0; i--) {
-                const bullet = gameState.bullets[i];
-                
                 for (let j = gameState.enemies.length - 1; j >= 0; j--) {
-                    if (checkCollision(bullet, gameState.enemies[j])) {
+                    if (checkCollision(gameState.bullets[i], gameState.enemies[j])) {
                         gameState.enemies.splice(j, 1);
                         gameState.bullets.splice(i, 1);
                         document.getElementById('enemies').textContent = gameState.enemies.length;
@@ -742,117 +398,25 @@
                 }
             }
             
-            // Düşman mermileri ile oyuncular
+            // Düşman mermileri ile oyuncu
             for (let i = gameState.enemyBullets.length - 1; i >= 0; i--) {
-                const bullet = gameState.enemyBullets[i];
-                
-                // Ana oyuncu
-                if (gameState.player.isAlive && checkCollision(bullet, gameState.player)) {
+                if (checkCollision(gameState.enemyBullets[i], gameState.player)) {
                     gameState.player.health -= 10;
                     gameState.enemyBullets.splice(i, 1);
                     document.getElementById('health').textContent = gameState.player.health;
-                    
-                    if (gameState.player.health <= 0) {
-                        playerDied(1);
-                    }
                 }
-                
-                // Diğer oyuncular
-                gameState.onlinePlayers.forEach(player => {
-                    if (player.id !== 1 && player.isAlive && checkCollision(bullet, player)) {
-                        player.health -= 10;
-                        gameState.enemyBullets.splice(i, 1);
-                        
-                        if (player.health <= 0) {
-                            playerDied(player.id);
-                        }
-                        break;
-                    }
-                });
-            }
-        }
-        
-        // Oyuncu öldüğünde
-        function playerDied(playerId) {
-            const player = playerId === 1 ? gameState.player : gameState.onlinePlayers.find(p => p.id === playerId);
-            player.isAlive = false;
-            player.health = 0;
-            
-            if (playerId === 1) {
-                gameState.isSpectator = true;
-                spectatorScreen.style.display = 'flex';
-                gameState.respawnTime = 10;
-                
-                const respawnInterval = setInterval(() => {
-                    gameState.respawnTime--;
-                    document.querySelector('#spectator-countdown span').textContent = gameState.respawnTime;
-                    
-                    if (gameState.respawnTime <= 0) {
-                        clearInterval(respawnInterval);
-                        
-                        // Bölüm tamamlandıysa yeniden doğ
-                        if (gameState.enemies.length === 0) {
-                            respawnPlayer(playerId);
-                            spectatorScreen.style.display = 'none';
-                            gameState.isSpectator = false;
-                        } else {
-                            // Hala düşman varsa izlemeye devam et
-                            gameState.respawnTime = 10;
-                        }
-                    }
-                }, 1000);
             }
             
-            updateAlivePlayers();
-            
-            // Tüm oyuncular öldüyse
-            if (gameState.onlinePlayers.filter(p => p.isAlive).length === 0) {
+            // Oyuncu öldüyse
+            if (gameState.player.health <= 0) {
                 gameOver();
             }
-        }
-        
-        // Oyuncuyu yeniden doğur
-        function respawnPlayer(playerId) {
-            const player = playerId === 1 ? gameState.player : gameState.onlinePlayers.find(p => p.id === playerId);
-            player.isAlive = true;
-            player.health = 100;
-            player.x = canvas.width / 2 + (playerId * 100 - 200);
-            player.y = canvas.height - 100;
-            
-            if (playerId === 1) {
-                document.getElementById('health').textContent = 100;
-            }
-            
-            updateAlivePlayers();
-        }
-        
-        // Canlı oyuncu sayısını güncelle
-        function updateAlivePlayers() {
-            const alivePlayers = gameState.onlinePlayers.filter(p => p.isAlive).length;
-            const totalPlayers = gameState.onlinePlayers.filter(p => p.ready).length;
-            
-            document.getElementById('alive-players').textContent = alivePlayers;
-            document.getElementById('total-players').textContent = totalPlayers;
         }
         
         // Çizim fonksiyonu
         function renderGame() {
             // Oyuncu gemisi
-            if (gameState.player.isAlive) {
-                drawPlayer();
-                
-                // Sağlık çubuğu
-                ctx.fillStyle = '#f72585';
-                ctx.fillRect(
-                    gameState.player.x,
-                    gameState.player.y - 15,
-                    gameState.player.width * (gameState.player.health / 100),
-                    5
-                );
-            }
-            
-            // Diğer oyuncular
-            drawOtherPlayers();
+            drawPlayer();
             
             // Düşmanlar
             for (const enemy of gameState.enemies) {
@@ -882,28 +446,14 @@
         // Yeni seviye
         function nextLevel() {
             gameState.level++;
-            gameState.enemiesCount += 5;
+            gameState.enemiesCount += 2;
             document.getElementById('level').textContent = gameState.level;
-            
-            // Ölü oyuncuları yeniden doğur
-            gameState.onlinePlayers.forEach(player => {
-                if (!player.isAlive && player.ready) {
-                    respawnPlayer(player.id);
-                }
-            });
-            
             spawnEnemies();
-            
-            // İzleyici modundaysa ve bölüm tamamlandıysa
-            if (gameState.isSpectator && gameState.respawnTime <= 0) {
-                spectatorScreen.style.display = 'none';
-                gameState.isSpectator = false;
-            }
         }
         
         // Oyun sonu
         function gameOver() {
-            alert('Oyun Bitti! Ulaştığınız Bölüm: ' + gameState.level);
+            alert('Oyun Bitti! Bölüm: ' + gameState.level);
             resetGame();
         }
         
@@ -913,19 +463,11 @@
                 player: {
                     x: canvas.width / 2,
                     y: canvas.height - 100,
-                    width: 60,
-                    height: 60,
-                    speed: 10,
+                    width: 50,
+                    height: 50,
+                    speed: 8,
                     health: 100,
-                    isAlive: true
                 },
-                onlinePlayers: [
-                    { id: 1, name: "Sen", ready: false, isAlive: true, x: canvas.width / 2 - 100, y: canvas.height - 100, health: 100 },
-                    { id: 2, name: "Oyuncu2", ready: false, isAlive: false, x: canvas.width / 2 + 100, y: canvas.height - 100, health: 100 },
-                    { id: 3, name: "Oyuncu3", ready: false, isAlive: false, x: canvas.width / 2 - 200, y: canvas.height - 100, health: 100 },
-                    { id: 4, name: "Oyuncu4", ready: false, isAlive: false, x: 0, y: 0, health: 0 },
-                    { id: 5, name: "Oyuncu5", ready: false, isAlive: false, x: 0, y: 0, health: 0 }
-                ],
                 enemies: [],
                 bullets: [],
                 enemyBullets: [],
@@ -934,33 +476,19 @@
                 keys: {},
                 gameStarted: false,
                 lastShot: 0,
-                countdown: 5,
-                lobbyCountdown: 10,
-                isSpectator: false,
-                respawnTime: 10
+                countdown: 3
             };
             
             document.getElementById('level').textContent = '1';
             document.getElementById('health').textContent = '100';
             document.getElementById('enemies').textContent = '10';
-            document.getElementById('alive-players').textContent = '1';
-            document.getElementById('total-players').textContent = '1';
             
             document.getElementById('start-screen').style.display = 'flex';
-            lobbyScreen.style.display = 'none';
             countdownScreen.style.display = 'none';
-            spectatorScreen.style.display = 'none';
         }
         
         // Kontroller
-        document.addEventListener('keydown', (e) => {
-            gameState.keys[e.key] = true;
-            
-            // ESC ile menüye dön
-            if (e.key === 'Escape' && gameState.gameStarted && !gameState.isSpectator) {
-                resetGame();
-            }
-        });
+        document.addEventListener('keydown', (e) => gameState.keys[e.key] = true);
         document.addEventListener('keyup', (e) => gameState.keys[e.key] = false);
         
         // Başlatma
