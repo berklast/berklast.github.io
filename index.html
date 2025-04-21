@@ -139,6 +139,18 @@
             text-align: center;
             margin: 20px 0;
         }
+        #spectator-mode {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+            z-index: 100;
+        }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 </head>
@@ -174,6 +186,10 @@
             <div>Gold: <span id="gold">0</span></div>
             <div>Mermi: <span id="ammo">30</span></div>
         </div>
+        <div id="spectator-mode">
+            <h2>İZLEME MODUNDASINIZ</h2>
+            <p>Bölüm geçilirse yeniden doğacaksınız</p>
+        </div>
     </div>
 
     <script type="module">
@@ -199,8 +215,8 @@
         const BULLET_SPEED = 12;
         const ENEMY_BULLET_SPEED = 6;
         const LEVEL_COUNT = 150;
-        const BOSS_INTERVAL = 10;
-        const MARKET_INTERVAL = 20;
+        const BOSS_INTERVAL = 25; // Her 25 bölümde bir boss
+        const ENEMY_INCREASE_INTERVAL = 2; // Her 2 bölümde 1 düşman artışı
 
         // OYUN DEĞİŞKENLERİ
         const canvas = document.getElementById("game-canvas");
@@ -228,7 +244,8 @@
             particles: [],
             level: 1,
             boss: null,
-            marketOpen: false,
+            baseEnemies: 1, // Başlangıç düşman sayısı
+            isSpectator: false,
             countdownInterval: null
         };
 
@@ -249,7 +266,8 @@
             confirmNameBtn: document.getElementById("confirm-name"),
             readyBtn: document.getElementById("ready-btn"),
             countdownDisplay: document.getElementById("countdown"),
-            playersWaiting: document.getElementById("players-waiting")
+            playersWaiting: document.getElementById("players-waiting"),
+            spectatorMode: document.getElementById("spectator-mode")
         };
 
         // OYUNU BAŞLAT
@@ -284,6 +302,11 @@
                     startCountdown();
                 } else if (readyPlayers.length === 0 && gameState.countdownInterval) {
                     stopCountdown();
+                }
+                
+                // Eğer izleyici modundaysak ve başka oyuncu kalmadıysa lobiye dön
+                if (gameState.isSpectator && Object.keys(gameState.players).filter(p => p.isAlive).length === 0) {
+                    returnToLobby();
                 }
             });
 
@@ -337,6 +360,7 @@
                     id: gameState.playerId,
                     name: gameState.playerName,
                     isReady: true,
+                    isAlive: true,
                     lastActive: Date.now(),
                     x: gameState.playerX,
                     y: gameState.playerY,
@@ -366,6 +390,7 @@
             }
             
             gameState.countdown = 10;
+            menuElements.countdownDisplay.textContent = gameState.countdown;
             gameState.countdownInterval = setInterval(() => {
                 gameState.countdown--;
                 menuElements.countdownDisplay.textContent = gameState.countdown;
@@ -387,11 +412,14 @@
 
         function startGame() {
             gameState.gameStarted = true;
+            gameState.isSpectator = false;
             document.getElementById("menu-screen").style.display = "none";
             document.getElementById("game-container").style.display = "block";
+            menuElements.spectatorMode.style.display = "none";
             
             // Oyun başlangıç ayarları
             gameState.level = 1;
+            gameState.baseEnemies = 1;
             gameState.health = 100;
             gameState.gold = 0;
             gameState.ammo = 30;
@@ -402,13 +430,18 @@
         // OYUN FONKSİYONLARI
         function updateGame(deltaTime) {
             // Oyuncu pozisyon güncelleme
-            updatePlayerPosition();
+            if (!gameState.isSpectator) {
+                updatePlayerPosition();
+            }
             
             // Mermileri güncelle
             updateBullets();
             
             // Düşmanları güncelle
             updateEnemies();
+            
+            // Boss güncelle
+            if (gameState.boss) updateBoss();
             
             // Çarpışma kontrolü
             checkCollisions();
@@ -418,6 +451,11 @@
             
             // Bölüm kontrolü
             checkLevelCompletion();
+            
+            // Oyuncu ölüm kontrolü
+            if (gameState.health <= 0 && !gameState.isSpectator) {
+                enterSpectatorMode();
+            }
         }
 
         function renderGame() {
@@ -453,7 +491,8 @@
                     x: gameState.playerX,
                     y: gameState.playerY - 30,
                     speed: BULLET_SPEED,
-                    damage: gameState.damage
+                    damage: gameState.damage,
+                    isPlayer: true
                 });
                 gameState.lastShot = Date.now();
                 gameState.ammo--;
@@ -467,21 +506,25 @@
                 health: gameState.health,
                 gold: gameState.gold,
                 ammo: gameState.ammo,
+                isAlive: gameState.health > 0,
                 lastActive: Date.now()
             });
         }
 
         function spawnEnemies() {
-            const playerCount = Object.keys(gameState.players).length;
             gameState.enemies = [];
             
-            for (let i = 0; i < playerCount; i++) {
+            // Her 2 bölümde 1 düşman artışı
+            const enemyCount = gameState.baseEnemies + Math.floor(gameState.level / ENEMY_INCREASE_INTERVAL);
+            
+            for (let i = 0; i < enemyCount; i++) {
                 gameState.enemies.push({
                     x: Math.random() * (canvas.width - 100) + 50,
-                    y: Math.random() * 200 + 50,
+                    y: 50 + Math.random() * 50, // Üst kısımda rastgele konum
                     speed: 2 + Math.random() * 2,
                     health: 30,
-                    lastShot: 0
+                    lastShot: 0,
+                    movePattern: Math.floor(Math.random() * 3) // 0: sabit, 1: yatay hareket, 2: zigzag
                 });
             }
             
@@ -489,6 +532,8 @@
             if (gameState.level % BOSS_INTERVAL === 0) {
                 spawnBoss();
             }
+            
+            document.getElementById("enemies").textContent = gameState.enemies.length + (gameState.boss ? 1 : 0);
         }
 
         function spawnBoss() {
@@ -497,10 +542,41 @@
                 y: 150,
                 width: 200,
                 height: 100,
-                health: 50 * gameState.level,
+                health: 50, // 50 mermi vurunca ölecek
                 speed: 1,
-                lastAttack: 0
+                lastAttack: 0,
+                moveDirection: 1
             };
+        }
+
+        function updateBoss() {
+            const boss = gameState.boss;
+            
+            // Boss hareketi
+            boss.x += boss.speed * boss.moveDirection;
+            if (boss.x > canvas.width - boss.width/2 || boss.x < boss.width/2) {
+                boss.moveDirection *= -1;
+            }
+            
+            // Boss ateş etme
+            if (Date.now() - boss.lastAttack > 1000) {
+                // Oyuncuya doğru ateş et
+                const angle = Math.atan2(
+                    gameState.playerY - boss.y,
+                    gameState.playerX - boss.x
+                );
+                
+                gameState.enemyBullets.push({
+                    x: boss.x,
+                    y: boss.y + boss.height/2,
+                    speedX: Math.cos(angle) * ENEMY_BULLET_SPEED,
+                    speedY: Math.sin(angle) * ENEMY_BULLET_SPEED,
+                    damage: 10,
+                    isBoss: true
+                });
+                
+                boss.lastAttack = Date.now();
+            }
         }
 
         function updateBullets() {
@@ -523,49 +599,102 @@
                         if (gameState.enemies[j].health <= 0) {
                             gameState.gold += 20;
                             gameState.enemies.splice(j, 1);
+                            document.getElementById("enemies").textContent = gameState.enemies.length + (gameState.boss ? 1 : 0);
                         }
                         break;
                     }
+                }
+                
+                // Boss'a çarpma kontrolü
+                if (gameState.boss && checkCollision(gameState.bullets[i], gameState.boss)) {
+                    gameState.boss.health -= 1; // Her mermi 1 hasar
+                    gameState.bullets.splice(i, 1);
+                    
+                    if (gameState.boss.health <= 0) {
+                        gameState.gold += 100;
+                        gameState.boss = null;
+                        document.getElementById("enemies").textContent = gameState.enemies.length;
+                    }
+                }
+            }
+            
+            // Düşman mermileri
+            for (let i = gameState.enemyBullets.length - 1; i >= 0; i--) {
+                const bullet = gameState.enemyBullets[i];
+                
+                if (bullet.isBoss) {
+                    bullet.x += bullet.speedX;
+                    bullet.y += bullet.speedY;
+                } else {
+                    bullet.y += bullet.speed;
+                }
+                
+                // Ekran dışına çıkan mermileri sil
+                if (bullet.y > canvas.height || bullet.x < 0 || bullet.x > canvas.width) {
+                    gameState.enemyBullets.splice(i, 1);
                 }
             }
         }
 
         function updateEnemies() {
             for (let i = gameState.enemies.length - 1; i >= 0; i--) {
-                // Düşman hareketi
-                gameState.enemies[i].y += gameState.enemies[i].speed;
+                const enemy = gameState.enemies[i];
                 
-                // Oyuncuya çarpma kontrolü
-                if (Math.abs(gameState.enemies[i].x - gameState.playerX) < 30 && 
-                    Math.abs(gameState.enemies[i].y - gameState.playerY) < 30) {
-                    gameState.health -= 10;
-                    gameState.enemies.splice(i, 1);
-                    continue;
+                // Hareket pattern'leri
+                switch(enemy.movePattern) {
+                    case 0: // Sabit
+                        break;
+                    case 1: // Yatay hareket
+                        enemy.x += enemy.speed;
+                        if (enemy.x > canvas.width - 50 || enemy.x < 50) {
+                            enemy.speed *= -1;
+                        }
+                        break;
+                    case 2: // Zigzag
+                        enemy.x += enemy.speed;
+                        if (enemy.x > canvas.width - 50 || enemy.x < 50) {
+                            enemy.speed *= -1;
+                        }
+                        break;
                 }
                 
-                // Düşman ateş etme
-                if (Date.now() - gameState.enemies[i].lastShot > 1000) {
+                // Oyuncuya doğru ateş et
+                if (Date.now() - enemy.lastShot > 1500) {
+                    const angle = Math.atan2(
+                        gameState.playerY - enemy.y,
+                        gameState.playerX - enemy.x
+                    );
+                    
                     gameState.enemyBullets.push({
-                        x: gameState.enemies[i].x,
-                        y: gameState.enemies[i].y + 30,
-                        speed: ENEMY_BULLET_SPEED,
+                        x: enemy.x,
+                        y: enemy.y + 20,
+                        speedX: Math.cos(angle) * ENEMY_BULLET_SPEED,
+                        speedY: Math.sin(angle) * ENEMY_BULLET_SPEED,
                         damage: 5
                     });
-                    gameState.enemies[i].lastShot = Date.now();
+                    
+                    enemy.lastShot = Date.now();
                 }
             }
         }
 
         function checkCollisions() {
-            // Oyuncu mermileri ile düşmanlar
-            // (updateBullets içinde yapılıyor)
-            
             // Düşman mermileri ile oyuncu
-            for (let i = gameState.enemyBullets.length - 1; i >= 0; i--) {
-                if (Math.abs(gameState.enemyBullets[i].x - gameState.playerX) < 20 && 
-                    Math.abs(gameState.enemyBullets[i].y - gameState.playerY) < 20) {
-                    gameState.health -= gameState.enemyBullets[i].damage;
-                    gameState.enemyBullets.splice(i, 1);
+            if (!gameState.isSpectator) {
+                for (let i = gameState.enemyBullets.length - 1; i >= 0; i--) {
+                    if (checkCollision(gameState.enemyBullets[i], {
+                        x: gameState.playerX,
+                        y: gameState.playerY,
+                        width: 30,
+                        height: 30
+                    })) {
+                        gameState.health -= gameState.enemyBullets[i].damage;
+                        gameState.enemyBullets.splice(i, 1);
+                        update(ref(db, `players/${gameState.playerId}`), {
+                            health: gameState.health,
+                            isAlive: gameState.health > 0
+                        });
+                    }
                 }
             }
         }
@@ -573,31 +702,67 @@
         function checkLevelCompletion() {
             if (gameState.enemies.length === 0 && !gameState.boss) {
                 gameState.level++;
-                if (gameState.level > LEVEL_COUNT) {
-                    endGame(true);
+                
+                // Eğer izleyici modundaysak ve bölüm geçildiyse yeniden doğ
+                if (gameState.isSpectator) {
+                    respawnPlayer();
                     return;
                 }
                 
-                // Market kontrolü
-                if (gameState.level % MARKET_INTERVAL === 0) {
-                    openMarket();
+                if (gameState.level > LEVEL_COUNT) {
+                    endGame(true);
+                    return;
                 }
                 
                 spawnEnemies();
             }
         }
 
+        function enterSpectatorMode() {
+            gameState.isSpectator = true;
+            menuElements.spectatorMode.style.display = "block";
+            update(ref(db, `players/${gameState.playerId}`), {
+                isAlive: false
+            });
+            
+            // Tüm oyuncular öldüyse lobiye dön
+            const alivePlayers = Object.values(gameState.players).filter(p => p.isAlive);
+            if (alivePlayers.length === 0) {
+                setTimeout(returnToLobby, 3000);
+            }
+        }
+
+        function respawnPlayer() {
+            gameState.isSpectator = false;
+            gameState.health = 100;
+            menuElements.spectatorMode.style.display = "none";
+            update(ref(db, `players/${gameState.playerId}`), {
+                health: 100,
+                isAlive: true
+            });
+        }
+
+        function returnToLobby() {
+            resetGame();
+            alert("Tüm oyuncular öldü! Lobiye dönülüyor.");
+        }
+
         function renderPlayers() {
-            // Kendi gemimiz
             const playerImg = new Image();
             playerImg.src = assets.playerShip;
-            ctx.drawImage(playerImg, gameState.playerX - 25, gameState.playerY - 25, 50, 50);
+            
+            // Kendi gemimiz (eğer ölmediysek)
+            if (!gameState.isSpectator) {
+                ctx.drawImage(playerImg, gameState.playerX - 25, gameState.playerY - 25, 50, 50);
+            }
             
             // Diğer oyuncular
             for (const playerId in gameState.players) {
                 if (playerId !== gameState.playerId) {
                     const player = gameState.players[playerId];
-                    ctx.drawImage(playerImg, player.x - 25, player.y - 25, 50, 50);
+                    if (player.isAlive) {
+                        ctx.drawImage(playerImg, player.x - 25, player.y - 25, 50, 50);
+                    }
                 }
             }
         }
@@ -617,17 +782,38 @@
             ctx.drawImage(bossImg, gameState.boss.x - gameState.boss.width/2, 
                          gameState.boss.y - gameState.boss.height/2, 
                          gameState.boss.width, gameState.boss.height);
+            
+            // Boss can bar
+            ctx.fillStyle = "red";
+            ctx.fillRect(gameState.boss.x - gameState.boss.width/2, 
+                        gameState.boss.y - gameState.boss.height/2 - 20, 
+                        gameState.boss.width, 5);
+            
+            ctx.fillStyle = "green";
+            ctx.fillRect(gameState.boss.x - gameState.boss.width/2, 
+                        gameState.boss.y - gameState.boss.height/2 - 20, 
+                        gameState.boss.width * (gameState.boss.health / 50), 5);
         }
 
         function renderBullets() {
+            // Oyuncu mermileri
             ctx.fillStyle = "#ffff00";
             for (const bullet of gameState.bullets) {
                 ctx.fillRect(bullet.x - 2, bullet.y - 10, 4, 10);
             }
             
+            // Düşman mermileri
             ctx.fillStyle = "#ff0000";
             for (const bullet of gameState.enemyBullets) {
                 ctx.fillRect(bullet.x - 2, bullet.y, 4, 10);
+            }
+            
+            // Boss mermileri
+            ctx.fillStyle = "#ff00ff";
+            for (const bullet of gameState.enemyBullets.filter(b => b.isBoss)) {
+                ctx.beginPath();
+                ctx.arc(bullet.x, bullet.y, 8, 0, Math.PI * 2);
+                ctx.fill();
             }
         }
 
@@ -635,7 +821,6 @@
             document.getElementById("level").textContent = gameState.level;
             document.getElementById("health").textContent = gameState.health;
             document.getElementById("gold").textContent = gameState.gold;
-            document.getElementById("ammo").textContent = gameState.ammo;
         }
 
         function updateAmmoUI() {
@@ -710,12 +895,7 @@
         }
 
         function checkCollision(obj1, obj2) {
-            return Math.abs(obj1.x - obj2.x) < 20 && Math.abs(obj1.y - obj2.y) < 20;
-        }
-
-        function openMarket() {
-            // Market UI'sini göster
-            alert("Market açıldı! Gold: " + gameState.gold);
+            return Math.abs(obj1.x - obj2.x) < 30 && Math.abs(obj1.y - obj2.y) < 30;
         }
 
         function endGame(win) {
@@ -735,10 +915,14 @@
             
             // Oyun durumunu sıfırla
             gameState.gameStarted = false;
+            gameState.isSpectator = false;
             gameState.level = 1;
+            gameState.baseEnemies = 1;
             gameState.health = 100;
             gameState.gold = 0;
             gameState.ammo = 30;
+            gameState.enemies = [];
+            gameState.boss = null;
             
             // Menüyü göster
             document.getElementById("menu-screen").style.display = "block";
@@ -746,6 +930,7 @@
             menuElements.mainMenu.style.display = "block";
             menuElements.nameInput.style.display = "none";
             menuElements.readyScreen.style.display = "none";
+            menuElements.spectatorMode.style.display = "none";
         }
     </script>
 </body>
