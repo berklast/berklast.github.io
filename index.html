@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Galaktik Savaş</title>
     <style>
+        /* ANA STİLLER */
         body {
             margin: 0;
             overflow: hidden;
@@ -12,15 +13,101 @@
             background: #000;
             color: #0ff;
             text-shadow: 0 0 5px #0ff;
-        }
-        #game-container {
-            position: relative;
-            width: 100vw;
+            touch-action: none;
             height: 100vh;
+        }
+
+        /* MENÜ ARKAPLAN ANİMASYONU */
+        #menu-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            background: radial-gradient(ellipse at center, #000000 0%, #000033 100%);
+        }
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 5s infinite alternate;
+        }
+        @keyframes twinkle {
+            0% { opacity: 0.3; }
+            100% { opacity: 1; }
+        }
+
+        /* MENÜ EKRANI */
+        #menu-screen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            background: rgba(0, 20, 40, 0.9);
+            padding: 30px;
+            border: 2px solid #0ff;
+            border-radius: 15px;
+            box-shadow: 0 0 30px #0ff;
+            width: 80%;
+            max-width: 500px;
+        }
+        #menu-screen h1 {
+            margin-top: 0;
+            font-size: 2.5rem;
+            color: #ff0;
+            text-shadow: 0 0 10px #ff0;
+        }
+        #name-input {
+            display: none;
+            margin: 20px 0;
+        }
+        #ready-screen {
+            display: none;
+        }
+        input {
+            background: rgba(0, 0, 30, 0.7);
+            color: #0ff;
+            border: 1px solid #0ff;
+            padding: 12px;
+            margin: 10px 0;
+            width: 80%;
+            font-family: 'Orbitron';
+            text-align: center;
+            border-radius: 25px;
+        }
+        button {
+            background: linear-gradient(to right, #0066ff, #00ccff);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            margin: 10px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-family: 'Orbitron';
+            font-weight: bold;
+            transition: all 0.3s;
+            width: 80%;
+        }
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px #0ff;
+        }
+
+        /* OYUN EKRANI */
+        #game-container {
+            display: none;
+            position: relative;
+            width: 100%;
+            height: 100%;
         }
         canvas {
             display: block;
+            margin: 0 auto;
             background: #000;
+            image-rendering: optimizeSpeed;
         }
         #ui {
             position: absolute;
@@ -30,462 +117,763 @@
             background: rgba(0, 0, 30, 0.5);
             padding: 10px;
             border-radius: 5px;
-            z-index: 10;
+            font-size: 14px;
+            border: 1px solid #0ff;
         }
-        #start-screen {
+        #countdown {
+            font-size: 2rem;
+            color: #ff0;
+            text-align: center;
+            margin: 20px 0;
+        }
+        #spectator-mode {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
             background: rgba(0, 0, 0, 0.7);
-            z-index: 5;
-        }
-        button {
-            background: #0066ff;
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            font-size: 18px;
-            cursor: pointer;
-            border-radius: 5px;
-            font-family: 'Orbitron';
-            margin-top: 20px;
-        }
-        h1 {
-            font-size: 48px;
-            color: #0ff;
-            text-shadow: 0 0 10px #0ff;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+            z-index: 100;
         }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div id="game-container">
-        <canvas id="game-canvas" width="800" height="600"></canvas>
-        <div id="ui">
-            <div>Bölüm: <span id="level">1</span></div>
-            <div>Sağlık: <span id="health">100</span></div>
-            <div>Düşman: <span id="enemies">10</span></div>
-            <div>Skor: <span id="score">0</span></div>
+    <!-- MENÜ ARKAPLANI -->
+    <div id="menu-bg"></div>
+
+    <!-- MENÜ EKRANI -->
+    <div id="menu-screen">
+        <h1>GALAKTİK SAVAŞ</h1>
+        <div id="main-menu">
+            <button id="play-btn">OYNA</button>
         </div>
-        <div id="start-screen">
-            <h1>GALAKTİK SAVAŞ</h1>
-            <button id="start-btn">OYNA</button>
+        
+        <div id="name-input">
+            <input type="text" id="player-name" placeholder="Pilot Adı (En az 3 karakter)" minlength="3" required>
+            <button id="confirm-name">ONAYLA</button>
+        </div>
+        
+        <div id="ready-screen">
+            <div id="countdown">10</div>
+            <div id="players-waiting">Hazır oyuncu: 1</div>
+            <button id="ready-btn">HAZIR</button>
         </div>
     </div>
 
-    <script>
-        // OYUN DEĞİŞKENLERİ
-        const canvas = document.getElementById('game-canvas');
-        const ctx = canvas.getContext('2d');
-        let gameState = {
-            player: {
-                x: canvas.width / 2,
-                y: canvas.height - 100,
-                width: 50,
-                height: 50,
-                speed: 8,
-                health: 100,
-                img: new Image()
-            },
-            enemies: [],
-            boss: null,
-            bullets: [],
-            enemyBullets: [],
-            level: 1,
-            enemiesCount: 10,
-            keys: {},
-            gameStarted: false,
-            lastShot: 0,
-            score: 0,
-            background: {
-                img: new Image(),
-                y: 0,
-                speed: 1
-            },
-            enemySpawnArea: {
-                x: 50,
-                y: 50,
-                width: canvas.width - 100,
-                height: 200
-            }
+    <!-- OYUN ALANI -->
+    <div id="game-container">
+        <canvas id="game-canvas" width="1000" height="700"></canvas>
+        <div id="ui">
+            <div>Bölüm: <span id="level">1</span>/150</div>
+            <div>Sağlık: <span id="health">100</span></div>
+            <div>Gold: <span id="gold">0</span></div>
+            <div>Mermi: <span id="ammo">30</span></div>
+        </div>
+        <div id="spectator-mode">
+            <h2>İZLEME MODUNDASINIZ</h2>
+            <p>Bölüm geçilirse yeniden doğacaksınız</p>
+        </div>
+    </div>
+
+    <script type="module">
+        // FIREBASE KONFİG
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, set, onValue, update, remove, onDisconnect } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyD9DCF-8mJz-0NfBXnrYHfBawP1hNuXgKI",
+            authDomain: "space-battle-game-291c7.firebaseapp.com",
+            databaseURL: "https://space-battle-game-291c7-default-rtdb.firebaseio.com",
+            projectId: "space-battle-game-291c7",
+            storageBucket: "space-battle-game-291c7.appspot.com",
+            messagingSenderId: "973408760674",
+            appId: "1:973408760674:web:461f84c97f9b8a2793f23b"
         };
 
-        // RESİMLERİ YÜKLE
-        gameState.player.img.src = 'player_ship.png';
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // OYUN SABİTLERİ
+        const PLAYER_SPEED = 8;
+        const BULLET_SPEED = 12;
+        const ENEMY_BULLET_SPEED = 6;
+        const LEVEL_COUNT = 150;
+        const BOSS_INTERVAL = 25; // Her 25 bölümde bir boss
+        const ENEMY_INCREASE_INTERVAL = 2; // Her 2 bölümde 1 düşman artışı
+
+        // OYUN DEĞİŞKENLERİ
+        const canvas = document.getElementById("game-canvas");
+        const ctx = canvas.getContext("2d", { alpha: false });
+        
+        // Resimler
+        const playerImg = new Image();
+        playerImg.src = 'player_ship.png';
         const enemyImg = new Image();
         enemyImg.src = 'enemy_ship.png';
         const bossImg = new Image();
         bossImg.src = 'boss.png';
-        gameState.background.img.src = 'background.png';
+        const backgroundImg = new Image();
+        backgroundImg.src = 'background.png';
+
+        let gameState = {
+            players: {},
+            playerId: `player_${Math.random().toString(36).substr(2, 9)}`,
+            playerName: "",
+            playerX: canvas.width / 2,
+            playerY: canvas.height - 100,
+            health: 100,
+            maxHealth: 100,
+            gold: 0,
+            ammo: 30,
+            damage: 10,
+            isReady: false,
+            gameStarted: false,
+            countdown: 10,
+            lastFrameTime: 0,
+            keys: {},
+            lastShot: 0,
+            enemies: [],
+            bullets: [],
+            enemyBullets: [],
+            particles: [],
+            level: 1,
+            boss: null,
+            baseEnemies: 1, // Başlangıç düşman sayısı
+            isSpectator: false,
+            countdownInterval: null,
+            imagesLoaded: false
+        };
+
+        // Resim yükleme kontrolü
+        let imagesToLoad = 4;
+        function imageLoaded() {
+            imagesToLoad--;
+            if (imagesToLoad === 0) {
+                gameState.imagesLoaded = true;
+            }
+        }
+
+        playerImg.onload = imageLoaded;
+        enemyImg.onload = imageLoaded;
+        bossImg.onload = imageLoaded;
+        backgroundImg.onload = imageLoaded;
+
+        // MENÜ ELEMANLARI
+        const menuElements = {
+            mainMenu: document.getElementById("main-menu"),
+            nameInput: document.getElementById("name-input"),
+            readyScreen: document.getElementById("ready-screen"),
+            playBtn: document.getElementById("play-btn"),
+            confirmNameBtn: document.getElementById("confirm-name"),
+            readyBtn: document.getElementById("ready-btn"),
+            countdownDisplay: document.getElementById("countdown"),
+            playersWaiting: document.getElementById("players-waiting"),
+            spectatorMode: document.getElementById("spectator-mode")
+        };
 
         // OYUNU BAŞLAT
-        document.getElementById('start-btn').addEventListener('click', startGame);
-        document.addEventListener('keydown', (e) => gameState.keys[e.key] = true);
-        document.addEventListener('keyup', (e) => gameState.keys[e.key] = false);
+        initGame();
+
+        function initGame() {
+            // MENÜ ARKAPLANINI AYARLA
+            createStars();
+            
+            // EVENT LİSTENERS
+            menuElements.playBtn.addEventListener("click", showNameInput);
+            menuElements.confirmNameBtn.addEventListener("click", confirmName);
+            menuElements.readyBtn.addEventListener("click", toggleReady);
+            
+            document.addEventListener("keydown", (e) => {
+                gameState.keys[e.key] = true;
+                if (e.key === "Enter" && menuElements.nameInput.style.display === "block") {
+                    confirmName();
+                }
+            });
+            document.addEventListener("keyup", (e) => gameState.keys[e.key] = false);
+
+            // FIREBASE LİSTENERS
+            onValue(ref(db, 'players'), (snapshot) => {
+                gameState.players = snapshot.val() || {};
+                updatePlayerCount();
+                
+                // Oyun başlatma kontrolü
+                const readyPlayers = Object.values(gameState.players).filter(p => p.isReady);
+                if (readyPlayers.length >= 1 && !gameState.gameStarted) {
+                    startCountdown();
+                } else if (readyPlayers.length === 0 && gameState.countdownInterval) {
+                    stopCountdown();
+                }
+                
+                // Eğer izleyici modundaysak ve başka oyuncu kalmadıysa lobiye dön
+                if (gameState.isSpectator && Object.keys(gameState.players).filter(id => gameState.players[id].isAlive).length === 0) {
+                    returnToLobby();
+                }
+            });
+
+            // OYUN DÖNGÜSÜ
+            function gameLoop(timestamp) {
+                const deltaTime = timestamp - gameState.lastFrameTime;
+                gameState.lastFrameTime = timestamp;
+
+                if (gameState.gameStarted && gameState.imagesLoaded) {
+                    // Oyun güncellemeleri
+                    updateGame(deltaTime);
+                }
+
+                // Render
+                renderGame();
+                requestAnimationFrame(gameLoop);
+            }
+            requestAnimationFrame(gameLoop);
+        }
+
+        // MENÜ FONKSİYONLARI
+        function showNameInput() {
+            menuElements.mainMenu.style.display = "none";
+            menuElements.nameInput.style.display = "block";
+            document.getElementById("player-name").focus();
+        }
+
+        function confirmName() {
+            const name = document.getElementById("player-name").value.trim();
+            if (name.length < 3) {
+                alert("En az 3 karakter girin!");
+                return;
+            }
+            
+            gameState.playerName = name;
+            menuElements.nameInput.style.display = "none";
+            menuElements.readyScreen.style.display = "block";
+            updatePlayerCount();
+        }
+
+        function toggleReady() {
+            gameState.isReady = !gameState.isReady;
+            
+            if (gameState.isReady) {
+                menuElements.readyBtn.textContent = "HAZIR (" + gameState.playerName + ")";
+                menuElements.readyBtn.style.background = "linear-gradient(to right, #00cc00, #00ff00)";
+                
+                // Firebase'e oyuncu ekle
+                const playerRef = ref(db, `players/${gameState.playerId}`);
+                set(playerRef, {
+                    id: gameState.playerId,
+                    name: gameState.playerName,
+                    isReady: true,
+                    isAlive: true,
+                    lastActive: Date.now(),
+                    x: gameState.playerX,
+                    y: gameState.playerY,
+                    health: gameState.health,
+                    gold: gameState.gold,
+                    ammo: gameState.ammo
+                });
+                
+                // Bağlantı kesilirse oyuncuyu kaldır
+                onDisconnect(playerRef).remove();
+            } else {
+                menuElements.readyBtn.textContent = "HAZIR";
+                menuElements.readyBtn.style.background = "linear-gradient(to right, #0066ff, #00ccff)";
+                remove(ref(db, `players/${gameState.playerId}`));
+            }
+        }
+
+        function updatePlayerCount() {
+            const playerCount = Object.keys(gameState.players).length;
+            menuElements.playersWaiting.textContent = `Hazır oyuncu: ${playerCount}`;
+        }
+
+        function startCountdown() {
+            // Önceki sayacı temizle
+            if (gameState.countdownInterval) {
+                clearInterval(gameState.countdownInterval);
+            }
+            
+            gameState.countdown = 10;
+            menuElements.countdownDisplay.textContent = gameState.countdown;
+            gameState.countdownInterval = setInterval(() => {
+                gameState.countdown--;
+                menuElements.countdownDisplay.textContent = gameState.countdown;
+                
+                if (gameState.countdown <= 0) {
+                    stopCountdown();
+                    startGame();
+                }
+            }, 1000);
+        }
+
+        function stopCountdown() {
+            if (gameState.countdownInterval) {
+                clearInterval(gameState.countdownInterval);
+                gameState.countdownInterval = null;
+            }
+            menuElements.countdownDisplay.textContent = "10";
+        }
 
         function startGame() {
-            document.getElementById('start-screen').style.display = 'none';
             gameState.gameStarted = true;
+            gameState.isSpectator = false;
+            document.getElementById("menu-screen").style.display = "none";
+            document.getElementById("game-container").style.display = "block";
+            menuElements.spectatorMode.style.display = "none";
+            
+            // Oyun başlangıç ayarları
             gameState.level = 1;
-            gameState.score = 0;
-            gameState.player.health = 100;
-            document.getElementById('score').textContent = gameState.score;
-            document.getElementById('health').textContent = gameState.player.health;
+            gameState.baseEnemies = 1;
+            gameState.health = 100;
+            gameState.gold = 0;
+            gameState.ammo = 30;
+            updateUI();
             spawnEnemies();
-            gameLoop();
+        }
+
+        // OYUN FONKSİYONLARI
+        function updateGame(deltaTime) {
+            // Oyuncu pozisyon güncelleme
+            if (!gameState.isSpectator) {
+                updatePlayerPosition();
+            }
+            
+            // Mermileri güncelle
+            updateBullets();
+            
+            // Düşmanları güncelle
+            updateEnemies();
+            
+            // Boss güncelle
+            if (gameState.boss) updateBoss();
+            
+            // Çarpışma kontrolü
+            checkCollisions();
+            
+            // UI güncelleme
+            updateUI();
+            
+            // Bölüm kontrolü
+            checkLevelCompletion();
+            
+            // Oyuncu ölüm kontrolü
+            if (gameState.health <= 0 && !gameState.isSpectator) {
+                enterSpectatorMode();
+            }
+        }
+
+        function renderGame() {
+            if (!gameState.imagesLoaded) return;
+            
+            // Arka plan
+            ctx.drawImage(backgroundImg, 0, 0, canvas.width, canvas.height);
+            
+            // Oyuncuları çiz
+            renderPlayers();
+            
+            // Düşmanları çiz
+            renderEnemies();
+            
+            // Mermileri çiz
+            renderBullets();
+            
+            // Boss çiz
+            if (gameState.boss) renderBoss();
+        }
+
+        function updatePlayerPosition() {
+            if (gameState.keys["ArrowLeft"]) gameState.playerX = Math.max(30, gameState.playerX - PLAYER_SPEED);
+            if (gameState.keys["ArrowRight"]) gameState.playerX = Math.min(canvas.width - 30, gameState.playerX + PLAYER_SPEED);
+            if (gameState.keys["ArrowUp"]) gameState.playerY = Math.max(30, gameState.playerY - PLAYER_SPEED);
+            if (gameState.keys["ArrowDown"]) gameState.playerY = Math.min(canvas.height - 30, gameState.playerY + PLAYER_SPEED);
+            
+            // Ateş etme (Space)
+            if (gameState.keys[" "] && Date.now() - gameState.lastShot > 200 && gameState.ammo > 0) {
+                gameState.bullets.push({
+                    x: gameState.playerX,
+                    y: gameState.playerY - 30,
+                    speed: BULLET_SPEED,
+                    damage: gameState.damage,
+                    isPlayer: true
+                });
+                gameState.lastShot = Date.now();
+                gameState.ammo--;
+                updateAmmoUI();
+            }
+
+            // Firebase'e güncelle
+            update(ref(db, `players/${gameState.playerId}`), {
+                x: gameState.playerX,
+                y: gameState.playerY,
+                health: gameState.health,
+                gold: gameState.gold,
+                ammo: gameState.ammo,
+                isAlive: gameState.health > 0,
+                lastActive: Date.now()
+            });
         }
 
         function spawnEnemies() {
             gameState.enemies = [];
-            const enemiesInLevel = gameState.enemiesCount + (gameState.level * 2);
             
-            for (let i = 0; i < enemiesInLevel; i++) {
+            // Her 2 bölümde 1 düşman artışı
+            const enemyCount = gameState.baseEnemies + Math.floor(gameState.level / ENEMY_INCREASE_INTERVAL);
+            
+            for (let i = 0; i < enemyCount; i++) {
                 gameState.enemies.push({
-                    x: Math.random() * gameState.enemySpawnArea.width + gameState.enemySpawnArea.x,
-                    y: Math.random() * gameState.enemySpawnArea.height + gameState.enemySpawnArea.y,
-                    width: 40,
-                    height: 40,
-                    speed: 2 + (gameState.level * 0.2),
-                    health: 1,
+                    x: Math.random() * (canvas.width - 100) + 50,
+                    y: 50 + Math.random() * 50, // Üst kısımda rastgele konum
+                    speed: 2 + Math.random() * 2,
+                    health: 30,
                     lastShot: 0,
-                    fireRate: 1500 - (gameState.level * 100),
                     movePattern: Math.floor(Math.random() * 3) // 0: sabit, 1: yatay hareket, 2: zigzag
                 });
             }
             
-            // Her 3. seviyede bir boss ekle
-            if (gameState.level % 3 === 0) {
-                gameState.boss = {
-                    x: canvas.width / 2 - 75,
-                    y: 100,
-                    width: 150,
-                    height: 100,
-                    speed: 1.5,
-                    health: 5 + gameState.level,
-                    lastShot: 0,
-                    fireRate: 1000,
-                    moveDirection: 1
-                };
+            // Boss kontrolü
+            if (gameState.level % BOSS_INTERVAL === 0) {
+                spawnBoss();
             }
             
-            document.getElementById('enemies').textContent = gameState.enemies.length + (gameState.boss ? 1 : 0);
-            document.getElementById('level').textContent = gameState.level;
+            document.getElementById("enemies").textContent = gameState.enemies.length + (gameState.boss ? 1 : 0);
         }
 
-        function gameLoop() {
-            if (!gameState.gameStarted) return;
-
-            // ARKA PLANI HAREKET ETTİR
-            updateBackground();
-            
-            // OYUNCU GÜNCELLE
-            updatePlayer();
-            
-            // DÜŞMANLARI GÜNCELLE
-            updateEnemies();
-            
-            // BOSS GÜNCELLE
-            if (gameState.boss) updateBoss();
-            
-            // MERMİLERİ GÜNCELLE
-            updateBullets();
-            
-            // ÇARPIŞMA KONTROLÜ
-            checkCollisions();
-            
-            // RENDER
-            renderGame();
-            
-            requestAnimationFrame(gameLoop);
-        }
-
-        function updateBackground() {
-            gameState.background.y += gameState.background.speed;
-            if (gameState.background.y >= gameState.background.img.height) {
-                gameState.background.y = 0;
-            }
-        }
-
-        function updatePlayer() {
-            // HAREKET
-            if (gameState.keys['ArrowLeft']) gameState.player.x = Math.max(0, gameState.player.x - gameState.player.speed);
-            if (gameState.keys['ArrowRight']) gameState.player.x = Math.min(canvas.width - gameState.player.width, gameState.player.x + gameState.player.speed);
-            if (gameState.keys['ArrowUp']) gameState.player.y = Math.max(0, gameState.player.y - gameState.player.speed);
-            if (gameState.keys['ArrowDown']) gameState.player.y = Math.min(canvas.height - gameState.player.height, gameState.player.y + gameState.player.speed);
-            
-            // ATEŞ ETME
-            if (gameState.keys[' '] && Date.now() - gameState.lastShot > 300) {
-                gameState.bullets.push({
-                    x: gameState.player.x + gameState.player.width / 2 - 2,
-                    y: gameState.player.y,
-                    width: 4,
-                    height: 10,
-                    speed: 10,
-                    isPlayer: true
-                });
-                gameState.lastShot = Date.now();
-            }
-        }
-
-        function updateEnemies() {
-            for (let i = gameState.enemies.length - 1; i >= 0; i--) {
-                const enemy = gameState.enemies[i];
-                
-                // HAREKET PATTERN'LERİ
-                switch(enemy.movePattern) {
-                    case 0: // Sabit
-                        break;
-                    case 1: // Yatay hareket
-                        enemy.x += enemy.speed;
-                        if (enemy.x > gameState.enemySpawnArea.x + gameState.enemySpawnArea.width - enemy.width || 
-                            enemy.x < gameState.enemySpawnArea.x) {
-                            enemy.speed *= -1;
-                        }
-                        break;
-                    case 2: // Zigzag
-                        enemy.x += enemy.speed;
-                        enemy.y += Math.sin(Date.now() * 0.005) * 0.5;
-                        if (enemy.x > gameState.enemySpawnArea.x + gameState.enemySpawnArea.width - enemy.width || 
-                            enemy.x < gameState.enemySpawnArea.x) {
-                            enemy.speed *= -1;
-                        }
-                        break;
-                }
-                
-                // ATEŞ ETME
-                if (Date.now() - enemy.lastShot > enemy.fireRate) {
-                    const angle = Math.atan2(
-                        gameState.player.y + gameState.player.height/2 - (enemy.y + enemy.height/2),
-                        gameState.player.x + gameState.player.width/2 - (enemy.x + enemy.width/2)
-                    );
-                    
-                    const speed = 5;
-                    gameState.enemyBullets.push({
-                        x: enemy.x + enemy.width / 2 - 2,
-                        y: enemy.y + enemy.height,
-                        width: 4,
-                        height: 10,
-                        speedX: Math.cos(angle) * speed,
-                        speedY: Math.sin(angle) * speed,
-                        isPlayer: false
-                    });
-                    enemy.lastShot = Date.now();
-                }
-            }
-            
-            // TÜM DÜŞMANLAR ÖLDÜYSE VE BOSS YOKSA
-            if (gameState.enemies.length === 0 && !gameState.boss) {
-                nextLevel();
-            }
+        function spawnBoss() {
+            gameState.boss = {
+                x: canvas.width / 2,
+                y: 150,
+                width: 200,
+                height: 100,
+                health: 50, // 50 mermi vurunca ölecek
+                speed: 1,
+                lastAttack: 0,
+                moveDirection: 1
+            };
         }
 
         function updateBoss() {
             const boss = gameState.boss;
             
-            // BOSS HAREKETİ
+            // Boss hareketi
             boss.x += boss.speed * boss.moveDirection;
-            if (boss.x > canvas.width - boss.width || boss.x < 0) {
+            if (boss.x > canvas.width - boss.width/2 || boss.x < boss.width/2) {
                 boss.moveDirection *= -1;
-                boss.y += 20;
             }
             
-            // BOSS ATEŞ ETME
-            if (Date.now() - boss.lastShot > boss.fireRate) {
-                // Çoklu ateş
-                for (let i = 0; i < 3 + Math.floor(gameState.level / 3); i++) {
-                    const angle = Math.atan2(
-                        gameState.player.y + gameState.player.height/2 - (boss.y + boss.height/2),
-                        gameState.player.x + gameState.player.width/2 - (boss.x + boss.width/2)
-                    ) + (i - 1) * 0.3;
-                    
-                    const speed = 4;
-                    gameState.enemyBullets.push({
-                        x: boss.x + boss.width / 2 - 5,
-                        y: boss.y + boss.height,
-                        width: 10,
-                        height: 15,
-                        speedX: Math.cos(angle) * speed,
-                        speedY: Math.sin(angle) * speed,
-                        isPlayer: false,
-                        isBoss: true
-                    });
-                }
-                boss.lastShot = Date.now();
+            // Boss ateş etme
+            if (Date.now() - boss.lastAttack > 1000) {
+                // Oyuncuya doğru ateş et
+                const angle = Math.atan2(
+                    gameState.playerY - boss.y,
+                    gameState.playerX - boss.x
+                );
+                
+                gameState.enemyBullets.push({
+                    x: boss.x,
+                    y: boss.y + boss.height/2,
+                    speedX: Math.cos(angle) * ENEMY_BULLET_SPEED,
+                    speedY: Math.sin(angle) * ENEMY_BULLET_SPEED,
+                    damage: 10,
+                    isBoss: true
+                });
+                
+                boss.lastAttack = Date.now();
             }
         }
 
         function updateBullets() {
-            // OYUNCU MERMİLERİ
+            // Oyuncu mermileri
             for (let i = gameState.bullets.length - 1; i >= 0; i--) {
                 gameState.bullets[i].y -= gameState.bullets[i].speed;
+                
+                // Ekran dışına çıkan mermileri sil
                 if (gameState.bullets[i].y < 0) {
                     gameState.bullets.splice(i, 1);
+                    continue;
+                }
+                
+                // Düşmanlara çarpma kontrolü
+                for (let j = gameState.enemies.length - 1; j >= 0; j--) {
+                    const enemy = gameState.enemies[j];
+                    if (checkCollision(gameState.bullets[i], enemy)) {
+                        enemy.health -= gameState.bullets[i].damage;
+                        gameState.bullets.splice(i, 1);
+                        
+                        if (enemy.health <= 0) {
+                            gameState.gold += 20;
+                            gameState.enemies.splice(j, 1);
+                            document.getElementById("enemies").textContent = gameState.enemies.length + (gameState.boss ? 1 : 0);
+                        }
+                        break;
+                    }
+                }
+                
+                // Boss'a çarpma kontrolü
+                if (gameState.boss && checkCollision(gameState.bullets[i], gameState.boss)) {
+                    gameState.boss.health -= 1; // Her mermi 1 hasar
+                    gameState.bullets.splice(i, 1);
+                    
+                    if (gameState.boss.health <= 0) {
+                        gameState.gold += 100;
+                        gameState.boss = null;
+                        document.getElementById("enemies").textContent = gameState.enemies.length;
+                    }
                 }
             }
             
-            // DÜŞMAN MERMİLERİ
+            // Düşman mermileri
             for (let i = gameState.enemyBullets.length - 1; i >= 0; i--) {
                 const bullet = gameState.enemyBullets[i];
-                bullet.x += bullet.speedX || 0;
-                bullet.y += bullet.speedY || bullet.speed;
                 
+                if (bullet.isBoss) {
+                    bullet.x += bullet.speedX;
+                    bullet.y += bullet.speedY;
+                } else {
+                    bullet.y += bullet.speed;
+                }
+                
+                // Ekran dışına çıkan mermileri sil
                 if (bullet.y > canvas.height || bullet.x < 0 || bullet.x > canvas.width) {
                     gameState.enemyBullets.splice(i, 1);
                 }
             }
         }
 
-        function checkCollisions() {
-            // OYUNCU MERMİLERİ İLE DÜŞMANLAR
-            for (let i = gameState.bullets.length - 1; i >= 0; i--) {
-                for (let j = gameState.enemies.length - 1; j >= 0; j--) {
-                    if (checkCollision(gameState.bullets[i], gameState.enemies[j])) {
-                        gameState.enemies.splice(j, 1);
-                        gameState.bullets.splice(i, 1);
-                        gameState.score += 10;
-                        document.getElementById('enemies').textContent = gameState.enemies.length + (gameState.boss ? 1 : 0);
-                        document.getElementById('score').textContent = gameState.score;
+        function updateEnemies() {
+            for (let i = 0; i < gameState.enemies.length; i++) {
+                const enemy = gameState.enemies[i];
+                
+                // Hareket pattern'leri
+                switch(enemy.movePattern) {
+                    case 0: // Sabit
                         break;
-                    }
+                    case 1: // Yatay hareket
+                        enemy.x += enemy.speed;
+                        if (enemy.x > canvas.width - 50 || enemy.x < 50) {
+                            enemy.speed *= -1;
+                        }
+                        break;
+                    case 2: // Zigzag
+                        enemy.x += enemy.speed;
+                        if (enemy.x > canvas.width - 50 || enemy.x < 50) {
+                            enemy.speed *= -1;
+                        }
+                        break;
                 }
                 
-                // OYUNCU MERMİLERİ İLE BOSS
-                if (gameState.boss && checkCollision(gameState.bullets[i], gameState.boss)) {
-                    gameState.boss.health--;
-                    gameState.bullets.splice(i, 1);
-                    gameState.score += 20;
-                    document.getElementById('score').textContent = gameState.score;
+                // Oyuncuya doğru ateş et
+                if (Date.now() - enemy.lastShot > 1500) {
+                    const angle = Math.atan2(
+                        gameState.playerY - enemy.y,
+                        gameState.playerX - enemy.x
+                    );
                     
-                    if (gameState.boss.health <= 0) {
-                        gameState.boss = null;
-                        document.getElementById('enemies').textContent = gameState.enemies.length;
-                        if (gameState.enemies.length === 0) {
-                            nextLevel();
-                        }
-                    }
+                    gameState.enemyBullets.push({
+                        x: enemy.x,
+                        y: enemy.y + 30,
+                        speedX: Math.cos(angle) * ENEMY_BULLET_SPEED,
+                        speedY: Math.sin(angle) * ENEMY_BULLET_SPEED,
+                        damage: 5
+                    });
+                    
+                    enemy.lastShot = Date.now();
                 }
             }
-            
-            // DÜŞMAN MERMİLERİ İLE OYUNCU
-            for (let i = gameState.enemyBullets.length - 1; i >= 0; i--) {
-                if (checkCollision(gameState.enemyBullets[i], gameState.player)) {
-                    const damage = gameState.enemyBullets[i].isBoss ? 20 : 10;
-                    gameState.player.health -= damage;
-                    gameState.enemyBullets.splice(i, 1);
-                    document.getElementById('health').textContent = gameState.player.health;
-                    
-                    // OYUNCU ÖLDÜYSE
-                    if (gameState.player.health <= 0) {
-                        gameOver();
+        }
+
+        function checkCollisions() {
+            // Düşman mermileri ile oyuncu
+            if (!gameState.isSpectator) {
+                for (let i = gameState.enemyBullets.length - 1; i >= 0; i--) {
+                    const bullet = gameState.enemyBullets[i];
+                    if (checkCollision(bullet, {
+                        x: gameState.playerX,
+                        y: gameState.playerY,
+                        width: 50,
+                        height: 50
+                    })) {
+                        gameState.health -= bullet.damage;
+                        gameState.enemyBullets.splice(i, 1);
+                        update(ref(db, `players/${gameState.playerId}`), {
+                            health: gameState.health,
+                            isAlive: gameState.health > 0
+                        });
                     }
                 }
             }
         }
 
-        function renderGame() {
-            // ARKA PLAN
-            ctx.drawImage(
-                gameState.background.img,
-                0, gameState.background.y,
-                canvas.width, canvas.height,
-                0, 0,
-                canvas.width, canvas.height
-            );
+        function checkLevelCompletion() {
+            if (gameState.enemies.length === 0 && !gameState.boss) {
+                gameState.level++;
+                
+                // Eğer izleyici modundaysak ve bölüm geçildiyse yeniden doğ
+                if (gameState.isSpectator) {
+                    respawnPlayer();
+                    return;
+                }
+                
+                if (gameState.level > LEVEL_COUNT) {
+                    endGame(true);
+                    return;
+                }
+                
+                spawnEnemies();
+            }
+        }
+
+        function enterSpectatorMode() {
+            gameState.isSpectator = true;
+            menuElements.spectatorMode.style.display = "block";
+            update(ref(db, `players/${gameState.playerId}`), {
+                isAlive: false
+            });
             
-            // İkinci arka plan (sonsuz döngü için)
-            if (gameState.background.y > 0) {
-                ctx.drawImage(
-                    gameState.background.img,
-                    0, gameState.background.y - gameState.background.img.height,
-                    canvas.width, canvas.height,
-                    0, 0,
-                    canvas.width, canvas.height
-                );
+            // Tüm oyuncular öldüyse lobiye dön
+            const alivePlayers = Object.values(gameState.players).filter(p => p.isAlive);
+            if (alivePlayers.length === 0) {
+                setTimeout(returnToLobby, 3000);
+            }
+        }
+
+        function respawnPlayer() {
+            gameState.isSpectator = false;
+            gameState.health = 100;
+            menuElements.spectatorMode.style.display = "none";
+            update(ref(db, `players/${gameState.playerId}`), {
+                health: 100,
+                isAlive: true
+            });
+        }
+
+        function returnToLobby() {
+            resetGame();
+            alert("Tüm oyuncular öldü! Lobiye dönülüyor.");
+        }
+
+        function renderPlayers() {
+            // Kendi gemimiz (eğer ölmediysek)
+            if (!gameState.isSpectator) {
+                ctx.drawImage(playerImg, gameState.playerX - 25, gameState.playerY - 25, 50, 50);
             }
             
-            // OYUNCU GEMİSİ
-            ctx.drawImage(
-                gameState.player.img,
-                gameState.player.x,
-                gameState.player.y,
-                gameState.player.width,
-                gameState.player.height
-            );
+            // Diğer oyuncular
+            for (const playerId in gameState.players) {
+                if (playerId !== gameState.playerId) {
+                    const player = gameState.players[playerId];
+                    if (player.isAlive) {
+                        ctx.drawImage(playerImg, player.x - 25, player.y - 25, 50, 50);
+                    }
+                }
+            }
+        }
+
+        function renderEnemies() {
+            for (const enemy of gameState.enemies) {
+                ctx.drawImage(enemyImg, enemy.x - 20, enemy.y - 20, 40, 40);
+            }
+        }
+
+        function renderBoss() {
+            ctx.drawImage(bossImg, gameState.boss.x - gameState.boss.width/2, 
+                         gameState.boss.y - gameState.boss.height/2, 
+                         gameState.boss.width, gameState.boss.height);
             
-            // DÜŞMANLAR
-            gameState.enemies.forEach(enemy => {
-                ctx.drawImage(
-                    enemyImg,
-                    enemy.x,
-                    enemy.y,
-                    enemy.width,
-                    enemy.height
-                );
-            });
+            // Boss can bar
+            ctx.fillStyle = "red";
+            ctx.fillRect(gameState.boss.x - gameState.boss.width/2, 
+                        gameState.boss.y - gameState.boss.height/2 - 20, 
+                        gameState.boss.width, 5);
             
-            // BOSS
-            if (gameState.boss) {
-                ctx.drawImage(
-                    bossImg,
-                    gameState.boss.x,
-                    gameState.boss.y,
-                    gameState.boss.width,
-                    gameState.boss.height
-                );
-                
-                // BOSS CAN BAR
-                ctx.fillStyle = 'red';
-                ctx.fillRect(
-                    gameState.boss.x,
-                    gameState.boss.y - 15,
-                    gameState.boss.width,
-                    5
-                );
-                
-                ctx.fillStyle = 'green';
-                ctx.fillRect(
-                    gameState.boss.x,
-                    gameState.boss.y - 15,
-                    gameState.boss.width * (gameState.boss.health / (5 + gameState.level)),
-                    5
-                );
+            ctx.fillStyle = "green";
+            ctx.fillRect(gameState.boss.x - gameState.boss.width/2, 
+                        gameState.boss.y - gameState.boss.height/2 - 20, 
+                        gameState.boss.width * (gameState.boss.health / 50), 5);
+        }
+
+        function renderBullets() {
+            // Oyuncu mermileri
+            ctx.fillStyle = "#ffff00";
+            for (const bullet of gameState.bullets) {
+                ctx.fillRect(bullet.x - 2, bullet.y - 10, 4, 10);
             }
             
-            // MERMİLER
-            gameState.bullets.forEach(bullet => {
-                ctx.fillStyle = '#ffff00';
-                ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
-            });
-            
-            gameState.enemyBullets.forEach(bullet => {
-                ctx.fillStyle = bullet.isBoss ? '#ff00ff' : '#ff0000';
-                ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
-            });
+            // Düşman mermileri
+            ctx.fillStyle = "#ff0000";
+            for (const bullet of gameState.enemyBullets) {
+                if (bullet.isBoss) {
+                    ctx.beginPath();
+                    ctx.arc(bullet.x, bullet.y, 8, 0, Math.PI * 2);
+                    ctx.fill();
+                } else {
+                    ctx.fillRect(bullet.x - 2, bullet.y, 4, 10);
+                }
+            }
+        }
+
+        function updateUI() {
+            document.getElementById("level").textContent = gameState.level;
+            document.getElementById("health").textContent = gameState.health;
+            document.getElementById("gold").textContent = gameState.gold;
+        }
+
+        function updateAmmoUI() {
+            document.getElementById("ammo").textContent = gameState.ammo;
+        }
+
+        // YARDIMCI FONKSİYONLAR
+        function createStars() {
+            const bg = document.getElementById("menu-bg");
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement("div");
+                star.className = "star";
+                star.style.width = (1 + Math.random() * 3) + "px";
+                star.style.height = star.style.width;
+                star.style.left = Math.random() * 100 + "vw";
+                star.style.top = Math.random() * 100 + "vh";
+                star.style.animationDelay = (Math.random() * 5) + "s";
+                star.style.opacity = 0.3 + Math.random() * 0.7;
+                bg.appendChild(star);
+            }
         }
 
         function checkCollision(obj1, obj2) {
-            return obj1.x < obj2.x + obj2.width &&
-                   obj1.x + obj1.width > obj2.x &&
-                   obj1.y < obj2.y + obj2.height &&
-                   obj1.y + obj1.height > obj2.y;
+            return Math.abs(obj1.x - obj2.x) < 25 && Math.abs(obj1.y - obj2.y) < 25;
         }
 
-        function nextLevel() {
-            gameState.level++;
-            gameState.enemiesCount = 10 + gameState.level * 2;
-            spawnEnemies();
+        function endGame(win) {
+            if (win) {
+                alert("Tebrikler! Tüm bölümleri tamamladınız!");
+            } else {
+                alert("Oyun bitti! Yeniden deneyin.");
+            }
+            
+            // Oyunu sıfırla
+            resetGame();
         }
 
-        function gameOver() {
+        function resetGame() {
+            // Firebase'den oyuncuyu kaldır
+            remove(ref(db, `players/${gameState.playerId}`));
+            
+            // Oyun durumunu sıfırla
             gameState.gameStarted = false;
-            document.getElementById('start-screen').style.display = 'flex';
-            document.querySelector('#start-screen h1').textContent = `Oyun Bitti! Skor: ${gameState.score}`;
-            document.getElementById('start-btn').textContent = 'TEKRAR OYNA';
+            gameState.isSpectator = false;
+            gameState.level = 1;
+            gameState.baseEnemies = 1;
+            gameState.health = 100;
+            gameState.gold = 0;
+            gameState.ammo = 30;
+            gameState.enemies = [];
+            gameState.boss = null;
+            
+            // Menüyü göster
+            document.getElementById("menu-screen").style.display = "block";
+            document.getElementById("game-container").style.display = "none";
+            menuElements.mainMenu.style.display = "block";
+            menuElements.nameInput.style.display = "none";
+            menuElements.readyScreen.style.display = "none";
+            menuElements.spectatorMode.style.display = "none";
         }
     </script>
 </body>
