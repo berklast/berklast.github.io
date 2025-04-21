@@ -1,16 +1,432 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kare Fırlatma Oyunu</title>
-    <link rel="stylesheet" href="style.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> </head>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            touch-action: none;
+            font-family: Arial, sans-serif;
+        }
+        canvas {
+            display: block;
+            background-color: skyblue;
+        }
+        #powerBarContainer {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            width: 30px;
+            height: 200px;
+            background-color: rgba(0, 0, 0, 0.3);
+            border-radius: 5px;
+            display: none;
+        }
+        #powerBar {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 0;
+            background-color: red;
+            border-radius: 5px;
+            transition: height 0.1s;
+        }
+        #nextSquare {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            background-color: red;
+            border: 2px solid black;
+        }
+        #mobileControls {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            display: none;
+        }
+        #throwButton {
+            padding: 15px 25px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+        }
+        @media (max-width: 768px) {
+            #mobileControls {
+                display: block;
+            }
+        }
+    </style>
+</head>
 <body>
-    <canvas id="oyunAlani"></canvas>
-    <div id="bilgiAlani">
-        <div id="siradakiKare">Sıradaki: <span id="siradakiRenk"></span></div>
-        <div id="gucBar"></div>
-        <div id="skor">Skor: 0</div>
+    <canvas id="gameCanvas"></canvas>
+    <div id="powerBarContainer">
+        <div id="powerBar"></div>
     </div>
-    <script src="script.js"></script>
+    <div id="nextSquare"></div>
+    <div id="mobileControls">
+        <button id="throwButton">Fırlat</button>
+    </div>
+
+    <script>
+        // Canvas ayarları
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const powerBarContainer = document.getElementById('powerBarContainer');
+        const powerBar = document.getElementById('powerBar');
+        const nextSquare = document.getElementById('nextSquare');
+        const throwButton = document.getElementById('throwButton');
+
+        // Oyun alanını ayarla
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // Oyun değişkenleri
+        const boxSize = 40;
+        let boxes = [];
+        let walls = [];
+        let fences = [];
+        let grass = [];
+        let isCharging = false;
+        let power = 0;
+        let maxPower = 100;
+        let chargeSpeed = 2;
+        let nextBoxColor = getRandomColor();
+        let isMobile = window.innerWidth <= 768;
+
+        // Başlangıçta çevreyi oluştur
+        function createEnvironment() {
+            // Duvarlar (siyah)
+            walls = [
+                {x: 0, y: 0, width: canvas.width, height: 20},
+                {x: 0, y: 0, width: 20, height: canvas.height},
+                {x: canvas.width - 20, y: 0, width: 20, height: canvas.height},
+                {x: 0, y: canvas.height - 20, width: canvas.width, height: 20},
+                {x: canvas.width/2 - 100, y: canvas.height/2 - 50, width: 200, height: 20}
+            ];
+
+            // Çimenler (yeşil)
+            grass = [
+                {x: 50, y: canvas.height - 70, width: 100, height: 50},
+                {x: canvas.width - 150, y: canvas.height - 70, width: 100, height: 50}
+            ];
+
+            // Çitler (mavi)
+            fences = [
+                {x: 200, y: canvas.height - 60, width: 10, height: 40},
+                {x: 230, y: canvas.height - 60, width: 10, height: 40},
+                {x: 260, y: canvas.height - 60, width: 10, height: 40},
+                {x: canvas.width - 300, y: canvas.height - 60, width: 10, height: 40},
+                {x: canvas.width - 330, y: canvas.height - 60, width: 10, height: 40},
+                {x: canvas.width - 360, y: canvas.height - 60, width: 10, height: 40}
+            ];
+        }
+
+        // Rastgele renk oluştur
+        function getRandomColor() {
+            const colors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+
+        // Kutu sınıfı
+        class Box {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.width = boxSize;
+                this.height = boxSize;
+                this.color = color;
+                this.vx = 0;
+                this.vy = 0;
+                this.gravity = 0.5;
+                this.friction = 0.98;
+                this.bounce = 0.7;
+            }
+
+            update() {
+                // Yerçekimi
+                this.vy += this.gravity;
+
+                // Hareket
+                this.x += this.vx;
+                this.y += this.vy;
+
+                // Sürtünme
+                this.vx *= this.friction;
+                this.vy *= this.friction;
+
+                // Duvarlarla çarpışma
+                walls.forEach(wall => {
+                    if (this.x < wall.x + wall.width &&
+                        this.x + this.width > wall.x &&
+                        this.y < wall.y + wall.height &&
+                        this.y + this.height > wall.y) {
+                        
+                        // Çarpışma tepkisi
+                        const overlapX = Math.min(
+                            Math.abs(this.x + this.width - wall.x),
+                            Math.abs(wall.x + wall.width - this.x)
+                        );
+                        const overlapY = Math.min(
+                            Math.abs(this.y + this.height - wall.y),
+                            Math.abs(wall.y + wall.height - this.y)
+                        );
+
+                        if (overlapX < overlapY) {
+                            // Yatay çarpışma
+                            if (this.vx > 0) {
+                                this.x = wall.x - this.width;
+                            } else {
+                                this.x = wall.x + wall.width;
+                            }
+                            this.vx = -this.vx * this.bounce;
+                        } else {
+                            // Dikey çarpışma
+                            if (this.vy > 0) {
+                                this.y = wall.y - this.height;
+                            } else {
+                                this.y = wall.y + wall.height;
+                            }
+                            this.vy = -this.vy * this.bounce;
+                        }
+                    }
+                });
+
+                // Çitlerle çarpışma (duvarlarla aynı)
+                fences.forEach(fence => {
+                    if (this.x < fence.x + fence.width &&
+                        this.x + this.width > fence.x &&
+                        this.y < fence.y + fence.height &&
+                        this.y + this.height > fence.y) {
+                        
+                        const overlapX = Math.min(
+                            Math.abs(this.x + this.width - fence.x),
+                            Math.abs(fence.x + fence.width - this.x)
+                        );
+                        const overlapY = Math.min(
+                            Math.abs(this.y + this.height - fence.y),
+                            Math.abs(fence.y + fence.height - this.y)
+                        );
+
+                        if (overlapX < overlapY) {
+                            if (this.vx > 0) {
+                                this.x = fence.x - this.width;
+                            } else {
+                                this.x = fence.x + fence.width;
+                            }
+                            this.vx = -this.vx * this.bounce;
+                        } else {
+                            if (this.vy > 0) {
+                                this.y = fence.y - this.height;
+                            } else {
+                                this.y = fence.y + fence.height;
+                            }
+                            this.vy = -this.vy * this.bounce;
+                        }
+                    }
+                });
+
+                // Çimenlerde sürtünme artar
+                let onGrass = false;
+                grass.forEach(g => {
+                    if (this.x + this.width > g.x && 
+                        this.x < g.x + g.width &&
+                        this.y + this.height > g.y && 
+                        this.y + this.height < g.y + g.height) {
+                        onGrass = true;
+                    }
+                });
+
+                if (onGrass) {
+                    this.vx *= 0.9;
+                }
+            }
+
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, this.y, this.width, this.height);
+                ctx.strokeStyle = 'black';
+                ctx.strokeRect(this.x, this.y, this.width, this.height);
+            }
+        }
+
+        // Oyunu çiz
+        function draw() {
+            // Arka plan
+            ctx.fillStyle = 'skyblue';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Çimenleri çiz
+            grass.forEach(g => {
+                ctx.fillStyle = 'green';
+                ctx.fillRect(g.x, g.y, g.width, g.height);
+            });
+
+            // Çitleri çiz
+            fences.forEach(fence => {
+                ctx.fillStyle = 'blue';
+                ctx.fillRect(fence.x, fence.y, fence.width, fence.height);
+            });
+
+            // Duvarları çiz
+            walls.forEach(wall => {
+                ctx.fillStyle = 'black';
+                ctx.fillRect(wall.x, wall.y, wall.width, wall.height);
+            });
+
+            // Kutuları çiz
+            boxes.forEach(box => {
+                box.draw();
+            });
+        }
+
+        // Oyun güncelleme
+        function update() {
+            // Kutuları güncelle
+            boxes.forEach((box, index) => {
+                box.update();
+
+                // Ekran dışına çıkan kutuları kaldır
+                if (box.y > canvas.height + 100) {
+                    boxes.splice(index, 1);
+                }
+            });
+
+            draw();
+            requestAnimationFrame(update);
+        }
+
+        // Fırlatma işlemi
+        function throwBox(x, y, power) {
+            const throwX = 50; // Fırlatıcı konumu
+            const throwY = canvas.height - boxSize - 20;
+            
+            const angle = Math.atan2(y - throwY, x - throwX);
+            const force = power / 10;
+            
+            const newBox = new Box(throwX, throwY, nextBoxColor);
+            newBox.vx = Math.cos(angle) * force;
+            newBox.vy = Math.sin(angle) * force;
+            
+            boxes.push(newBox);
+            
+            // Yeni kutu rengini ayarla
+            nextBoxColor = getRandomColor();
+            nextSquare.style.backgroundColor = nextBoxColor;
+        }
+
+        // Olay dinleyicileri
+        canvas.addEventListener('mousedown', (e) => {
+            if (isMobile) return;
+            
+            isCharging = true;
+            powerBarContainer.style.display = 'block';
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (!isCharging || isMobile) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+        });
+
+        canvas.addEventListener('mouseup', (e) => {
+            if (isMobile) return;
+            
+            if (isCharging) {
+                isCharging = false;
+                powerBarContainer.style.display = 'none';
+                
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+                
+                throwBox(mouseX, mouseY, power);
+                power = 0;
+                powerBar.style.height = '0';
+            }
+        });
+
+        // Mobil kontroller
+        let touchStartTime = 0;
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            touchStartTime = Date.now();
+            isCharging = true;
+            powerBarContainer.style.display = 'block';
+        });
+
+        canvas.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+        });
+
+        canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            if (isCharging) {
+                isCharging = false;
+                powerBarContainer.style.display = 'none';
+                
+                const touch = e.changedTouches[0];
+                const rect = canvas.getBoundingClientRect();
+                const touchX = touch.clientX - rect.left;
+                const touchY = touch.clientY - rect.top;
+                
+                throwBox(touchX, touchY, power);
+                power = 0;
+                powerBar.style.height = '0';
+            }
+        });
+
+        throwButton.addEventListener('click', () => {
+            if (!isMobile) return;
+            
+            // Mobilde rastgele bir yöne fırlat
+            const angle = Math.random() * Math.PI * 0.6 + Math.PI * 0.2; // 30-150 derece arası
+            const force = maxPower;
+            
+            const newBox = new Box(50, canvas.height - boxSize - 20, nextBoxColor);
+            newBox.vx = Math.cos(angle) * (force / 10);
+            newBox.vy = Math.sin(angle) * (force / 10);
+            
+            boxes.push(newBox);
+            
+            // Yeni kutu rengini ayarla
+            nextBoxColor = getRandomColor();
+            nextSquare.style.backgroundColor = nextBoxColor;
+        });
+
+        // Güç çubuğunu güncelle
+        function updatePowerBar() {
+            if (isCharging) {
+                power = Math.min(power + chargeSpeed, maxPower);
+                powerBar.style.height = `${(power / maxPower) * 100}%`;
+            }
+        }
+
+        // Oyun döngüsü
+        function gameLoop() {
+            updatePowerBar();
+            setTimeout(gameLoop, 1000/60);
+        }
+
+        // Oyunu başlat
+        createEnvironment();
+        nextSquare.style.backgroundColor = nextBoxColor;
+        update();
+        gameLoop();
+    </script>
 </body>
 </html>
