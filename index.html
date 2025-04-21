@@ -3,28 +3,43 @@
 <head>
   <meta charset="UTF-8">
   <title>Mesajlaşma Uygulaması</title>
-  <style>
-    body { font-family: Arial; }
-    #chat { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll; }
-    #messageInput { width: 80%; }
-  </style>
 </head>
 <body>
-  <h1>Hoş Geldin</h1>
-  <div id="chat"></div>
-  <input type="text" id="messageInput" placeholder="Mesaj yaz...">
-  <button onclick="sendMessage()">Gönder</button>
+  <h2>Kayıt Ol</h2>
+  <input id="regUser" placeholder="Kullanıcı Adı">
+  <input id="regPass" placeholder="Şifre" type="password">
+  <button onclick="register()">Kayıt Ol</button>
+
+  <h2>Giriş Yap</h2>
+  <input id="loginUser" placeholder="Kullanıcı Adı">
+  <input id="loginPass" placeholder="Şifre" type="password">
+  <button onclick="login()">Giriş Yap</button>
 
   <script>
-    const chat = document.getElementById("chat");
-    function sendMessage() {
-      const input = document.getElementById("messageInput");
-      const msg = input.value;
-      if (msg.trim() !== "") {
-        const p = document.createElement("p");
-        p.textContent = "Sen: " + msg;
-        chat.appendChild(p);
-        input.value = "";
+    async function register() {
+      const username = document.getElementById("regUser").value;
+      const password = document.getElementById("regPass").value;
+      const res = await fetch('/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await res.json();
+      alert(data.message);
+    }
+
+    async function login() {
+      const username = document.getElementById("loginUser").value;
+      const password = document.getElementById("loginPass").value;
+      const res = await fetch('/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await res.json();
+      alert(data.message);
+      if (res.ok) {
+        // Başarılı girişten sonra yönlendirme yapılabilir
       }
     }
   </script>
