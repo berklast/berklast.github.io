@@ -2,11 +2,31 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Benim İlk Sitem</title>
+  <title>Mesajlaşma Uygulaması</title>
+  <style>
+    body { font-family: Arial; }
+    #chat { border: 1px solid #ccc; padding: 10px; height: 300px; overflow-y: scroll; }
+    #messageInput { width: 80%; }
+  </style>
 </head>
 <body>
-  <h1>Merhaba Dünya!</h1>
-  <p>Bu, Render &amp; GitHub ile yayınladığım basit bir site.</p>
+  <h1>Hoş Geldin</h1>
+  <div id="chat"></div>
+  <input type="text" id="messageInput" placeholder="Mesaj yaz...">
+  <button onclick="sendMessage()">Gönder</button>
+
+  <script>
+    const chat = document.getElementById("chat");
+    function sendMessage() {
+      const input = document.getElementById("messageInput");
+      const msg = input.value;
+      if (msg.trim() !== "") {
+        const p = document.createElement("p");
+        p.textContent = "Sen: " + msg;
+        chat.appendChild(p);
+        input.value = "";
+      }
+    }
+  </script>
 </body>
 </html>
