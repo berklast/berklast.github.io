@@ -2,99 +2,84 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Galaksi Savaşları</title>
     <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            font-family: 'Arial', sans-serif;
-            background: url('https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
-            background-size: cover;
-            color: white;
-        }
-        #login-screen {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 20px;
-            border-radius: 10px;
-        }
-        #game-container {
-            display: none;
-        }
-        #players-count {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 10px;
-            border-radius: 5px;
-        }
-        #game-canvas {
-            display: block;
-            margin: 0 auto;
-            background: black;
-        }
-        #market-button, #start-button {
-            position: absolute;
-            bottom: 20px;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        #market-button {
-            left: 20px;
-            background: #4CAF50;
-        }
-        #start-button {
-            right: 20px;
-            background: #f44336;
-        }
-        #market {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.9);
-            padding: 20px;
-            border-radius: 10px;
-            display: none;
-            z-index: 100;
-        }
-        .item {
-            margin: 10px;
-            padding: 10px;
-            background: #333;
-            cursor: pointer;
-        }
+        body { margin: 0; overflow: hidden; font-family: Arial; background: #000; color: white; }
+        #login-screen { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
+        #game-container { display: none; }
+        canvas { background: black; }
     </style>
 </head>
 <body>
     <div id="login-screen">
         <h1>Galaksi Savaşları</h1>
-        <input type="text" id="player-name" placeholder="İsminizi girin" required>
-        <button onclick="startGame()">Oyuna Başla</button>
+        <input type="text" id="player-name" placeholder="İsminiz" required>
+        <button onclick="startGame()">Başla</button>
     </div>
 
     <div id="game-container">
-        <div id="players-count">Oyuncular: <span id="count">1</span></div>
         <canvas id="game-canvas" width="800" height="600"></canvas>
-        <button id="market-button" onclick="openMarket()">Market</button>
-        <button id="start-button" onclick="startRound()">Raunt Başlat</button>
+        <div id="players-count">Oyuncu: <span id="count">0</span></div>
     </div>
 
-    <div id="market">
-        <h2>Market</h2>
-        <div class="item" onclick="buyItem('shield', 50)">Kalkan (50 Gold)</div>
-        <div class="item" onclick="buyItem('weapon', 100)">Lazer Silahı (100 Gold)</div>
-        <div class="item" onclick="buyItem('health', 30)">Can Doldur (30 Gold)</div>
-        <button onclick="closeMarket()">Kapat</button>
-    </div>
+    <!-- Firebase ve Oyun JS -->
+    <script type="module">
+        // Firebase konfigürasyonunuz (SİZİNKİYLE DEĞİŞTİRİLDİ)
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-    <script src="game.js"></script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyD9DCF-8mJz-0NfBXnrYHfBawP1hNuXgKI",
+            authDomain: "space-battle-game-291c7.firebaseapp.com",
+            databaseURL: "https://space-battle-game-291c7-default-rtdb.firebaseio.com",
+            projectId: "space-battle-game-291c7",
+            storageBucket: "space-battle-game-291c7.appspot.com",
+            messagingSenderId: "973408760674",
+            appId: "1:973408760674:web:461f84c97f9b8a2793f23b"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Oyun Değişkenleri
+        let playerName = "";
+        const canvas = document.getElementById("game-canvas");
+        const ctx = canvas.getContext("2d");
+
+        // Oyun Başlatma
+        window.startGame = () => {
+            playerName = document.getElementById("player-name").value;
+            if (!playerName) return alert("İsim girin!");
+
+            document.getElementById("login-screen").style.display = "none";
+            document.getElementById("game-container").style.display = "block";
+
+            // Oyuncuyu Firebase'e ekle
+            set(ref(db, 'players/' + playerName), {
+                name: playerName,
+                x: 400,
+                y: 550,
+                health: 100
+            });
+
+            // Diğer oyuncuları dinle
+            onValue(ref(db, 'players'), (snapshot) => {
+                const players = snapshot.val();
+                document.getElementById("count").textContent = Object.keys(players || {}).length;
+                renderGame(players);
+            });
+        };
+
+        // Oyunu Renderla
+        function renderGame(players) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (const id in players) {
+                const player = players[id];
+                ctx.fillStyle = "blue";
+                ctx.fillRect(player.x, player.y, 50, 30);
+                ctx.fillText(player.name, player.x, player.y - 10);
+            }
+        }
+    </script>
 </body>
 </html>
