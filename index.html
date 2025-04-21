@@ -1,47 +1,143 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <title>Mesajlaşma Uygulaması</title>
+    <!-- HEADER VE STİL DÜZENLEMELERİ -->
+    <style>
+        /* RENK TEMASI GÜNCELLEMELERİ */
+        :root {
+            --primary-color: #3f51b5;
+            --secondary-color: #303f9f;
+            --danger-color: #ff5252;
+            --success-color: #4caf50;
+            --light-color: #f5f5f5;
+            --dark-color: #212121;
+            --gray-color: #757575;
+        }
+
+        /* YENİ GRADYAN VE GÖLGE EFEKTLERİ */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* ARKADAŞ LİSTESİ TASARIMI */
+        .friend-item {
+            transition: all 0.2s;
+            border: 1px solid #eee;
+        }
+
+        /* MESAJ KUTULARINDA ANİMASYON */
+        .message {
+            animation: messageFade 0.3s ease;
+            position: relative;
+        }
+
+        @keyframes messageFade {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* PROFİL RESMİ STİLLERİ */
+        .profile-pic {
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* YENİ YÜKLENEN KULLANICILAR İÇİN DÜZENLEME */
+        .user-item button {
+            transition: all 0.2s;
+        }
+
+        .user-item button:hover {
+            transform: scale(1.05);
+        }
+    </style>
 </head>
 <body>
-  <h2>Kayıt Ol</h2>
-  <input id="regUser" placeholder="Kullanıcı Adı">
-  <input id="regPass" placeholder="Şifre" type="password">
-  <button onclick="register()">Kayıt Ol</button>
+    <script>
+        // KULLANICI KAYIT PROBLEMİ DÜZELTMESİ
+        function register() {
+            // ... önceki kodlar ...
+            
+            // Profil resmi kaydetme hatası düzeltildi
+            const newUser = {
+                ... // diğer alanlar
+                profilePic: profilePicBase64,
+                friends: [],
+                friendRequests: [],
+                messages: {},
+                lastChattedWith: null
+            };
 
-  <h2>Giriş Yap</h2>
-  <input id="loginUser" placeholder="Kullanıcı Adı">
-  <input id="loginPass" placeholder="Şifre" type="password">
-  <button onclick="login()">Giriş Yap</button>
+            // Kullanıcıları güncellerken referans problemi düzeltildi
+            const updatedUsers = [...users, newUser];
+            localStorage.setItem('users', JSON.stringify(updatedUsers));
+            users = updatedUsers;
+        }
 
-  <script>
-    async function register() {
-      const username = document.getElementById("regUser").value;
-      const password = document.getElementById("regPass").value;
-      const res = await fetch('/register', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-      });
-      const data = await res.json();
-      alert(data.message);
-    }
+        // ARKADAŞ LİSTELEME DÜZELTMESİ
+        function showAllUsers() {
+            const currentUsername = currentUser.username.toLowerCase();
+            const filteredUsers = users.filter(user => 
+                user.username.toLowerCase() !== currentUsername &&
+                !currentUser.friends.some(f => f.toLowerCase() === user.username.toLowerCase())
+            );
+            // ... görüntüleme kodları ...
+        }
 
-    async function login() {
-      const username = document.getElementById("loginUser").value;
-      const password = document.getElementById("loginPass").value;
-      const res = await fetch('/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password })
-      });
-      const data = await res.json();
-      alert(data.message);
-      if (res.ok) {
-        // Başarılı girişten sonra yönlendirme yapılabilir
-      }
-    }
-  </script>
+        // PROFİL RESMİ GÖSTERİM DÜZELTMESİ
+        function loadFriendsList() {
+            currentUser.friends.forEach(friendUsername => {
+                const friend = users.find(u => u.username === friendUsername);
+                if (friend) {
+                    // Profil resmi gösterimi düzeltildi
+                    if (friend.profilePic) {
+                        friendElement.style.backgroundImage = `url(${friend.profilePic})`;
+                        friendElement.style.backgroundSize = 'cover';
+                    }
+                }
+            });
+        }
+
+        // ARKADAŞLIK İSTEK SİSTEMİ DÜZELTMESİ
+        function acceptFriendRequest(requesterUsername) {
+            const requester = users.find(u => u.username === requesterUsername);
+            const currentUserIndex = users.findIndex(u => u.username === currentUser.username);
+
+            if (requester && currentUserIndex !== -1) {
+                // Çift yönlü arkadaş ekleme
+                users[currentUserIndex].friends.push(requesterUsername);
+                requester.friends.push(currentUser.username);
+                
+                // İstek listesinden kaldırma
+                users[currentUserIndex].friendRequests = 
+                    users[currentUserIndex].friendRequests.filter(u => u !== requesterUsername);
+
+                localStorage.setItem('users', JSON.stringify(users));
+                loadFriendsList();
+                loadFriendRequests();
+            }
+        }
+
+        // MESAJLAŞMA SİSTEMİ İYİLEŞTİRMELERİ
+        function openChat(friendUsername) {
+            // Mesaj geçmişi sıralama eklendi
+            const messages = currentUser.messages[friendUsername]?.sort((a, b) => 
+                new Date(a.date) - new Date(b.date)
+            );
+            
+            // Zaman damgası eklendi
+            messages.forEach(msg => {
+                const time = new Date(msg.date).toLocaleTimeString('tr-TR', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+                messageDiv.innerHTML = `
+                    <div>${msg.text}</div>
+                    <div class="message-time">${time}</div>
+                `;
+            });
+        }
+    </script>
 </body>
 </html>
