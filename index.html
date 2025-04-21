@@ -185,6 +185,11 @@
             border-radius: 6px;
             margin-top: 10px;
             display: none;
+            position: absolute;
+            width: 280px;
+            background: white;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
         .user-item {
             display: flex;
@@ -194,6 +199,9 @@
         }
         .user-item:hover {
             background-color: #f5f5f5;
+        }
+        .user-list-container {
+            position: relative;
         }
         @media (max-width: 768px) {
             .dashboard {
@@ -274,8 +282,10 @@
                 <div class="dashboard">
                     <div class="sidebar">
                         <h3>Arkadaşlar</h3>
-                        <button onclick="showAllUsers()" class="btn btn-primary">Arkadaş Ekle</button>
-                        <div id="allUsersList" class="user-list"></div>
+                        <div class="user-list-container">
+                            <button onclick="showAllUsers()" class="btn btn-primary">Arkadaş Ekle</button>
+                            <div id="allUsersList" class="user-list"></div>
+                        </div>
                         
                         <h3 style="margin-top: 20px;">Arkadaş İstekleri</h3>
                         <div id="friendRequestsList"></div>
@@ -354,6 +364,13 @@
             
             document.getElementById('settingsProfilePicUpload').addEventListener('change', function(e) {
                 handleImageUpload(e, 'settingsProfilePicPreview');
+            });
+
+            // Dışarı tıklandığında kullanıcı listesini kapat
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.user-list-container')) {
+                    document.getElementById('allUsersList').style.display = 'none';
+                }
             });
         });
 
@@ -555,10 +572,13 @@
             container.innerHTML = '';
             
             // Mevcut kullanıcı ve arkadaşları hariç tüm kullanıcıları listele
-            const filteredUsers = users.filter(user => 
-                user.username !== currentUser.username &&
-                !currentUser.friends.includes(user.username)
-            );
+            const currentUsername = currentUser.username.toLowerCase();
+            const friendUsernames = currentUser.friends.map(f => f.toLowerCase());
+            
+            const filteredUsers = users.filter(user => {
+                const username = user.username.toLowerCase();
+                return username !== currentUsername && !friendUsernames.includes(username);
+            });
             
             if (filteredUsers.length === 0) {
                 container.innerHTML = '<div class="user-item">Eklenebilecek kullanıcı yok</div>';
@@ -567,33 +587,21 @@
                     const userElement = document.createElement('div');
                     userElement.className = 'user-item';
                     
-                    if (user.profilePic) {
-                        userElement.innerHTML = `
-                            <div style="background-image: url(${user.profilePic}); 
-                                width: 30px; height: 30px; border-radius: 50%; 
-                                background-size: cover; margin-right: 10px;"></div>
-                            <span>${user.username}</span>
-                            <button onclick="sendFriendRequest('${user.username}')" 
-                                style="margin-left: auto; background: var(--primary-color); 
-                                color: white; border: none; border-radius: 4px; padding: 5px 10px;">
-                                İstek Gönder
-                            </button>
-                        `;
-                    } else {
-                        userElement.innerHTML = `
-                            <div style="width: 30px; height: 30px; border-radius: 50%; 
-                                background-color: #ddd; margin-right: 10px; 
-                                display: flex; align-items: center; justify-content: center;">
-                                <i class="fas fa-user" style="font-size: 12px; color: #777;"></i>
-                            </div>
-                            <span>${user.username}</span>
-                            <button onclick="sendFriendRequest('${user.username}')" 
-                                style="margin-left: auto; background: var(--primary-color); 
-                                color: white; border: none; border-radius: 4px; padding: 5px 10px;">
-                                İstek Gönder
-                            </button>
-                        `;
-                    }
+                    const profilePicHTML = user.profilePic 
+                        ? `<div style="background-image: url(${user.profilePic}); width: 30px; height: 30px; border-radius: 50%; background-size: cover; margin-right: 10px;"></div>`
+                        : `<div style="width: 30px; height: 30px; border-radius: 50%; background-color: #ddd; margin-right: 10px; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-user" style="font-size: 12px; color: #777;"></i>
+                           </div>`;
+                    
+                    userElement.innerHTML = `
+                        ${profilePicHTML}
+                        <span>${user.username}</span>
+                        <button onclick="sendFriendRequest('${user.username}')" 
+                            style="margin-left: auto; background: var(--primary-color); 
+                            color: white; border: none; border-radius: 4px; padding: 5px 10px;">
+                            İstek Gönder
+                        </button>
+                    `;
                     
                     container.appendChild(userElement);
                 });
@@ -617,12 +625,12 @@
 
             const friend = users[friendIndex];
             
-            if (currentUser.friends.includes(friend.username)) {
+            if (currentUser.friends.some(f => f.toLowerCase() === friendUsername.toLowerCase())) {
                 alert("Bu kullanıcı zaten arkadaşınız!");
                 return;
             }
             
-            if (friend.friendRequests.includes(currentUser.username)) {
+            if (friend.friendRequests.some(req => req.toLowerCase() === currentUser.username.toLowerCase())) {
                 alert("Bu kullanıcıya zaten istek gönderdiniz!");
                 return;
             }
@@ -645,47 +653,28 @@
                         const requestElement = document.createElement('div');
                         requestElement.className = 'friend-item';
                         
-                        if (requester.profilePic) {
-                            requestElement.innerHTML = `
-                                <div style="background-image: url(${requester.profilePic}); 
-                                    width: 30px; height: 30px; border-radius: 50%; 
-                                    background-size: cover; margin-right: 10px;"></div>
-                                <span>${requester.username}</span>
-                                <div style="margin-left: auto;">
-                                    <button onclick="acceptFriendRequest('${requester.username}')" 
-                                        style="background: var(--success-color); color: white; border: none; 
-                                        border-radius: 4px; padding: 5px 10px; margin-right: 5px;">
-                                        Kabul
-                                    </button>
-                                    <button onclick="rejectFriendRequest('${requester.username}')" 
-                                        style="background: var(--danger-color); color: white; border: none; 
-                                        border-radius: 4px; padding: 5px 10px;">
-                                        Reddet
-                                    </button>
-                                </div>
-                            `;
-                        } else {
-                            requestElement.innerHTML = `
-                                <div style="width: 30px; height: 30px; border-radius: 50%; 
-                                    background-color: #ddd; margin-right: 10px; 
-                                    display: flex; align-items: center; justify-content: center;">
-                                    <i class="fas fa-user" style="font-size: 12px; color: #777;"></i>
-                                </div>
-                                <span>${requester.username}</span>
-                                <div style="margin-left: auto;">
-                                    <button onclick="acceptFriendRequest('${requester.username}')" 
-                                        style="background: var(--success-color); color: white; border: none; 
-                                        border-radius: 4px; padding: 5px 10px; margin-right: 5px;">
-                                        Kabul
-                                    </button>
-                                    <button onclick="rejectFriendRequest('${requester.username}')" 
-                                        style="background: var(--danger-color); color: white; border: none; 
-                                        border-radius: 4px; padding: 5px 10px;">
-                                        Reddet
-                                    </button>
-                                </div>
-                            `;
-                        }
+                        const profilePicHTML = requester.profilePic 
+                            ? `<div style="background-image: url(${requester.profilePic}); width: 30px; height: 30px; border-radius: 50%; background-size: cover; margin-right: 10px;"></div>`
+                            : `<div style="width: 30px; height: 30px; border-radius: 50%; background-color: #ddd; margin-right: 10px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-user" style="font-size: 12px; color: #777;"></i>
+                               </div>`;
+                        
+                        requestElement.innerHTML = `
+                            ${profilePicHTML}
+                            <span>${requester.username}</span>
+                            <div style="margin-left: auto;">
+                                <button onclick="acceptFriendRequest('${requester.username}')" 
+                                    style="background: var(--success-color); color: white; border: none; 
+                                    border-radius: 4px; padding: 5px 10px; margin-right: 5px;">
+                                    Kabul
+                                </button>
+                                <button onclick="rejectFriendRequest('${requester.username}')" 
+                                    style="background: var(--danger-color); color: white; border: none; 
+                                    border-radius: 4px; padding: 5px 10px;">
+                                    Reddet
+                                </button>
+                            </div>
+                        `;
                         
                         container.appendChild(requestElement);
                     }
@@ -703,15 +692,15 @@
                 const requester = users[requesterIndex];
                 const me = users[currentUserIndex];
 
-                if (!me.friends.includes(requesterUsername)) {
+                if (!me.friends.some(f => f.toLowerCase() === requesterUsername.toLowerCase())) {
                     me.friends.push(requesterUsername);
                 }
 
-                if (!requester.friends.includes(currentUser.username)) {
+                if (!requester.friends.some(f => f.toLowerCase() === currentUser.username.toLowerCase())) {
                     requester.friends.push(currentUser.username);
                 }
 
-                me.friendRequests = me.friendRequests.filter(u => u !== requesterUsername);
+                me.friendRequests = me.friendRequests.filter(u => u.toLowerCase() !== requesterUsername.toLowerCase());
 
                 localStorage.setItem('users', JSON.stringify(users));
                 currentUser = me;
@@ -724,7 +713,7 @@
         }
 
         function rejectFriendRequest(username) {
-            currentUser.friendRequests = currentUser.friendRequests.filter(u => u !== username);
+            currentUser.friendRequests = currentUser.friendRequests.filter(u => u.toLowerCase() !== username.toLowerCase());
             localStorage.setItem('users', JSON.stringify(users));
             loadFriendRequests();
         }
@@ -741,23 +730,16 @@
                         friendElement.className = 'friend-item';
                         friendElement.onclick = () => openChat(friend.username);
                         
-                        if (friend.profilePic) {
-                            friendElement.innerHTML = `
-                                <div style="background-image: url(${friend.profilePic}); 
-                                    width: 30px; height: 30px; border-radius: 50%; 
-                                    background-size: cover; margin-right: 10px;"></div>
-                                ${friend.username}
-                            `;
-                        } else {
-                            friendElement.innerHTML = `
-                                <div style="width: 30px; height: 30px; border-radius: 50%; 
-                                    background-color: #ddd; margin-right: 10px; 
-                                    display: flex; align-items: center; justify-content: center;">
-                                    <i class="fas fa-user" style="font-size: 12px; color: #777;"></i>
-                                </div>
-                                ${friend.username}
-                            `;
-                        }
+                        const profilePicHTML = friend.profilePic 
+                            ? `<div style="background-image: url(${friend.profilePic}); width: 30px; height: 30px; border-radius: 50%; background-size: cover; margin-right: 10px;"></div>`
+                            : `<div style="width: 30px; height: 30px; border-radius: 50%; background-color: #ddd; margin-right: 10px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-user" style="font-size: 12px; color: #777;"></i>
+                               </div>`;
+                        
+                        friendElement.innerHTML = `
+                            ${profilePicHTML}
+                            ${friend.username}
+                        `;
                         
                         container.appendChild(friendElement);
                     }
