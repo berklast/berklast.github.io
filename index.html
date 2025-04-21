@@ -28,24 +28,11 @@
             overflow: hidden;
             background: radial-gradient(ellipse at center, #000000 0%, #000033 100%);
         }
-        .flying-ship {
-            position: absolute;
-            width: 150px;
-            height: 50px;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 50"><path d="M10 25 L40 5 L140 25 L40 45 Z" fill="%2300ffff"/></svg>') no-repeat;
-            animation: fly 15s linear infinite;
-            opacity: 0.6;
-            filter: drop-shadow(0 0 5px #00ffff);
-        }
         .star {
             position: absolute;
             background: white;
             border-radius: 50%;
             animation: twinkle 5s infinite alternate;
-        }
-        @keyframes fly {
-            0% { transform: translateX(-200px) translateY(100px); }
-            100% { transform: translateX(calc(100vw + 200px)) translateY(-100px); }
         }
         @keyframes twinkle {
             0% { opacity: 0.3; }
@@ -293,7 +280,6 @@
 
         function initGame() {
             // MENÜ ARKAPLANINI AYARLA
-            createFlyingShips();
             createStars();
             
             // EVENT LİSTENERS
@@ -677,10 +663,16 @@
                 
                 // Oyuncuya doğru ateş et
                 if (Date.now() - enemy.lastShot > 1500) {
+                    const angle = Math.atan2(
+                        gameState.playerY - enemy.y,
+                        gameState.playerX - enemy.x
+                    );
+                    
                     gameState.enemyBullets.push({
                         x: enemy.x,
                         y: enemy.y + 30,
-                        speed: ENEMY_BULLET_SPEED,
+                        speedX: Math.cos(angle) * ENEMY_BULLET_SPEED,
+                        speedY: Math.sin(angle) * ENEMY_BULLET_SPEED,
                         damage: 5
                     });
                     
@@ -830,19 +822,6 @@
         }
 
         // YARDIMCI FONKSİYONLAR
-        function createFlyingShips() {
-            const bg = document.getElementById("menu-bg");
-            for (let i = 0; i < 5; i++) {
-                const ship = document.createElement("div");
-                ship.className = "flying-ship";
-                ship.style.left = Math.random() * 100 + "vw";
-                ship.style.top = Math.random() * 100 + "vh";
-                ship.style.animationDuration = (10 + Math.random() * 20) + "s";
-                ship.style.animationDelay = (Math.random() * 10) + "s";
-                bg.appendChild(ship);
-            }
-        }
-
         function createStars() {
             const bg = document.getElementById("menu-bg");
             for (let i = 0; i < 100; i++) {
