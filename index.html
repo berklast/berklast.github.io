@@ -5,122 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Galaksi Savaşları</title>
     <style>
-        /* MÜKEMMEL ARAYÜZ STİLLERİ */
         body {
             margin: 0;
             overflow: hidden;
             font-family: 'Orbitron', sans-serif;
-            background: url('https://images.unsplash.com/photo-1506318137071-a8e063b4bec0?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
-            background-size: cover;
-            color: #00fffc;
-            text-shadow: 0 0 10px #00fffc;
+            background: #000;
+            color: #0ff;
+            text-shadow: 0 0 5px #0ff;
         }
-
         #login-screen {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 20, 0.8);
             padding: 30px;
-            border-radius: 15px;
-            border: 2px solid #00fffc;
-            box-shadow: 0 0 20px #00fffc;
+            border: 2px solid #0ff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px #0ff;
         }
-
         #game-container {
             display: none;
-            position: relative;
-            width: 100vw;
-            height: 100vh;
         }
-
-        #game-canvas {
+        canvas {
             display: block;
             margin: 0 auto;
-            background: rgba(0, 0, 0, 0.7);
-            border: 2px solid #00fffc;
-            box-shadow: 0 0 30px #00fffc;
+            background: #000;
         }
-
-        #ui-overlay {
+        #ui {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            padding: 20px;
-            display: flex;
-            justify-content: space-between;
+            top: 10px;
+            left: 10px;
+            color: #0ff;
         }
-
-        .ui-panel {
-            background: rgba(0, 0, 0, 0.6);
-            padding: 15px;
-            border-radius: 10px;
-            border: 1px solid #00fffc;
-        }
-
-        #login-button {
-            background: linear-gradient(45deg, #0066ff, #00fffc);
-            border: none;
-            padding: 12px 30px;
-            font-size: 18px;
-            cursor: pointer;
-            border-radius: 50px;
-            margin-top: 20px;
-            transition: all 0.3s;
-        }
-
-        #login-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 20px #00fffc;
-        }
-
-        #player-name {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid #00fffc;
-            color: white;
-            padding: 12px;
-            font-size: 16px;
-            margin-top: 15px;
-            width: 80%;
+        input, button {
+            background: rgba(0, 0, 30, 0.7);
+            color: #0ff;
+            border: 1px solid #0ff;
+            padding: 10px;
+            margin: 5px;
         }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- GİRİŞ EKRANI -->
     <div id="login-screen">
         <h1>GALAKSİ SAVAŞLARI</h1>
-        <p>Uzayda zafer seni bekliyor!</p>
-        <input type="text" id="player-name" placeholder="Pilot Adınız" required>
-        <button id="login-button" onclick="startGame()">SAVAŞA BAŞLA</button>
+        <input type="text" id="player-name" placeholder="Pilot Adı" required>
+        <button onclick="startGame()">SAVAŞA BAŞLA</button>
     </div>
 
-    <!-- OYUN ALANI -->
     <div id="game-container">
-        <canvas id="game-canvas" width="1000" height="700"></canvas>
-        
-        <!-- OYUN ARAYÜZÜ -->
-        <div id="ui-overlay">
-            <div class="ui-panel">
-                <h2>PİLOT: <span id="display-name">-</span></h2>
-                <p>SAĞLIK: <span id="health">100</span></p>
-                <p>GOLD: <span id="gold">0</span></p>
-            </div>
-            
-            <div class="ui-panel">
-                <h2>RAUNT: <span id="round">1</span></h2>
-                <p>OYUNCULAR: <span id="players-count">1</span></p>
-                <p>DÜŞMANLAR: <span id="enemies-count">0</span></p>
-            </div>
+        <canvas id="game-canvas" width="800" height="600"></canvas>
+        <div id="ui">
+            <div>SAĞLIK: <span id="health">100</span></div>
+            <div>GOLD: <span id="gold">0</span></div>
+            <div>RAUNT: <span id="round">1</span></div>
         </div>
     </div>
 
-    <!-- FIREBASE VE OYUN KODU -->
     <script type="module">
-        // FIREBASE KONFİGÜRASYONU (SİZİNKİYLE AYNI)
+        // FIREBASE KONFİG (SİZİNKİ)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
@@ -141,125 +87,156 @@
         const canvas = document.getElementById("game-canvas");
         const ctx = canvas.getContext("2d");
         let playerName = "";
-        let players = {};
+        let player = { x: 400, y: 500, health: 100, gold: 0 };
         let enemies = [];
-        let gameActive = false;
+        let bullets = [];
+        let lastShot = 0;
+        let round = 1;
+
+        // RESİMLER
+        const playerImg = new Image();
+        playerImg.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"><polygon points="25,0 10,50 40,50" fill="%2300ffff"/></svg>';
+        
+        const enemyImg = new Image();
+        enemyImg.src = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"><polygon points="25,50 10,0 40,0" fill="%23ff0000"/></svg>';
 
         // OYUN BAŞLATMA
-        window.startGame = async () => {
-            playerName = document.getElementById("player-name").value.trim();
-            if (!playerName) {
-                alert("Lütfen bir pilot adı girin!");
-                return;
-            }
-
+        window.startGame = () => {
+            playerName = document.getElementById("player-name").value;
+            if (!playerName) return alert("Pilot adı gerekli!");
+            
             document.getElementById("login-screen").style.display = "none";
             document.getElementById("game-container").style.display = "block";
-            document.getElementById("display-name").textContent = playerName;
-
-            // Oyuncuyu Firebase'e ekle
-            await set(ref(db, `players/${playerName}`), {
-                name: playerName,
-                health: 100,
-                gold: 0,
-                kills: 0,
-                x: Math.floor(canvas.width / 2),
-                y: canvas.height - 100
-            });
-
-            // Diğer oyuncuları dinle
-            onValue(ref(db, 'players'), (snapshot) => {
-                players = snapshot.val() || {};
-                document.getElementById("players-count").textContent = Object.keys(players).length;
-                renderPlayers();
-            });
-
+            
+            // Firebase'e oyuncu ekle
+            set(ref(db, `players/${playerName}`), player);
+            
             // Oyun döngüsünü başlat
-            gameActive = true;
             gameLoop();
+            spawnEnemies();
         };
+
+        // DÜŞMAN ÜRETME
+        function spawnEnemies() {
+            for (let i = 0; i < round * 2; i++) {
+                enemies.push({
+                    x: Math.random() * (canvas.width - 40) + 20,
+                    y: Math.random() * 200 + 20,
+                    speed: Math.random() * 2 + 1,
+                    health: 30 + round * 10
+                });
+            }
+        }
 
         // OYUN DÖNGÜSÜ
         function gameLoop() {
-            if (!gameActive) return;
-
-            // Temizle ve arkaplanı çiz
+            // TEMİZLE
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            drawBackground();
             
-            // Oyun elemanlarını renderla
-            renderPlayers();
-            renderEnemies();
+            // ARKAPLAN (YILDIZLAR)
+            drawStars();
+            
+            // OYUNCU GEMİSİ
+            ctx.drawImage(playerImg, player.x - 25, player.y - 25, 50, 50);
+            
+            // DÜŞMANLAR
+            enemies.forEach((enemy, index) => {
+                enemy.y += enemy.speed;
+                ctx.drawImage(enemyImg, enemy.x - 20, enemy.y - 20, 40, 40);
+                
+                // ÇARPIŞMA KONTROLÜ
+                if (Math.abs(player.x - enemy.x) < 30 && Math.abs(player.y - enemy.y) < 30) {
+                    player.health -= 10;
+                    enemies.splice(index, 1);
+                }
+                
+                // DÜŞMAN AŞAĞIYA ULAŞTI
+                if (enemy.y > canvas.height) {
+                    enemies.splice(index, 1);
+                    player.gold += 5;
+                    document.getElementById("gold").textContent = player.gold;
+                }
+            });
+            
+            // Mermiler
+            bullets.forEach((bullet, index) => {
+                bullet.y -= 5;
+                ctx.fillStyle = "#ffff00";
+                ctx.fillRect(bullet.x - 2, bullet.y - 10, 4, 10);
+                
+                // Mermi düşmana çarptı
+                enemies.forEach((enemy, eIndex) => {
+                    if (Math.abs(bullet.x - enemy.x) < 20 && Math.abs(bullet.y - enemy.y) < 20) {
+                        enemy.health -= 10;
+                        bullets.splice(index, 1);
+                        
+                        if (enemy.health <= 0) {
+                            enemies.splice(eIndex, 1);
+                            player.gold += 20;
+                            document.getElementById("gold").textContent = player.gold;
+                        }
+                    }
+                });
+                
+                // Mermi ekran dışına çıktı
+                if (bullet.y < 0) {
+                    bullets.splice(index, 1);
+                }
+            });
+            
+            // UI GÜNCELLEME
+            document.getElementById("health").textContent = player.health;
+            
+            // OYUN BİTTİ Mİ?
+            if (player.health <= 0) {
+                alert("Oyun bitti! Gold: " + player.gold);
+                location.reload();
+            }
+            
+            // RAUNT BİTTİ Mİ?
+            if (enemies.length === 0) {
+                round++;
+                document.getElementById("round").textContent = round;
+                spawnEnemies();
+            }
             
             requestAnimationFrame(gameLoop);
         }
 
-        // OYUNCULARI RENDERLA
-        function renderPlayers() {
-            for (const id in players) {
-                const player = players[id];
-                ctx.fillStyle = id === playerName ? "#0066ff" : "#ff00aa";
-                ctx.fillRect(player.x - 25, player.y - 25, 50, 50);
-                
-                // Oyuncu adını yaz
-                ctx.fillStyle = "white";
-                ctx.font = "12px Orbitron";
-                ctx.fillText(player.name, player.x - 25, player.y - 30);
-            }
-        }
-
-        // DÜŞMANLARI RENDERLA
-        function renderEnemies() {
-            enemies.forEach(enemy => {
-                ctx.fillStyle = "#ff0000";
-                ctx.beginPath();
-                ctx.arc(enemy.x, enemy.y, 20, 0, Math.PI * 2);
-                ctx.fill();
-            });
-        }
-
-        // ARKAPLAN ÇİZİMİ
-        function drawBackground() {
-            // Yıldızlar
+        // YILDIZLARI ÇİZ
+        function drawStars() {
             ctx.fillStyle = "white";
             for (let i = 0; i < 100; i++) {
                 const x = Math.random() * canvas.width;
-                const y = Math.random() * canvas.height;
+                const y = (Math.random() * canvas.height + Date.now()/100) % canvas.height;
                 ctx.fillRect(x, y, 2, 2);
             }
-            
-            // Nebula efekti
-            const gradient = ctx.createRadialGradient(
-                canvas.width / 2, canvas.height / 2, 0,
-                canvas.width / 2, canvas.height / 2, canvas.width
-            );
-            gradient.addColorStop(0, "rgba(0, 20, 50, 0.1)");
-            gradient.addColorStop(1, "rgba(0, 0, 0, 0.8)");
-            ctx.fillStyle = gradient;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
 
         // KLAVYE KONTROLLERİ
         document.addEventListener("keydown", (e) => {
-            if (!players[playerName]) return;
-            
-            const playerRef = ref(db, `players/${playerName}`);
             const speed = 10;
-            
             switch(e.key) {
-                case "ArrowLeft":
-                    update(playerRef, { x: Math.max(25, players[playerName].x - speed) });
-                    break;
-                case "ArrowRight":
-                    update(playerRef, { x: Math.min(canvas.width - 25, players[playerName].x + speed) });
-                    break;
-                case "ArrowUp":
-                    update(playerRef, { y: Math.max(25, players[playerName].y - speed) });
-                    break;
-                case "ArrowDown":
-                    update(playerRef, { y: Math.min(canvas.height - 25, players[playerName].y + speed) });
+                case "ArrowLeft": player.x = Math.max(25, player.x - speed); break;
+                case "ArrowRight": player.x = Math.min(canvas.width - 25, player.x + speed); break;
+                case "ArrowUp": player.y = Math.max(25, player.y - speed); break;
+                case "ArrowDown": player.y = Math.min(canvas.height - 25, player.y + speed); break;
+                case " ":
+                    // Ateş etme (saniyede 5 mermi)
+                    if (Date.now() - lastShot > 200) {
+                        bullets.push({ x: player.x, y: player.y });
+                        lastShot = Date.now();
+                    }
                     break;
             }
+            
+            // Firebase'de konumu güncelle
+            update(ref(db, `players/${playerName}`), {
+                x: player.x,
+                y: player.y,
+                health: player.health,
+                gold: player.gold
+            });
         });
     </script>
 </body>
