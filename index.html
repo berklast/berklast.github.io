@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Galaktik Savaş</title>
     <style>
-        /* TÜM STİL DÜZENLEMELERİ */
         body {
             margin: 0;
             padding: 0;
@@ -49,11 +48,11 @@
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
-            background: rgba(0, 0, 50, 0.8);
+            background: rgba(0, 0, 50, 0.9);
             padding: 30px;
             border-radius: 15px;
             border: 2px solid #0ff;
-            box-shadow: 0 0 20px #0ff;
+            box-shadow: 0 0 30px #0ff;
             z-index: 100;
         }
         
@@ -72,45 +71,45 @@
         
         #start-btn:hover {
             transform: scale(1.05);
-            box-shadow: 0 0 15px #0ff;
+            box-shadow: 0 0 20px #0ff;
         }
         
         .background-ship {
             position: absolute;
-            width: 120px;
-            height: 60px;
-            background-image: url('background.png');
+            width: 150px;
+            height: 75px;
             background-size: contain;
             background-repeat: no-repeat;
-            animation: fly 20s linear infinite;
-            opacity: 0.6;
+            animation: fly 25s linear infinite;
+            opacity: 0.5;
             z-index: -1;
         }
         
         @keyframes fly {
-            0% { transform: translateX(-150px) translateY(100px) rotate(-10deg); }
-            100% { transform: translateX(calc(100vw + 150px)) translateY(-100px) rotate(10deg); }
+            0% { transform: translateX(-200px) translateY(100px) rotate(-5deg); }
+            100% { transform: translateX(calc(100vw + 200px)) translateY(-100px) rotate(5deg); }
         }
     </style>
 </head>
 <body>
     <div id="game-container">
         <!-- Arkaplan gemileri -->
-        <div class="background-ship" style="top: 20%; animation-delay: 0s;"></div>
-        <div class="background-ship" style="top: 40%; animation-delay: 5s;"></div>
-        <div class="background-ship" style="top: 70%; animation-delay: 10s;"></div>
+        <div class="background-ship" style="top: 20%; left: -200px; animation-delay: 0s;"></div>
+        <div class="background-ship" style="top: 40%; left: -200px; animation-delay: 8s;"></div>
+        <div class="background-ship" style="top: 70%; left: -200px; animation-delay: 15s;"></div>
         
         <canvas id="game-canvas"></canvas>
         
         <div id="ui">
             <div>Bölüm: <span id="level">1</span></div>
             <div>Sağlık: <span id="health">100</span></div>
-            <div>Düşman: <span id="enemies">10</span></div>
+            <div>Düşman: <span id="enemies">0</span></div>
             <div>Gold: <span id="gold">0</span></div>
+            <div>Mermi: <span id="ammo">30</span></div>
         </div>
         
         <div id="start-screen">
-            <h1 style="font-size: 3em; margin-bottom: 20px; color: #ff0;">GALAKTİK SAVAŞ</h1>
+            <h1 style="font-size: 3em; margin-bottom: 30px; color: #ff0; text-shadow: 0 0 10px #ff0;">GALAKTİK SAVAŞ</h1>
             <button id="start-btn">OYNA</button>
         </div>
     </div>
@@ -119,6 +118,24 @@
         // OYUN DEĞİŞKENLERİ
         const canvas = document.getElementById('game-canvas');
         const ctx = canvas.getContext('2d');
+        const uiElements = {
+            level: document.getElementById('level'),
+            health: document.getElementById('health'),
+            enemies: document.getElementById('enemies'),
+            gold: document.getElementById('gold'),
+            ammo: document.getElementById('ammo')
+        };
+        
+        // Resim yükleme kontrolü
+        let imagesLoaded = 0;
+        const totalImages = 4;
+        
+        function imageLoaded() {
+            imagesLoaded++;
+            if (imagesLoaded === totalImages) {
+                document.getElementById('start-btn').disabled = false;
+            }
+        }
         
         // Canvas boyutunu ayarla
         function resizeCanvas() {
@@ -126,16 +143,15 @@
             canvas.height = window.innerHeight;
             if (gameState.gameStarted) {
                 gameState.player.x = canvas.width / 2;
-                gameState.player.y = canvas.height - 100;
+                gameState.player.y = canvas.height - 120;
             }
         }
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
         
+        // OYUN DURUMU
         let gameState = {
             player: {
-                x: canvas.width / 2,
-                y: canvas.height - 100,
+                x: 0,
+                y: 0,
                 width: 60,
                 height: 60,
                 speed: 10,
@@ -158,37 +174,88 @@
             enemySpeed: 3,
             particles: [],
             boss: null,
-            bossActive: false
+            bossActive: false,
+            assets: {
+                player: new Image(),
+                enemy: new Image(),
+                boss: new Image(),
+                background: new Image()
+            }
         };
-
+        
         // RESİMLERİ YÜKLE
-        gameState.player.img.src = 'player_ship.png';
-        const enemyImg = new Image();
-        enemyImg.src = 'enemy_ship.png';
-        const bossImg = new Image();
-        bossImg.src = 'boss.png';
-
+        gameState.assets.player.src = 'player.png';
+        gameState.assets.player.onload = imageLoaded;
+        
+        gameState.assets.enemy.src = 'enemy.png';
+        gameState.assets.enemy.onload = imageLoaded;
+        
+        gameState.assets.boss.src = 'boss.png';
+        gameState.assets.boss.onload = imageLoaded;
+        
+        gameState.assets.background.src = 'background.png';
+        gameState.assets.background.onload = function() {
+            document.querySelectorAll('.background-ship').forEach(ship => {
+                ship.style.backgroundImage = `url('${this.src}')`;
+            });
+            imageLoaded();
+        };
+        
         // OYUNU BAŞLAT
         document.getElementById('start-btn').addEventListener('click', startGame);
-        document.addEventListener('keydown', (e) => gameState.keys[e.key] = true);
-        document.addEventListener('keyup', (e) => gameState.keys[e.key] = false);
-
+        document.addEventListener('keydown', keyDownHandler);
+        document.addEventListener('keyup', keyUpHandler);
+        window.addEventListener('resize', resizeCanvas);
+        
+        function keyDownHandler(e) {
+            gameState.keys[e.key] = true;
+        }
+        
+        function keyUpHandler(e) {
+            gameState.keys[e.key] = false;
+        }
+        
         function startGame() {
+            if (imagesLoaded < totalImages) return;
+            
             document.getElementById('start-screen').style.display = 'none';
+            resizeCanvas();
+            resetGame();
             gameState.gameStarted = true;
-            resetPlayer();
             spawnEnemies();
             gameLoop();
         }
-
-        function resetPlayer() {
-            gameState.player.health = gameState.player.maxHealth;
-            gameState.player.ammo = gameState.player.maxAmmo;
-            gameState.player.x = canvas.width / 2;
-            gameState.player.y = canvas.height - 100;
-            gameState.player.gold = 0;
+        
+        function resetGame() {
+            gameState.player = {
+                x: canvas.width / 2,
+                y: canvas.height - 120,
+                width: 60,
+                height: 60,
+                speed: 10,
+                health: 100,
+                maxHealth: 100,
+                img: gameState.assets.player,
+                lastShot: 0,
+                ammo: 30,
+                maxAmmo: 30,
+                gold: 0,
+                damage: 10
+            };
+            
+            gameState.enemies = [];
+            gameState.bullets = [];
+            gameState.enemyBullets = [];
+            gameState.level = 1;
+            gameState.enemiesCount = 10;
+            gameState.enemySpeed = 3;
+            gameState.particles = [];
+            gameState.boss = null;
+            gameState.bossActive = false;
+            
+            updateUI();
         }
-
+        
         function spawnEnemies() {
             gameState.enemies = [];
             const enemySize = Math.min(canvas.width / 15, 60);
@@ -213,9 +280,9 @@
             }
             updateUI();
         }
-
+        
         function spawnBoss() {
-            const bossSize = Math.min(canvas.width / 5, 200);
+            const bossSize = Math.min(canvas.width / 4, 250);
             gameState.boss = {
                 x: canvas.width / 2 - bossSize / 2,
                 y: 100,
@@ -230,13 +297,13 @@
             gameState.bossActive = true;
             updateUI();
         }
-
+        
         function gameLoop() {
             if (!gameState.gameStarted) return;
-
+            
             // TEMİZLE
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+            
             // OYUNCU GÜNCELLE
             updatePlayer();
             
@@ -260,7 +327,7 @@
             
             requestAnimationFrame(gameLoop);
         }
-
+        
         function updatePlayer() {
             // HAREKET
             if (gameState.keys['ArrowLeft']) gameState.player.x = Math.max(0, gameState.player.x - gameState.player.speed);
@@ -283,7 +350,7 @@
                 updateUI();
             }
         }
-
+        
         function updateEnemies() {
             for (let i = gameState.enemies.length - 1; i >= 0; i--) {
                 const enemy = gameState.enemies[i];
@@ -319,7 +386,7 @@
                 nextLevel();
             }
         }
-
+        
         function updateBoss() {
             const boss = gameState.boss;
             
@@ -366,7 +433,7 @@
                 nextLevel();
             }
         }
-
+        
         function updateBullets() {
             // OYUNCU MERMİLERİ
             for (let i = gameState.bullets.length - 1; i >= 0; i--) {
@@ -384,7 +451,7 @@
                 }
             }
         }
-
+        
         function updateParticles() {
             for (let i = gameState.particles.length - 1; i >= 0; i--) {
                 const p = gameState.particles[i];
@@ -397,7 +464,7 @@
                 }
             }
         }
-
+        
         function checkCollisions() {
             // OYUNCU MERMİLERİ İLE DÜŞMANLAR
             for (let i = gameState.bullets.length - 1; i >= 0; i--) {
@@ -439,7 +506,7 @@
                 gameOver();
             }
         }
-
+        
         function createExplosion(x, y) {
             for (let i = 0; i < 20; i++) {
                 gameState.particles.push({
@@ -453,7 +520,7 @@
                 });
             }
         }
-
+        
         function renderGame() {
             // YILDIZ ARKAPLAN
             drawStars();
@@ -470,7 +537,7 @@
             // DÜŞMANLAR
             gameState.enemies.forEach(enemy => {
                 ctx.drawImage(
-                    enemyImg,
+                    gameState.assets.enemy,
                     enemy.x,
                     enemy.y,
                     enemy.width,
@@ -481,7 +548,7 @@
             // BOSS
             if (gameState.bossActive) {
                 ctx.drawImage(
-                    bossImg,
+                    gameState.assets.boss,
                     gameState.boss.x,
                     gameState.boss.y,
                     gameState.boss.width,
@@ -513,7 +580,7 @@
                 ctx.fillRect(p.x, p.y, p.size, p.size);
             });
         }
-
+        
         function drawStars() {
             ctx.fillStyle = 'white';
             for (let i = 0; i < 200; i++) {
@@ -523,14 +590,14 @@
                 ctx.fillRect(x, y, size, size);
             }
         }
-
+        
         function checkCollision(obj1, obj2) {
             return obj1.x < obj2.x + obj2.width &&
                    obj1.x + obj1.width > obj2.x &&
                    obj1.y < obj2.y + obj2.height &&
                    obj1.y + obj1.height > obj2.y;
         }
-
+        
         function nextLevel() {
             gameState.level++;
             gameState.enemiesCount = 10 + gameState.level * 2;
@@ -541,25 +608,33 @@
                 gameState.player.damage += 2;
                 gameState.player.maxAmmo += 5;
                 gameState.player.maxHealth += 10;
+                gameState.player.health = gameState.player.maxHealth;
+                gameState.player.ammo = gameState.player.maxAmmo;
             }
             
             spawnEnemies();
             updateUI();
         }
-
+        
         function updateUI() {
-            document.getElementById('level').textContent = gameState.level;
-            document.getElementById('health').textContent = gameState.player.health;
-            document.getElementById('enemies').textContent = gameState.bossActive ? "BOSS" : gameState.enemies.length;
-            document.getElementById('gold').textContent = gameState.player.gold;
+            uiElements.level.textContent = gameState.level;
+            uiElements.health.textContent = gameState.player.health;
+            uiElements.enemies.textContent = gameState.bossActive ? "BOSS" : gameState.enemies.length;
+            uiElements.gold.textContent = gameState.player.gold;
+            uiElements.ammo.textContent = gameState.player.ammo;
         }
-
+        
         function gameOver() {
+            gameState.gameStarted = false;
             alert(`Oyun Bitti! Bölüm: ${gameState.level}\nTopladığınız Gold: ${gameState.player.gold}`);
             document.getElementById('start-screen').style.display = 'block';
-            gameState.gameStarted = false;
-            gameState.level = 1;
         }
+        
+        // Sayfa yüklendiğinde canvas boyutunu ayarla
+        window.addEventListener('load', () => {
+            resizeCanvas();
+            document.getElementById('start-btn').disabled = true;
+        });
     </script>
 </body>
 </html>
