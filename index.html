@@ -177,7 +177,7 @@
     </div>
 
     <script type="module">
-        // FIREBASE KONFİG (KENDİNİZİNKİNİ EKLEYİN)
+        // FIREBASE KONFİG
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, set, onValue, update, remove, onDisconnect } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
@@ -228,7 +228,8 @@
             particles: [],
             level: 1,
             boss: null,
-            marketOpen: false
+            marketOpen: false,
+            countdownInterval: null
         };
 
         // ASSET'LER
@@ -281,6 +282,8 @@
                 const readyPlayers = Object.values(gameState.players).filter(p => p.isReady);
                 if (readyPlayers.length >= 1 && !gameState.gameStarted) {
                     startCountdown();
+                } else if (readyPlayers.length === 0 && gameState.countdownInterval) {
+                    stopCountdown();
                 }
             });
 
@@ -357,15 +360,29 @@
         }
 
         function startCountdown() {
-            const countdownInterval = setInterval(() => {
+            // Önceki sayacı temizle
+            if (gameState.countdownInterval) {
+                clearInterval(gameState.countdownInterval);
+            }
+            
+            gameState.countdown = 10;
+            gameState.countdownInterval = setInterval(() => {
                 gameState.countdown--;
                 menuElements.countdownDisplay.textContent = gameState.countdown;
                 
                 if (gameState.countdown <= 0) {
-                    clearInterval(countdownInterval);
+                    stopCountdown();
                     startGame();
                 }
             }, 1000);
+        }
+
+        function stopCountdown() {
+            if (gameState.countdownInterval) {
+                clearInterval(gameState.countdownInterval);
+                gameState.countdownInterval = null;
+            }
+            menuElements.countdownDisplay.textContent = "10";
         }
 
         function startGame() {
@@ -374,6 +391,10 @@
             document.getElementById("game-container").style.display = "block";
             
             // Oyun başlangıç ayarları
+            gameState.level = 1;
+            gameState.health = 100;
+            gameState.gold = 0;
+            gameState.ammo = 30;
             updateUI();
             spawnEnemies();
         }
@@ -452,6 +473,8 @@
 
         function spawnEnemies() {
             const playerCount = Object.keys(gameState.players).length;
+            gameState.enemies = [];
+            
             for (let i = 0; i < playerCount; i++) {
                 gameState.enemies.push({
                     x: Math.random() * (canvas.width - 100) + 50,
@@ -461,12 +484,158 @@
                     lastShot: 0
                 });
             }
+            
+            // Boss kontrolü
+            if (gameState.level % BOSS_INTERVAL === 0) {
+                spawnBoss();
+            }
+        }
+
+        function spawnBoss() {
+            gameState.boss = {
+                x: canvas.width / 2,
+                y: 150,
+                width: 200,
+                height: 100,
+                health: 50 * gameState.level,
+                speed: 1,
+                lastAttack: 0
+            };
+        }
+
+        function updateBullets() {
+            // Oyuncu mermileri
+            for (let i = gameState.bullets.length - 1; i >= 0; i--) {
+                gameState.bullets[i].y -= gameState.bullets[i].speed;
+                
+                // Ekran dışına çıkan mermileri sil
+                if (gameState.bullets[i].y < 0) {
+                    gameState.bullets.splice(i, 1);
+                    continue;
+                }
+                
+                // Düşmanlara çarpma kontrolü
+                for (let j = gameState.enemies.length - 1; j >= 0; j--) {
+                    if (checkCollision(gameState.bullets[i], gameState.enemies[j])) {
+                        gameState.enemies[j].health -= gameState.bullets[i].damage;
+                        gameState.bullets.splice(i, 1);
+                        
+                        if (gameState.enemies[j].health <= 0) {
+                            gameState.gold += 20;
+                            gameState.enemies.splice(j, 1);
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+
+        function updateEnemies() {
+            for (let i = gameState.enemies.length - 1; i >= 0; i--) {
+                // Düşman hareketi
+                gameState.enemies[i].y += gameState.enemies[i].speed;
+                
+                // Oyuncuya çarpma kontrolü
+                if (Math.abs(gameState.enemies[i].x - gameState.playerX) < 30 && 
+                    Math.abs(gameState.enemies[i].y - gameState.playerY) < 30) {
+                    gameState.health -= 10;
+                    gameState.enemies.splice(i, 1);
+                    continue;
+                }
+                
+                // Düşman ateş etme
+                if (Date.now() - gameState.enemies[i].lastShot > 1000) {
+                    gameState.enemyBullets.push({
+                        x: gameState.enemies[i].x,
+                        y: gameState.enemies[i].y + 30,
+                        speed: ENEMY_BULLET_SPEED,
+                        damage: 5
+                    });
+                    gameState.enemies[i].lastShot = Date.now();
+                }
+            }
+        }
+
+        function checkCollisions() {
+            // Oyuncu mermileri ile düşmanlar
+            // (updateBullets içinde yapılıyor)
+            
+            // Düşman mermileri ile oyuncu
+            for (let i = gameState.enemyBullets.length - 1; i >= 0; i--) {
+                if (Math.abs(gameState.enemyBullets[i].x - gameState.playerX) < 20 && 
+                    Math.abs(gameState.enemyBullets[i].y - gameState.playerY) < 20) {
+                    gameState.health -= gameState.enemyBullets[i].damage;
+                    gameState.enemyBullets.splice(i, 1);
+                }
+            }
+        }
+
+        function checkLevelCompletion() {
+            if (gameState.enemies.length === 0 && !gameState.boss) {
+                gameState.level++;
+                if (gameState.level > LEVEL_COUNT) {
+                    endGame(true);
+                    return;
+                }
+                
+                // Market kontrolü
+                if (gameState.level % MARKET_INTERVAL === 0) {
+                    openMarket();
+                }
+                
+                spawnEnemies();
+            }
+        }
+
+        function renderPlayers() {
+            // Kendi gemimiz
+            const playerImg = new Image();
+            playerImg.src = assets.playerShip;
+            ctx.drawImage(playerImg, gameState.playerX - 25, gameState.playerY - 25, 50, 50);
+            
+            // Diğer oyuncular
+            for (const playerId in gameState.players) {
+                if (playerId !== gameState.playerId) {
+                    const player = gameState.players[playerId];
+                    ctx.drawImage(playerImg, player.x - 25, player.y - 25, 50, 50);
+                }
+            }
+        }
+
+        function renderEnemies() {
+            const enemyImg = new Image();
+            enemyImg.src = assets.enemyShip;
+            
+            for (const enemy of gameState.enemies) {
+                ctx.drawImage(enemyImg, enemy.x - 20, enemy.y - 20, 40, 40);
+            }
+        }
+
+        function renderBoss() {
+            const bossImg = new Image();
+            bossImg.src = assets.bossShip;
+            ctx.drawImage(bossImg, gameState.boss.x - gameState.boss.width/2, 
+                         gameState.boss.y - gameState.boss.height/2, 
+                         gameState.boss.width, gameState.boss.height);
+        }
+
+        function renderBullets() {
+            ctx.fillStyle = "#ffff00";
+            for (const bullet of gameState.bullets) {
+                ctx.fillRect(bullet.x - 2, bullet.y - 10, 4, 10);
+            }
+            
+            ctx.fillStyle = "#ff0000";
+            for (const bullet of gameState.enemyBullets) {
+                ctx.fillRect(bullet.x - 2, bullet.y, 4, 10);
+            }
         }
 
         function updateUI() {
             document.getElementById("level").textContent = gameState.level;
             document.getElementById("health").textContent = gameState.health;
             document.getElementById("gold").textContent = gameState.gold;
+            document.getElementById("ammo").textContent = gameState.ammo;
         }
 
         function updateAmmoUI() {
@@ -540,7 +709,44 @@
             }
         }
 
-        // [Diğer oyun fonksiyonları buraya eklenecek...]
+        function checkCollision(obj1, obj2) {
+            return Math.abs(obj1.x - obj2.x) < 20 && Math.abs(obj1.y - obj2.y) < 20;
+        }
+
+        function openMarket() {
+            // Market UI'sini göster
+            alert("Market açıldı! Gold: " + gameState.gold);
+        }
+
+        function endGame(win) {
+            if (win) {
+                alert("Tebrikler! Tüm bölümleri tamamladınız!");
+            } else {
+                alert("Oyun bitti! Yeniden deneyin.");
+            }
+            
+            // Oyunu sıfırla
+            resetGame();
+        }
+
+        function resetGame() {
+            // Firebase'den oyuncuyu kaldır
+            remove(ref(db, `players/${gameState.playerId}`));
+            
+            // Oyun durumunu sıfırla
+            gameState.gameStarted = false;
+            gameState.level = 1;
+            gameState.health = 100;
+            gameState.gold = 0;
+            gameState.ammo = 30;
+            
+            // Menüyü göster
+            document.getElementById("menu-screen").style.display = "block";
+            document.getElementById("game-container").style.display = "none";
+            menuElements.mainMenu.style.display = "block";
+            menuElements.nameInput.style.display = "none";
+            menuElements.readyScreen.style.display = "none";
+        }
     </script>
 </body>
 </html>
