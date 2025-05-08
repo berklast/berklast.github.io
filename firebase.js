@@ -2,7 +2,8 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebas
 import { 
   getAuth, 
   createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword 
+  signInWithEmailAndPassword,
+  onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { 
   getFirestore,
@@ -11,12 +12,12 @@ import {
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// Firebase konfigürasyonunuz (DÜZELTTİM)
+// Firebase konfigürasyonu (Spark/Ücretsiz plan)
 const firebaseConfig = {
   apiKey: "AIzaSyDH5GBWQNoZv7LZZ2MbFjh-twI1jZuYqK0",
   authDomain: "newdc-d6404.firebaseapp.com",
   projectId: "newdc-d6404",
-  storageBucket: "newdc-d6404.appspot.com", // .firebasestorage.app yerine .appspot.com
+  storageBucket: "newdc-d6404.appspot.com",
   messagingSenderId: "101292652984",
   appId: "1:101292652984:web:59d6b49b400572bec1774d"
 };
@@ -31,6 +32,7 @@ export {
   db,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  onAuthStateChanged,
   doc,
   setDoc,
   serverTimestamp
