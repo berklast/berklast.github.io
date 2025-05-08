@@ -4,48 +4,45 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NewDC | Kayıt Ol</title>
-  <link rel="stylesheet" href="/css/styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* login.html'deki CSS'in aynısı */
+  </style>
 </head>
 <body>
   <div class="auth-container">
-    <div class="logo">
-      <i class="fas fa-comments"></i> NewDC
-    </div>
-    
-    <div class="form-container">
-      <h1>Hesap Oluştur</h1>
-      
-      <div class="input-group">
-        <label><i class="fas fa-envelope"></i> E-posta</label>
-        <input type="email" id="email" placeholder="ornek@mail.com">
-        <span class="error-message" id="email-error"></span>
+    <div class="auth-card">
+      <div class="auth-header">
+        <h1><i class="fas fa-user-plus"></i> Kayıt Ol</h1>
+        <p>Yeni bir hesap oluşturun</p>
       </div>
-      
-      <div class="input-group">
-        <label><i class="fas fa-lock"></i> Şifre (en az 6 karakter)</label>
-        <input type="password" id="password" placeholder="••••••••">
-        <span class="error-message" id="password-error"></span>
-      </div>
-      
-      <div class="input-group">
-        <label><i class="fas fa-lock"></i> Şifre Tekrar</label>
-        <input type="password" id="confirm-password" placeholder="••••••••">
-        <span class="error-message" id="confirm-error"></span>
-      </div>
-      
-      <button id="register-btn" class="btn-primary">
-        <i class="fas fa-user-plus"></i> Kayıt Ol
-      </button>
-      
-      <div class="alternative-actions">
-        <a href="/login.html" class="btn-secondary">
-          <i class="fas fa-sign-in-alt"></i> Zaten hesabım var
-        </a>
+      <div class="auth-body">
+        <div class="input-group">
+          <label for="email"><i class="fas fa-envelope"></i> E-posta</label>
+          <input type="email" id="email" placeholder="ornek@mail.com" required>
+          <div class="error-message" id="email-error"></div>
+        </div>
+        <div class="input-group">
+          <label for="password"><i class="fas fa-lock"></i> Şifre (en az 6 karakter)</label>
+          <input type="password" id="password" placeholder="••••••••" required>
+          <div class="error-message" id="password-error"></div>
+        </div>
+        <div class="input-group">
+          <label for="confirm-password"><i class="fas fa-lock"></i> Şifre Tekrar</label>
+          <input type="password" id="confirm-password" placeholder="••••••••" required>
+          <div class="error-message" id="confirm-error"></div>
+        </div>
+        <button class="btn btn-primary" id="register-btn">
+          <i class="fas fa-check-circle"></i> Kayıt Ol
+        </button>
+        <div class="auth-footer">
+          <a href="login.html"><i class="fas fa-sign-in-alt"></i> Zaten hesabım var</a>
+        </div>
       </div>
     </div>
   </div>
 
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
   <script type="module" src="/js/register.js"></script>
 </body>
 </html>
