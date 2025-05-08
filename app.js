@@ -1,11 +1,7 @@
-// Import the necessary Firebase SDKs
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
-import { getFirestore, collection, addDoc } from "firebase/firestore";
 import { getDatabase, ref, set } from "firebase/database";
 
-// Firebase config
 const firebaseConfig = {
   apiKey: "AIzaSyCxHwmk04MmfvpL53N58WcUwZ7KQjCy5SA",
   authDomain: "mesajpro-e97fc.firebaseapp.com",
@@ -16,28 +12,20 @@ const firebaseConfig = {
   measurementId: "G-LV2RYRMVVL"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-
-// Initialize Firebase Authentication and Firestore
 const auth = getAuth();
-const db = getFirestore();
-const rtdb = getDatabase();
+const db = getDatabase();
 
-// Show register form
 function showRegisterForm() {
     document.getElementById('register-form').style.display = 'block';
     document.getElementById('login-form').style.display = 'none';
 }
 
-// Show login form
 function showLoginForm() {
     document.getElementById('login-form').style.display = 'block';
     document.getElementById('register-form').style.display = 'none';
 }
 
-// Register new user
 async function registerUser() {
     const username = document.getElementById('register-username').value;
     const email = document.getElementById('register-email').value;
@@ -51,22 +39,20 @@ async function registerUser() {
     try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-        
-        // Save additional user info (e.g., username) to Firestore or Realtime Database
-        await set(ref(rtdb, 'users/' + user.uid), {
+
+        await set(ref(db, 'users/' + user.uid), {
             username: username,
-            email: email,
-            profilePic: ""  // Placeholder for profile picture (can be added later)
+            email: email
         });
-        
+
         alert("Başarıyla kayıt oldunuz!");
+        window.location.href = "chat.html";
     } catch (error) {
-        console.error("Error during registration:", error.message);
-        alert(error.message);
+        console.error(error.message);
+        alert("Hata: " + error.message);
     }
 }
 
-// Log in user
 async function loginUser() {
     const email = document.getElementById('login-email').value;
     const password = document.getElementById('login-password').value;
@@ -74,15 +60,13 @@ async function loginUser() {
     try {
         await signInWithEmailAndPassword(auth, email, password);
         alert("Başarıyla giriş yaptınız!");
-        // Redirect to the main chat page or dashboard
         window.location.href = "chat.html";
     } catch (error) {
-        console.error("Error during login:", error.message);
-        alert(error.message);
+        console.error(error.message);
+        alert("Hata: " + error.message);
     }
 }
 
-// Send password reset email
 async function resetPassword() {
     const email = document.getElementById('login-email').value;
 
@@ -90,7 +74,7 @@ async function resetPassword() {
         await sendPasswordResetEmail(auth, email);
         alert("Şifre sıfırlama e-postası gönderildi!");
     } catch (error) {
-        console.error("Error sending reset email:", error.message);
-        alert(error.message);
+        console.error(error.message);
+        alert("Hata: " + error.message);
     }
 }
