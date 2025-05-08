@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NewDC - Sohbet</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-comments"></i>
+                    <h1>NewDC</h1>
+                </div>
+                <div class="user-profile">
+                    <img id="user-avatar" src="https://via.placeholder.com/50" alt="Profil">
+                    <div class="user-info">
+                        <span id="username">Kullanıcı Adı</span>
+                        <span id="user-status">Çevrimiçi</span>
+                    </div>
+                    <i class="fas fa-cog" id="settings-btn"></i>
+                </div>
+            </div>
+            
+            <div class="sidebar-menu">
+                <div class="menu-item active" data-tab="friends">
+                    <i class="fas fa-user-friends"></i>
+                    <span>Arkadaşlar</span>
+                </div>
+                <div class="menu-item" data-tab="requests">
+                    <i class="fas fa-user-plus"></i>
+                    <span>İstekler</span>
+                    <span class="badge" id="requests-badge">0</span>
+                </div>
+                <div class="menu-item" data-tab="search">
+                    <i class="fas fa-search"></i>
+                    <span>Kullanıcı Ara</span>
+                </div>
+                <div class="menu-item" data-tab="settings">
+                    <i class="fas fa-cog"></i>
+                    <span>Ayarlar</span>
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <button class="btn btn-logout" id="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Çıkış Yap</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Friends Tab -->
+            <div class="tab-content active" id="friends-tab">
+                <div class="friends-list">
+                    <div class="section-header">
+                        <h2>Arkadaşlar</h2>
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" placeholder="Arkadaş ara...">
+                        </div>
+                    </div>
+                    
+                    <div class="friends-container" id="friends-container">
+                        <!-- Friends will be loaded here -->
+                    </div>
+                </div>
+                
+                <div class="chat-container">
+                    <div class="chat-header">
+                        <div class="chat-user">
+                            <img id="chat-avatar" src="https://via.placeholder.com/40" alt="Profil">
+                            <div class="chat-user-info">
+                                <span id="chat-username">Sohbet Seçin</span>
+                                <span id="chat-status">Çevrimdışı</span>
+                            </div>
+                        </div>
+                        <div class="chat-actions">
+                            <i class="fas fa-phone"></i>
+                            <i class="fas fa-video"></i>
+                            <i class="fas fa-ellipsis-v"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-messages" id="chat-messages">
+                        <!-- Messages will be loaded here -->
+                        <div class="empty-chat">
+                            <i class="fas fa-comment-dots"></i>
+                            <p>Bir sohbet seçin veya yeni bir arkadaş ekleyin</p>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-input">
+                        <div class="input-actions">
+                            <i class="fas fa-smile"></i>
+                            <i class="fas fa-paperclip"></i>
+                        </div>
+                        <input type="text" placeholder="Bir mesaj yazın..." id="message-input">
+                        <button class="btn btn-send" id="send-btn">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Requests Tab -->
+            <div class="tab-content" id="requests-tab">
+                <div class="requests-container">
+                    <h2>Arkadaşlık İstekleri</h2>
+                    <div class="requests-list" id="requests-list">
+                        <!-- Requests will be loaded here -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Search Tab -->
+            <div class="tab-content" id="search-tab">
+                <div class="search-container">
+                    <h2>Kullanıcı Ara</h2>
+                    <div class="search-box">
+                        <input type="text" placeholder="Kullanıcı adı veya e-posta ile ara..." id="user-search-input">
+                        <button class="btn btn-primary" id="search-btn">Ara</button>
+                    </div>
+                    
+                    <div class="search-results" id="search-results">
+                        <!-- Search results will be loaded here -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Settings Tab -->
+            <div class="tab-content" id="settings-tab">
+                <div class="settings-container">
+                    <h2>Hesap Ayarları</h2>
+                    
+                    <div class="settings-section">
+                        <h3>Profil Bilgileri</h3>
+                        <div class="settings-form">
+                            <div class="form-group">
+                                <label for="settings-name">Kullanıcı Adı</label>
+                                <input type="text" id="settings-name" name="settings-name">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="settings-email">E-posta</label>
+                                <input type="email" id="settings-email" name="settings-email" disabled>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="settings-photo">Profil Fotoğrafı</label>
+                                <div class="photo-upload">
+                                    <img id="settings-photo-preview" src="https://via.placeholder.com/100" alt="Profil">
+                                    <input type="file" id="settings-photo" name="settings-photo" accept="image/*">
+                                    <label for="settings-photo" class="btn btn-secondary">Fotoğraf Seç</label>
+                                </div>
+                            </div>
+                            
+                            <button class="btn btn-primary" id="save-profile-btn">Değişiklikleri Kaydet</button>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <h3>Şifre Değiştir</h3>
+                        <div class="settings-form">
+                            <div class="form-group">
+                                <label for="current-password">Mevcut Şifre</label>
+                                <input type="password" id="current-password" name="current-password">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="new-password">Yeni Şifre</label>
+                                <input type="password" id="new-password" name="new-password">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="confirm-password">Yeni Şifre (Tekrar)</label>
+                                <input type="password" id="confirm-password" name="confirm-password">
+                            </div>
+                            
+                            <button class="btn btn-primary" id="change-password-btn">Şifreyi Değiştir</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/db.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script src="js/ui.js"></script>
+</body>
+</html>
