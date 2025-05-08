@@ -1,85 +1,69 @@
 import { 
-  auth,
-  db,
-  createUserWithEmailAndPassword,
+  auth, 
+  db, 
+  createUserWithEmailAndPassword, 
   signInWithEmailAndPassword,
-  sendEmailVerification,
   doc,
   setDoc,
-  updateDoc,
   serverTimestamp
 } from './firebase.js';
 
-document.getElementById('register-btn').addEventListener('click', async () => {
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
-  
-  if (!validateEmail(email)) {
-    alert("Geçerli bir email adresi girin!");
-    return;
-  }
-  
-  if (password.length < 6) {
-    alert("Şifre en az 6 karakter olmalıdır!");
-    return;
-  }
+document.addEventListener('DOMContentLoaded', () => {
+  const signupBtn = document.getElementById('signup-btn');
+  const loginBtn = document.getElementById('login-btn');
 
-  try {
-    // 1. Kullanıcı oluştur
-    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+  // Kayıt Ol
+  signupBtn.addEventListener('click', async () => {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
     
-    // 2. Doğrulama maili gönder
-    await sendEmailVerification(userCredential.user);
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      await createUserProfile(userCredential.user);
+      alert('Kayıt başarılı!');
+    } catch (error) {
+      alert('Hata: ' + error.message);
+    }
+  });
+
+  // Giriş Yap
+  loginBtn.addEventListener('click', async () => {
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
     
-    // 3. Firestore'a kullanıcı kaydet
-    await setDoc(doc(db, "users", userCredential.user.uid), {
-      email: email,
-      username: email.split('@')[0],
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      alert('Giriş başarılı!');
+    } catch (error) {
+      alert('Hata: ' + error.message);
+    }
+  });
+
+  // Kullanıcı Profili Oluşturma
+  async function createUserProfile(user) {
+    await setDoc(doc(db, "users", user.uid), {
+      email: user.email,
+      username: user.email.split('@')[0],
+      status: "online",
       createdAt: serverTimestamp(),
-      friends: [],
-      friendRequests: [],
-      status: "online",
       lastSeen: serverTimestamp()
     });
-
-    alert('Kayıt başarılı! Doğrulama linki e-postanıza gönderildi.');
-  } catch (error) {
-    alert("Hata: " + error.message);
-    console.error("Kayıt hatası:", error);
   }
-});
 
-document.getElementById('login-btn').addEventListener('click', async () => {
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
+  // Oturum Durumu Takibi
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      console.log("Oturum açık:", user.email);
+      updateUserStatus(user.uid, "online");
+    } else {
+      console.log("Oturum kapalı");
+    }
+  });
 
-  try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    
-    // Çevrimiçi durumu güncelle
-    await updateDoc(doc(db, "users", userCredential.user.uid), {
-      status: "online",
+  async function updateUserStatus(uid, status) {
+    await setDoc(doc(db, "users", uid), {
+      status: status,
       lastSeen: serverTimestamp()
-    });
-    
-    window.location.href = "dashboard.html";
-  } catch (error) {
-    alert("Giriş hatası: " + error.message);
-    console.error("Giriş hatası:", error);
-  }
-});
-
-function validateEmail(email) {
-  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return re.test(email);
-}
-
-// Sayfa kapatılırken çevrimdışı yap
-window.addEventListener('beforeunload', async () => {
-  if (auth.currentUser) {
-    await updateDoc(doc(db, "users", auth.currentUser.uid), {
-      status: "offline",
-      lastSeen: serverTimestamp()
-    });
+    }, { merge: true });
   }
 });
