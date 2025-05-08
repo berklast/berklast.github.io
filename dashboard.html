@@ -4,850 +4,127 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NewDC | Sohbet</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --primary: #5865F2;
-            --primary-dark: #4752C4;
-            --secondary: #ED4245;
-            --dark: #23272A;
-            --light: #FFFFFF;
-            --gray: #99AAB5;
-            --bg: #F8F9FA;
-            --success: #3BA55C;
-            --sidebar: #1E1F22;
-            --header: #2B2D31;
-            --chat-bg: #313338;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--chat-bg);
-            color: var(--light);
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
-        
-        /* Sidebar */
-        .sidebar {
-            width: 280px;
-            background-color: var(--sidebar);
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid rgba(0, 0, 0, 0.2);
-        }
-        
-        .sidebar-header {
-            padding: 1rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-        
-        .server-name {
-            display: flex;
-            align-items: center;
-            padding: 0.5rem;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        
-        .server-name:hover {
-            background: rgba(255, 255, 255, 0.05);
-        }
-        
-        .server-icon {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: var(--primary);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 0.75rem;
-        }
-        
-        .server-text {
-            font-weight: 600;
-            font-size: 1.1rem;
-        }
-        
-        .sidebar-nav {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1rem 0;
-        }
-        
-        .nav-section {
-            margin-bottom: 1.5rem;
-        }
-        
-        .section-title {
-            padding: 0.5rem 1rem;
-            font-size: 0.8rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: var(--gray);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .section-title i {
-            cursor: pointer;
-            opacity: 0.7;
-            transition: opacity 0.2s;
-        }
-        
-        .section-title i:hover {
-            opacity: 1;
-        }
-        
-        .nav-item {
-            display: flex;
-            align-items: center;
-            padding: 0.5rem 1rem;
-            margin: 0.25rem 0;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .nav-item:hover {
-            background: rgba(255, 255, 255, 0.05);
-        }
-        
-        .nav-item.active {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        
-        .nav-item i {
-            width: 24px;
-            margin-right: 0.75rem;
-            opacity: 0.7;
-        }
-        
-        .nav-item .badge {
-            margin-left: auto;
-            background: var(--secondary);
-            color: white;
-            font-size: 0.7rem;
-            padding: 2px 6px;
-            border-radius: 10px;
-        }
-        
-        .user-panel {
-            padding: 1rem;
-            background: var(--header);
-            display: flex;
-            align-items: center;
-        }
-        
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-right: 0.75rem;
-        }
-        
-        .user-info {
-            flex: 1;
-        }
-        
-        .username {
-            font-weight: 500;
-            font-size: 0.95rem;
-            margin-bottom: 0.1rem;
-        }
-        
-        .user-status {
-            font-size: 0.8rem;
-            color: var(--gray);
-            display: flex;
-            align-items: center;
-        }
-        
-        .status-indicator {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--success);
-            margin-right: 0.5rem;
-        }
-        
-        .user-controls {
-            display: flex;
-        }
-        
-        .user-controls i {
-            padding: 0.5rem;
-            opacity: 0.7;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-        
-        .user-controls i:hover {
-            opacity: 1;
-        }
-        
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            display: flex;
-        }
-        
-        /* Friends List */
-        .friends-list {
-            width: 280px;
-            background: var(--header);
-            border-right: 1px solid rgba(0, 0, 0, 0.2);
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .friends-header {
-            padding: 1.25rem 1rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .friends-header h2 {
-            font-size: 1.25rem;
-        }
-        
-        .search-box {
-            position: relative;
-            margin: 1rem;
-        }
-        
-        .search-box i {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--gray);
-        }
-        
-        .search-box input {
-            width: 100%;
-            padding: 0.5rem 1rem 0.5rem 2.5rem;
-            background: rgba(0, 0, 0, 0.3);
-            border: none;
-            border-radius: 4px;
-            color: var(--light);
-            font-size: 0.9rem;
-        }
-        
-        .friends-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 0.5rem;
-        }
-        
-        .friend-item {
-            display: flex;
-            align-items: center;
-            padding: 0.5rem;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        
-        .friend-item:hover {
-            background: rgba(255, 255, 255, 0.05);
-        }
-        
-        .friend-item.active {
-            background: rgba(255, 255, 255, 0.1);
-        }
-        
-        .friend-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-right: 0.75rem;
-        }
-        
-        .friend-info {
-            flex: 1;
-        }
-        
-        .friend-name {
-            font-weight: 500;
-            font-size: 0.95rem;
-            margin-bottom: 0.1rem;
-        }
-        
-        .friend-status {
-            font-size: 0.8rem;
-            color: var(--gray);
-        }
-        
-        .friend-status.online {
-            color: var(--success);
-        }
-        
-        /* Chat Area */
-        .chat-area {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .chat-header {
-            padding: 1rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            align-items: center;
-        }
-        
-        .chat-title {
-            display: flex;
-            align-items: center;
-        }
-        
-        .chat-title i {
-            margin-right: 0.75rem;
-            color: var(--gray);
-        }
-        
-        .chat-title h2 {
-            font-size: 1.1rem;
-        }
-        
-        .chat-messages {
-            flex: 1;
-            padding: 1rem;
-            overflow-y: auto;
-        }
-        
-        .message {
-            display: flex;
-            margin-bottom: 1rem;
-        }
-        
-        .message-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-right: 1rem;
-            flex-shrink: 0;
-        }
-        
-        .message-content {
-            flex: 1;
-        }
-        
-        .message-header {
-            display: flex;
-            align-items: baseline;
-            margin-bottom: 0.25rem;
-        }
-        
-        .message-sender {
-            font-weight: 600;
-            margin-right: 0.5rem;
-        }
-        
-        .message-time {
-            font-size: 0.75rem;
-            color: var(--gray);
-        }
-        
-        .message-text {
-            line-height: 1.4;
-        }
-        
-        .chat-input {
-            padding: 1rem;
-            background: var(--header);
-        }
-        
-        .input-container {
-            display: flex;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 8px;
-            padding: 0.5rem 1rem;
-        }
-        
-        .input-container input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: var(--light);
-            font-size: 0.95rem;
-            padding: 0.5rem 0;
-        }
-        
-        .input-container input:focus {
-            outline: none;
-        }
-        
-        .input-actions {
-            display: flex;
-            align-items: center;
-        }
-        
-        .input-actions i {
-            margin-left: 1rem;
-            opacity: 0.7;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-        
-        .input-actions i:hover {
-            opacity: 1;
-        }
-        
-        /* Requests Tab */
-        .requests-tab {
-            padding: 1rem;
-        }
-        
-        .request-item {
-            display: flex;
-            align-items: center;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 6px;
-            margin-bottom: 1rem;
-        }
-        
-        .request-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            object-fit: cover;
-            margin-right: 1rem;
-        }
-        
-        .request-info {
-            flex: 1;
-        }
-        
-        .request-name {
-            font-weight: 500;
-            margin-bottom: 0.25rem;
-        }
-        
-        .request-meta {
-            font-size: 0.85rem;
-            color: var(--gray);
-        }
-        
-        .request-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-        
-        .request-btn {
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            font-weight: 500;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            border: none;
-        }
-        
-        .accept-btn {
-            background: var(--success);
-            color: white;
-        }
-        
-        .accept-btn:hover {
-            background: #2d8c4a;
-        }
-        
-        .decline-btn {
-            background: rgba(255, 255, 255, 0.1);
-            color: var(--light);
-        }
-        
-        .decline-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-        
-        /* Settings Tab */
-        .settings-tab {
-            padding: 1.5rem;
-            max-width: 800px;
-        }
-        
-        .settings-section {
-            margin-bottom: 2rem;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            padding: 1.5rem;
-        }
-        
-        .settings-section h3 {
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .settings-form .form-group {
-            margin-bottom: 1.5rem;
-        }
-        
-        .settings-form label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-        }
-        
-        .settings-form input {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 6px;
-            color: var(--light);
-            font-size: 0.95rem;
-        }
-        
-        .settings-form input:disabled {
-            opacity: 0.6;
-        }
-        
-        .avatar-upload {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-        }
-        
-        .avatar-preview {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-        
-        .avatar-actions {
-            flex: 1;
-        }
-        
-        .avatar-actions button {
-            margin-top: 1rem;
-        }
-        
-        .save-btn {
-            padding: 0.75rem 1.5rem;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        
-        .save-btn:hover {
-            background: var(--primary-dark);
-        }
-        
-        /* Tab System */
-        .tab-content {
-            display: none;
-            flex: 1;
-            overflow-y: auto;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-    </style>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="sidebar-header">
-            <div class="server-name">
-                <div class="server-icon">
-                    <i class="fas fa-comments"></i>
-                </div>
-                <span class="server-text">NewDC</span>
-            </div>
-        </div>
-        
-        <div class="sidebar-nav">
-            <div class="nav-section">
-                <div class="section-title">
-                    <span>Sohbet</span>
-                </div>
-                <div class="nav-item active" data-tab="friends">
-                    <i class="fas fa-user-friends"></i>
-                    <span>Arkadaşlar</span>
-                </div>
-                <div class="nav-item" data-tab="requests">
-                    <i class="fas fa-user-plus"></i>
-                    <span>Arkadaşlık İstekleri</span>
-                    <span class="badge">3</span>
-                </div>
-                <div class="nav-item" data-tab="search">
-                    <i class="fas fa-search"></i>
-                    <span>Kullanıcı Ara</span>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="server-name">
+                    <div class="server-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <span class="server-text">NewDC</span>
                 </div>
             </div>
             
-            <div class="nav-section">
-                <div class="section-title">
-                    <span>Ayarlar</span>
-                </div>
-                <div class="nav-item" data-tab="settings">
-                    <i class="fas fa-cog"></i>
-                    <span>Hesap Ayarları</span>
-                </div>
-            </div>
-        </div>
-        
-        <div class="user-panel">
-            <img src="https://via.placeholder.com/40" alt="Profil" class="user-avatar" id="user-avatar">
-            <div class="user-info">
-                <div class="username" id="username">KullanıcıAdı</div>
-                <div class="user-status">
-                    <span class="status-indicator"></span>
-                    <span>Çevrimiçi</span>
-                </div>
-            </div>
-            <div class="user-controls">
-                <i class="fas fa-microphone"></i>
-                <i class="fas fa-headphones"></i>
-                <i class="fas fa-cog"></i>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Main Content -->
-    <div class="main-content">
-        <!-- Friends List -->
-        <div class="friends-list">
-            <div class="friends-header">
-                <h2>Arkadaşlar</h2>
-            </div>
-            
-            <div class="search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Arkadaş ara...">
-            </div>
-            
-            <div class="friends-container">
-                <div class="friend-item active">
-                    <img src="https://via.placeholder.com/40" alt="Profil" class="friend-avatar">
-                    <div class="friend-info">
-                        <div class="friend-name">Ahmet Yılmaz</div>
-                        <div class="friend-status online">Çevrimiçi</div>
+            <div class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="section-title">
+                        <span>Sohbet</span>
                     </div>
-                </div>
-                
-                <div class="friend-item">
-                    <img src="https://via.placeholder.com/40" alt="Profil" class="friend-avatar">
-                    <div class="friend-info">
-                        <div class="friend-name">Ayşe Kaya</div>
-                        <div class="friend-status">Çevrimdışı</div>
-                    </div>
-                </div>
-                
-                <div class="friend-item">
-                    <img src="https://via.placeholder.com/40" alt="Profil" class="friend-avatar">
-                    <div class="friend-info">
-                        <div class="friend-name">Mehmet Demir</div>
-                        <div class="friend-status online">Çevrimiçi</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Chat Area -->
-        <div class="tab-content active" id="friends-tab">
-            <div class="chat-area">
-                <div class="chat-header">
-                    <div class="chat-title">
+                    <div class="nav-item active" data-tab="friends">
                         <i class="fas fa-user-friends"></i>
+                        <span>Arkadaşlar</span>
+                    </div>
+                    <div class="nav-item" data-tab="requests">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Arkadaşlık İstekleri</span>
+                        <span class="badge" id="requests-badge">0</span>
+                    </div>
+                    <div class="nav-item" data-tab="search">
+                        <i class="fas fa-search"></i>
+                        <span>Kullanıcı Ara</span>
+                    </div>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="section-title">
+                        <span>Ayarlar</span>
+                    </div>
+                    <div class="nav-item" data-tab="settings">
+                        <i class="fas fa-cog"></i>
+                        <span>Hesap Ayarları</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="user-panel">
+                <img src="https://via.placeholder.com/40" alt="Profil" class="user-avatar" id="user-avatar">
+                <div class="user-info">
+                    <div class="username" id="username">KullanıcıAdı</div>
+                    <div class="user-status">
+                        <span class="status-indicator"></span>
+                        <span>Çevrimiçi</span>
+                    </div>
+                </div>
+                <div class="user-controls">
+                    <i class="fas fa-sign-out-alt" id="logout-btn"></i>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Friends Tab -->
+            <div class="tab-content active" id="friends-tab">
+                <div class="friends-list">
+                    <div class="friends-header">
                         <h2>Arkadaşlar</h2>
                     </div>
-                </div>
-                
-                <div class="chat-messages">
-                    <div class="empty-chat">
-                        <i class="fas fa-comment-dots" style="font-size: 3rem; color: var(--gray); margin-bottom: 1rem;"></i>
-                        <p>Bir arkadaş seçerek sohbete başlayın</p>
+                    
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Arkadaş ara..." id="friend-search">
                     </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Requests Tab -->
-        <div class="tab-content" id="requests-tab">
-            <div class="requests-tab">
-                <h2 style="margin-bottom: 1.5rem;">Arkadaşlık İstekleri</h2>
-                
-                <div class="request-item">
-                    <img src="https://via.placeholder.com/50" alt="Profil" class="request-avatar">
-                    <div class="request-info">
-                        <div class="request-name">Elif Şahin</div>
-                        <div class="request-meta">3 gün önce istek gönderdi</div>
-                    </div>
-                    <div class="request-actions">
-                        <button class="request-btn accept-btn">Kabul Et</button>
-                        <button class="request-btn decline-btn">Reddet</button>
+                    
+                    <div class="friends-container" id="friends-container">
+                        <!-- Arkadaşlar buraya yüklenecek -->
                     </div>
                 </div>
                 
-                <div class="request-item">
-                    <img src="https://via.placeholder.com/50" alt="Profil" class="request-avatar">
-                    <div class="request-info">
-                        <div class="request-name">Can Bulut</div>
-                        <div class="request-meta">1 hafta önce istek gönderdi</div>
-                    </div>
-                    <div class="request-actions">
-                        <button class="request-btn accept-btn">Kabul Et</button>
-                        <button class="request-btn decline-btn">Reddet</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Search Tab -->
-        <div class="tab-content" id="search-tab">
-            <div class="requests-tab">
-                <h2 style="margin-bottom: 1.5rem;">Kullanıcı Ara</h2>
-                
-                <div class="search-box" style="margin: 0 0 1.5rem 0; width: 100%;">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Kullanıcı adı veya e-posta ile ara...">
-                </div>
-                
-                <div class="request-item">
-                    <img src="https://via.placeholder.com/50" alt="Profil" class="request-avatar">
-                    <div class="request-info">
-                        <div class="request-name">Deniz Yıldız</div>
-                        <div class="request-meta">deniz@ornek.com</div>
-                    </div>
-                    <button class="request-btn" style="background: var(--primary); color: white;">İstek Gönder</button>
-                </div>
-                
-                <div class="request-item">
-                    <img src="https://via.placeholder.com/50" alt="Profil" class="request-avatar">
-                    <div class="request-info">
-                        <div class="request-name">Eren Korkmaz</div>
-                        <div class="request-meta">eren@ornek.com</div>
-                    </div>
-                    <button class="request-btn" style="background: var(--gray); color: white;">Zaten Arkadaş</button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Settings Tab -->
-        <div class="tab-content" id="settings-tab">
-            <div class="settings-tab">
-                <h2 style="margin-bottom: 1.5rem;">Hesap Ayarları</h2>
-                
-                <div class="settings-section">
-                    <h3>Profil Bilgileri</h3>
-                    <form class="settings-form">
-                        <div class="form-group">
-                            <label for="settings-username">Kullanıcı Adı</label>
-                            <input type="text" id="settings-username" value="KullanıcıAdı">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="settings-email">E-posta Adresi</label>
-                            <input type="email" id="settings-email" value="email@ornek.com" disabled>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label>Profil Fotoğrafı</label>
-                            <div class="avatar-upload">
-                                <img src="https://via.placeholder.com/80" alt="Profil" class="avatar-preview" id="settings-avatar">
-                                <div class="avatar-actions">
-                                    <input type="file" id="avatar-upload" accept="image/*" style="display: none;">
-                                    <label for="avatar-upload" class="save-btn" style="display: inline-block;">Fotoğraf Seç</label>
-                                    <button type="button" class="save-btn" style="background: var(--secondary); margin-left: 0.5rem;">Fotoğrafı Kaldır</button>
-                                </div>
+                <div class="chat-area">
+                    <div class="chat-header">
+                        <div class="chat-user">
+                            <img id="chat-avatar" src="https://via.placeholder.com/40" alt="Profil">
+                            <div class="chat-user-info">
+                                <span id="chat-username">Sohbet Seçin</span>
+                                <span id="chat-status">Çevrimdışı</span>
                             </div>
                         </div>
-                        
-                        <button type="submit" class="save-btn">Değişiklikleri Kaydet</button>
-                    </form>
-                </div>
-                
-                <div class="settings-section">
-                    <h3>Şifre Değiştir</h3>
-                    <form class="settings-form">
-                        <div class="form-group">
-                            <label for="current-password">Mevcut Şifre</label>
-                            <input type="password" id="current-password">
+                    </div>
+                    
+                    <div class="chat-messages" id="chat-messages">
+                        <div class="empty-chat">
+                            <i class="fas fa-comment-dots"></i>
+                            <p>Bir arkadaş seçerek sohbete başlayın</p>
                         </div>
-                        
-                        <div class="form-group">
-                            <label for="new-password">Yeni Şifre</label>
-                            <input type="password" id="new-password">
+                    </div>
+                    
+                    <div class="chat-input">
+                        <div class="input-container">
+                            <input type="text" placeholder="Bir mesaj yazın..." id="message-input">
+                            <div class="input-actions">
+                                <i class="fas fa-paper-plane" id="send-btn"></i>
+                            </div>
                         </div>
-                        
-                        <div class="form-group">
-                            <label for="confirm-password">Yeni Şifre (Tekrar)</label>
-                            <input type="password" id="confirm-password">
-                        </div>
-                        
-                        <button type="submit" class="save-btn">Şifreyi Değiştir</button>
-                    </form>
+                    </div>
                 </div>
             </div>
+            
+            <!-- Diğer tab içerikleri... -->
         </div>
     </div>
 
-    <script>
-        // Tab geçişleri
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', function() {
-                // Tüm aktif sınıfları kaldır
-                document.querySelectorAll('.nav-item').forEach(i => {
-                    i.classList.remove('active');
-                });
-                
-                // Tüm tabları gizle
-                document.querySelectorAll('.tab-content').forEach(tab => {
-                    tab.classList.remove('active');
-                });
-                
-                // Tıklanan öğeye aktif sınıfı ekle
-                this.classList.add('active');
-                
-                // İlgili tabı göster
-                const tabId = this.getAttribute('data-tab') + '-tab';
-                document.getElementById(tabId).classList.add('active');
-            });
-        });
-        
-        // Avatar değiştirme
-        document.getElementById('avatar-upload').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    document.getElementById('settings-avatar').src = event.target.result;
-                    document.getElementById('user-avatar').src = event.target.result;
-                };
-                reader.readAsDataURL(file);
-            }
-        });
-        
-        // Kullanıcı adı değiştirme örneği
-        document.getElementById('settings-username').addEventListener('change', function() {
-            document.getElementById('username').textContent = this.value;
-        });
-    </script>
+    <!-- Firebase ve Uygulama Scriptleri -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
+    <script src="js/db.js"></script>
+    <script src="js/dashboard.js"></script>
 </body>
 </html>
