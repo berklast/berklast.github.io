@@ -6,83 +6,42 @@
 <body>
   <div class="auth-card">
     <div class="auth-header">
-      <h1>Hesap Oluştur</h1>
-      <p>NewDC'ye katılın</p>
+      <h1><i class="fas fa-user-plus"></i> Kayıt Ol</h1>
+      <p>Yeni hesap oluşturun</p>
     </div>
     <div class="auth-body">
       <div class="input-group">
-        <label for="email">E-posta</label>
-        <input type="email" id="email" placeholder="ornek@mail.com" required>
+        <input type="email" id="email" placeholder="E-posta" required>
         <div class="error-message" id="email-error"></div>
       </div>
       <div class="input-group">
-        <label for="password">Şifre (en az 6 karakter)</label>
-        <input type="password" id="password" placeholder="••••••••" required>
+        <input type="password" id="password" placeholder="Şifre (min 6 karakter)" required>
         <div class="error-message" id="password-error"></div>
       </div>
-      <div class="input-group">
-        <label for="confirm-password">Şifre Tekrar</label>
-        <input type="password" id="confirm-password" placeholder="••••••••" required>
-        <div class="error-message" id="confirm-error"></div>
-      </div>
       <button class="btn btn-primary" id="register-btn">
-        <i class="fas fa-user-plus"></i> Kayıt Ol
+        <i class="fas fa-check"></i> Kaydı Tamamla
       </button>
-      <button class="btn btn-secondary" id="login-btn">
-        <i class="fas fa-sign-in-alt"></i> Zaten hesabım var
-      </button>
+      <div class="auth-footer">
+        <a href="/login.html"><i class="fas fa-sign-in-alt"></i> Giriş Yap</a>
+      </div>
     </div>
   </div>
 
   <script type="module">
-    import { 
-      auth, 
-      createUserWithEmailAndPassword,
-      db,
-      doc,
-      setDoc,
-      serverTimestamp
-    } from './js/firebase.js';
+    import { auth, createUserWithEmailAndPassword } from '/js/firebase.js';
 
     document.getElementById('register-btn').addEventListener('click', async () => {
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
-      const confirmPassword = document.getElementById('confirm-password').value;
-
-      // Doğrulamalar
-      if (password !== confirmPassword) {
-        document.getElementById('confirm-error').textContent = "Şifreler eşleşmiyor!";
-        document.getElementById('confirm-error').style.display = 'block';
-        return;
-      }
-
-      if (password.length < 6) {
-        document.getElementById('password-error').textContent = "Şifre en az 6 karakter olmalı!";
-        document.getElementById('password-error').style.display = 'block';
-        return;
-      }
-
+      
       try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        
-        // Firestore'a kullanıcı kaydet
-        await setDoc(doc(db, "users", userCredential.user.uid), {
-          email: email,
-          createdAt: serverTimestamp(),
-          lastLogin: serverTimestamp(),
-          status: "online"
-        });
-        
-        window.location.href = "dashboard.html";
+        await createUserWithEmailAndPassword(auth, email, password);
+        alert("Kayıt başarılı! Giriş yapılıyor...");
+        window.location.href = "/dashboard.html";
       } catch (error) {
-        const errorElement = document.getElementById('email-error');
-        errorElement.textContent = "Hata: " + error.message;
-        errorElement.style.display = 'block';
+        document.getElementById('email-error').textContent = error.message;
+        document.getElementById('email-error').style.display = 'block';
       }
-    });
-
-    document.getElementById('login-btn').addEventListener('click', () => {
-      window.location.href = "login.html";
     });
   </script>
 </body>
