@@ -4,255 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NewDC | Modern Sohbet Platformu</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/style.css">
-    <style>
-        :root {
-            --primary: #5865F2;
-            --primary-dark: #4752C4;
-            --secondary: #ED4245;
-            --dark: #23272A;
-            --light: #FFFFFF;
-            --gray: #99AAB5;
-            --bg: #F8F9FA;
-            --success: #3BA55C;
-        }
-        
-        .hero {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: var(--light);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
-            animation: rotate 20s linear infinite;
-        }
-        
-        @keyframes rotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .hero-content {
-            position: relative;
-            z-index: 2;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 2rem;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-            align-items: center;
-        }
-        
-        .hero-text {
-            animation: fadeInUp 0.8s ease-out;
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-        
-        .logo-icon {
-            font-size: 2.5rem;
-            margin-right: 1rem;
-            color: var(--light);
-        }
-        
-        .logo-text {
-            font-size: 2.5rem;
-            font-weight: 700;
-        }
-        
-        .hero-title {
-            font-size: 3.5rem;
-            font-weight: 700;
-            line-height: 1.2;
-            margin-bottom: 1.5rem;
-        }
-        
-        .hero-subtitle {
-            font-size: 1.25rem;
-            opacity: 0.9;
-            margin-bottom: 2.5rem;
-            line-height: 1.6;
-        }
-        
-        .cta-buttons {
-            display: flex;
-            gap: 1rem;
-        }
-        
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .btn-primary {
-            background: var(--light);
-            color: var(--primary);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(0,0,0,0.15);
-        }
-        
-        .btn-secondary {
-            background: transparent;
-            color: var(--light);
-            border: 2px solid rgba(255,255,255,0.3);
-        }
-        
-        .btn-secondary:hover {
-            background: rgba(255,255,255,0.1);
-            border-color: rgba(255,255,255,0.5);
-        }
-        
-        .features-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            animation: fadeIn 1s ease-out 0.3s both;
-        }
-        
-        .feature-card {
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 12px;
-            padding: 2rem;
-            border: 1px solid rgba(255,255,255,0.2);
-            transition: all 0.3s ease;
-        }
-        
-        .feature-card:hover {
-            transform: translateY(-5px);
-            background: rgba(255,255,255,0.15);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-        }
-        
-        .feature-icon {
-            font-size: 2rem;
-            margin-bottom: 1.5rem;
-            color: var(--light);
-        }
-        
-        .feature-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-        }
-        
-        .feature-desc {
-            opacity: 0.8;
-            line-height: 1.6;
-        }
-        
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        @media (max-width: 992px) {
-            .hero-content {
-                grid-template-columns: 1fr;
-                text-align: center;
-            }
-            
-            .cta-buttons {
-                justify-content: center;
-            }
-            
-            .logo {
-                justify-content: center;
-            }
-        }
-        
-        @media (max-width: 576px) {
-            .hero-title {
-                font-size: 2.5rem;
-            }
-            
-            .hero-subtitle {
-                font-size: 1rem;
-            }
-            
-            .cta-buttons {
-                flex-direction: column;
-            }
-        }
-    </style>
 </head>
 <body>
-    <section class="hero">
-        <div class="hero-content">
-            <div class="hero-text">
-                <div class="logo">
-                    <i class="fas fa-comment-dots logo-icon"></i>
-                    <span class="logo-text">NewDC</span>
-                </div>
-                <h1 class="hero-title">Bağlantı Kurmanın Yeni Yolu</h1>
-                <p class="hero-subtitle">Dünyanın dört bir yanındaki insanlarla gerçek zamanlı olarak bağlantı kurun. Kolay, hızlı ve güvenli.</p>
-                <div class="cta-buttons">
-                    <a href="auth.html?mode=login" class="btn btn-primary">Giriş Yap</a>
-                    <a href="auth.html?mode=register" class="btn btn-secondary">Kayıt Ol</a>
-                </div>
+    <div class="welcome-container">
+        <div class="welcome-content">
+            <div class="logo">
+                <i class="fas fa-comment-dots logo-icon"></i>
+                <h1 class="logo-text">NewDC</h1>
             </div>
-            
-            <div class="features-grid">
-                <div class="feature-card">
-                    <i class="fas fa-user-friends feature-icon"></i>
-                    <h3 class="feature-title">Arkadaşlarını Bul</h3>
-                    <p class="feature-desc">Kayıtlı kullanıcıları keşfet ve yeni bağlantılar kur.</p>
-                </div>
-                
-                <div class="feature-card">
-                    <i class="fas fa-bolt feature-icon"></i>
-                    <h3 class="feature-title">Anında Mesajlaş</h3>
-                    <p class="feature-desc">Gerçek zamanlı sohbet ile kesintisiz iletişim.</p>
-                </div>
-                
-                <div class="feature-card">
-                    <i class="fas fa-shield-alt feature-icon"></i>
-                    <h3 class="feature-title">Güvenli Platform</h3>
-                    <p class="feature-desc">Gelişmiş güvenlik önlemleri ile güvenliğiniz garantide.</p>
-                </div>
+            <p class="welcome-message">Dünyanın dört bir yanındaki insanlarla bağlantı kurun</p>
+            <div class="welcome-buttons">
+                <a href="auth.html?mode=login" class="btn btn-primary">Giriş Yap</a>
+                <a href="auth.html?mode=register" class="btn btn-secondary">Kayıt Ol</a>
             </div>
         </div>
-    </section>
+    </div>
 
+    <!-- Firebase ve Uygulama Scriptleri -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-storage.js"></script>
     <script src="js/db.js"></script>
 </body>
 </html>
