@@ -1,51 +1,27 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { 
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  sendEmailVerification,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+  getAuth, 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { 
-  getFirestore,
-  doc,
+  getFirestore, 
+  doc, 
   setDoc,
-  updateDoc,
-  serverTimestamp
-} from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+  serverTimestamp 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDH5GBWQNoZv7LZZ2MbFjh-twI1jZuYqK0",
-  authDomain: "newdc-d6404.firebaseapp.com",
-  projectId: "newdc-d6404",
-  storageBucket: "newdc-d6404.appspot.com",
-  messagingSenderId: "101292652984",
-  appId: "1:101292652984:web:59d6b49b400572bec1774d",
-  measurementId: "G-NV86JDVJ27"
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT_ID.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// Kullanıcı durum takibi
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    await updateDoc(doc(db, "users", user.uid), {
-      status: "online",
-      lastSeen: serverTimestamp()
-    });
-  }
-});
-
-export { 
-  auth, 
-  db,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  sendEmailVerification,
-  doc,
-  setDoc,
-  updateDoc,
-  serverTimestamp
-};
+export { auth, db, createUserWithEmailAndPassword, signInWithEmailAndPassword, doc, setDoc, serverTimestamp };
