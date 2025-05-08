@@ -31,33 +31,49 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            background-image: radial-gradient(circle at 15% 50%, rgba(88, 101, 242, 0.1) 0%, rgba(88, 101, 242, 0) 25%);
         }
         
         .auth-container {
             background-color: var(--dark);
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
             width: 420px;
             padding: 40px;
             text-align: center;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .logo {
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             font-weight: 700;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             color: var(--primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .logo i {
+            margin-right: 10px;
         }
         
         .subtitle {
             color: var(--gray);
             margin-bottom: 30px;
             font-size: 1rem;
+            line-height: 1.5;
         }
         
         .input-group {
             margin-bottom: 20px;
             text-align: left;
+            position: relative;
         }
         
         .input-group label {
@@ -65,33 +81,42 @@
             margin-bottom: 8px;
             color: var(--gray);
             font-size: 0.9rem;
+            font-weight: 500;
         }
         
         .input-group input {
             width: 100%;
-            padding: 12px 15px;
+            padding: 14px 15px;
             background-color: var(--darker);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
+            border-radius: 8px;
             color: var(--light);
             font-size: 1rem;
-            transition: border 0.3s;
+            transition: all 0.3s;
         }
         
         .input-group input:focus {
             outline: none;
             border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(88, 101, 242, 0.3);
         }
         
         .btn {
             width: 100%;
-            padding: 12px;
+            padding: 14px;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             font-size: 1rem;
             font-weight: 500;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .btn i {
+            margin-right: 8px;
         }
         
         .btn-primary {
@@ -101,12 +126,17 @@
         
         .btn-primary:hover {
             background-color: #4752C4;
+            transform: translateY(-2px);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0);
         }
         
         .divider {
             display: flex;
             align-items: center;
-            margin: 20px 0;
+            margin: 25px 0;
             color: var(--gray);
             font-size: 0.9rem;
         }
@@ -118,15 +148,15 @@
         }
         
         .divider::before {
-            margin-right: 10px;
+            margin-right: 15px;
         }
         
         .divider::after {
-            margin-left: 10px;
+            margin-left: 15px;
         }
         
         .switch-auth {
-            margin-top: 20px;
+            margin-top: 25px;
             color: var(--gray);
             font-size: 0.9rem;
         }
@@ -134,33 +164,48 @@
         .switch-auth a {
             color: var(--primary);
             text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
         }
         
         .switch-auth a:hover {
             text-decoration: underline;
         }
+        
+        .error-message {
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+        }
     </style>
 </head>
 <body>
     <div class="auth-container" id="auth-container">
-        <div class="logo">NewDC</div>
-        <div class="subtitle">Sohbet dünyasına katılmak için giriş yapın</div>
+        <div class="logo"><i class="fab fa-discord"></i>NewDC</div>
+        <div class="subtitle">Sohbet dünyasına katılmak için giriş yapın veya yeni bir hesap oluşturun</div>
         
         <div class="input-group">
             <label for="email">E-posta Adresi</label>
-            <input type="email" id="email" placeholder="email@newdc.com">
+            <input type="email" id="email" placeholder="ornek@newdc.com" autocomplete="username">
+            <div class="error-message" id="email-error">Geçerli bir e-posta adresi girin</div>
         </div>
         
         <div class="input-group">
             <label for="password">Şifre</label>
-            <input type="password" id="password" placeholder="••••••••">
+            <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
+            <div class="error-message" id="password-error">Şifre en az 6 karakter olmalıdır</div>
         </div>
         
-        <button class="btn btn-primary" id="login-btn">Giriş Yap</button>
+        <button class="btn btn-primary" id="login-btn">
+            <i class="fas fa-sign-in-alt"></i> Giriş Yap
+        </button>
         
         <div class="divider">VEYA</div>
         
-        <button class="btn btn-primary" id="register-btn" style="display: none;">Kayıt Ol</button>
+        <button class="btn btn-primary" id="register-btn" style="display: none;">
+            <i class="fas fa-user-plus"></i> Kayıt Ol
+        </button>
         
         <div class="switch-auth">
             <span id="switch-text">Hesabınız yok mu?</span>
@@ -168,75 +213,6 @@
         </div>
     </div>
 
-    <!-- Firebase CDN'leri eklendi -->
-    <script type="module">
-        import { 
-            auth,
-            createUserWithEmailAndPassword,
-            signInWithEmailAndPassword,
-            sendEmailVerification,
-            db,
-            doc,
-            setDoc
-        } from './firebase.js';
-
-        // Kayıt ve giriş işlemleri
-        document.getElementById('register-btn').addEventListener('click', async () => {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            
-            try {
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                await sendEmailVerification(userCredential.user);
-                
-                await setDoc(doc(db, "users", userCredential.user.uid), {
-                    email: email,
-                    username: email.split('@')[0],
-                    createdAt: new Date(),
-                    friends: []
-                });
-                
-                alert('Kayıt başarılı! Lütfen e-postanızı doğrulayın.');
-            } catch (error) {
-                alert('Hata: ' + error.message);
-                console.error(error);
-            }
-        });
-
-        document.getElementById('login-btn').addEventListener('click', async () => {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            
-            try {
-                await signInWithEmailAndPassword(auth, email, password);
-                alert('Giriş başarılı! Yönlendiriliyorsunuz...');
-                window.location.href = 'dashboard.html';
-            } catch (error) {
-                alert('Hata: ' + error.message);
-                console.error(error);
-            }
-        });
-
-        // Kayıt/Giriş modu değiştirme
-        document.getElementById('switch-link').addEventListener('click', (e) => {
-            e.preventDefault();
-            const loginBtn = document.getElementById('login-btn');
-            const registerBtn = document.getElementById('register-btn');
-            const switchText = document.getElementById('switch-text');
-            const switchLink = document.getElementById('switch-link');
-            
-            if (loginBtn.style.display === 'none') {
-                loginBtn.style.display = 'block';
-                registerBtn.style.display = 'none';
-                switchText.textContent = "Hesabınız yok mu?";
-                switchLink.textContent = "Kayıt Ol";
-            } else {
-                loginBtn.style.display = 'none';
-                registerBtn.style.display = 'block';
-                switchText.textContent = "Zaten hesabınız var mı?";
-                switchLink.textContent = "Giriş Yap";
-            }
-        });
-    </script>
+    <script type="module" src="auth.js"></script>
 </body>
 </html>
