@@ -1,76 +1,91 @@
-// Çevrimiçi kullanıcıları yükleme fonksiyonu
-async function loadOnlineUsers() {
-  const q = query(
-    collection(db, "users"),
-    where("status", "==", "online")
-  );
+import { 
+  auth, 
+  db, 
+  signOut,
+  onAuthStateChanged,
+  collection,
+  addDoc,
+  serverTimestamp,
+  onSnapshot,
+  query,
+  orderBy
+} from './firebase.js';
 
-  const unsubscribe = onSnapshot(q, (snapshot) => {
-    let onlineCount = 0;
-    const onlineUsersContainer = document.getElementById('online-users');
-    onlineUsersContainer.innerHTML = '';
+// UI Elementleri
+const chatArea = document.getElementById('chat-area');
+const messageInput = document.getElementById('message-input');
+const sendBtn = document.getElementById('send-btn');
+const logoutBtn = document.getElementById('logout-btn');
+const userAvatar = document.getElementById('user-avatar');
+const usernameElement = document.getElementById('username');
 
-    snapshot.forEach((doc) => {
-      if (doc.id !== auth.currentUser?.uid) {
-        onlineCount++;
-        const user = doc.data();
-        const avatar = document.createElement('div');
-        avatar.className = 'member-avatar';
-        avatar.textContent = user.username?.charAt(0) || '?';
-        avatar.title = user.username || 'Kullanıcı';
-        onlineUsersContainer.appendChild(avatar);
-      }
-    });
-
-    document.getElementById('online-count').textContent = `Çevrimiçi: ${onlineCount}`;
-  });
-
-  return unsubscribe;
-}
-
-// Mesaj gönderme fonksiyonu (düzeltilmiş)
+// Mesaj Gönderme Fonksiyonu
 async function sendMessage() {
-  const messageInput = document.getElementById('message-input');
-  const text = messageInput.value.trim();
-  if (!text || !auth.currentUser) return;
+  const message = messageInput.value.trim();
+  if (!message || !auth.currentUser) return;
 
   try {
-    const messageData = {
-      text: text,
-      senderId: auth.currentUser.uid,
-      senderName: auth.currentUser.displayName || auth.currentUser.email.split('@')[0],
+    await addDoc(collection(db, "messages"), {
+      text: message,
+      sender: auth.currentUser.uid,
       timestamp: serverTimestamp()
-    };
-
-    if (currentChat === 'general') {
-      messageData.channel = 'general';
-    } else {
-      messageData.receiverId = currentChat;
-      messageData.users = [auth.currentUser.uid, currentChat];
-    }
-
-    await addDoc(collection(db, "messages"), messageData);
+    });
     messageInput.value = '';
   } catch (error) {
     console.error("Mesaj gönderilemedi:", error);
-    alert("Hata: " + error.message);
+    alert("Mesaj gönderilemedi: " + error.message);
   }
 }
 
-// Event listener'ları yeniden bağlama
-function setupEventListeners() {
-  // Mesaj gönderme
-  document.getElementById('send-btn').addEventListener('click', sendMessage);
+// Mesajları Dinleme
+function setupMessages() {
+  const q = query(collection(db, "messages"), orderBy("timestamp"));
   
-  // Mesaj input'unda Enter tuşu
-  document.getElementById('message-input').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
+  onSnapshot(q, (snapshot) => {
+    chatArea.innerHTML = '';
+    snapshot.forEach((doc) => {
+      const message = doc.data();
+      const messageElement = document.createElement('div');
+      messageElement.className = 'message';
+      messageElement.textContent = message.text;
+      chatArea.appendChild(messageElement);
+    });
+    chatArea.scrollTop = chatArea.scrollHeight;
   });
-
-  // Diğer butonlar
-  document.getElementById('add-friend-btn').addEventListener('click', addFriend);
-  document.getElementById('logout-btn').addEventListener('click', logout);
 }
+
+// Kullanıcı Bilgilerini Yükle
+function loadUser(user) {
+  usernameElement.textContent = user.email.split('@')[0];
+  userAvatar.textContent = user.email.charAt(0).toUpperCase();
+}
+
+// Çıkış Yap
+logoutBtn.addEventListener('click', async () => {
+  try {
+    await signOut(auth);
+    window.location.href = "index.html";
+  } catch (error) {
+    console.error("Çıkış yapılamadı:", error);
+  }
+});
+
+// Enter tuşu ile mesaj gönderme
+messageInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') {
+    sendMessage();
+  }
+});
+
+// Gönder butonu
+sendBtn.addEventListener('click', sendMessage);
+
+// Oturum Kontrolü
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    loadUser(user);
+    setupMessages();
+  } else {
+    window.location.href = "index.html";
+  }
+});
