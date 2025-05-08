@@ -1,14 +1,18 @@
 // auth.js
-import { auth, db } from './firebase.js';
 import { 
+  auth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  sendEmailVerification
-} from "firebase/auth";
-import { doc, setDoc } from "firebase/firestore";
+  sendEmailVerification,
+  db,
+  doc,
+  setDoc
+} from './firebase.js';
 
-// Kayıt fonksiyonu
-async function register(email, password) {
+document.getElementById('register-btn').addEventListener('click', async () => {
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     await sendEmailVerification(userCredential.user);
@@ -17,23 +21,27 @@ async function register(email, password) {
     await setDoc(doc(db, "users", userCredential.user.uid), {
       email: email,
       username: email.split('@')[0],
-      createdAt: new Date()
+      createdAt: new Date(),
+      friends: []
     });
     
-    console.log("Kayıt başarılı!");
+    alert('Kayıt başarılı! Lütfen e-postanızı doğrulayın.');
   } catch (error) {
-    console.error("Kayıt hatası:", error.message);
-    alert("Kayıt hatası: " + error.message);
+    alert('Hata: ' + error.message);
+    console.error(error);
   }
-}
+});
 
-// Giriş fonksiyonu
-async function login(email, password) {
+document.getElementById('login-btn').addEventListener('click', async () => {
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+  
   try {
     await signInWithEmailAndPassword(auth, email, password);
-    console.log("Giriş başarılı!");
+    alert('Giriş başarılı! Yönlendiriliyorsunuz...');
+    window.location.href = 'dashboard.html';
   } catch (error) {
-    console.error("Giriş hatası:", error.message);
-    alert("Giriş hatası: " + error.message);
+    alert('Hata: ' + error.message);
+    console.error(error);
   }
-}
+});
