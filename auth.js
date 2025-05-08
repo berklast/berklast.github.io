@@ -1,69 +1,53 @@
 import { 
-  auth, 
-  db, 
-  createUserWithEmailAndPassword, 
+  auth,
+  createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  db,
   doc,
   setDoc,
   serverTimestamp
 } from './firebase.js';
 
-document.addEventListener('DOMContentLoaded', () => {
-  const signupBtn = document.getElementById('signup-btn');
-  const loginBtn = document.getElementById('login-btn');
+// Kayıt Ol Fonksiyonu
+document.getElementById('signup-btn').addEventListener('click', async () => {
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
 
-  // Kayıt Ol
-  signupBtn.addEventListener('click', async () => {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      await createUserProfile(userCredential.user);
-      alert('Kayıt başarılı!');
-    } catch (error) {
-      alert('Hata: ' + error.message);
-    }
-  });
-
-  // Giriş Yap
-  loginBtn.addEventListener('click', async () => {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-    
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      alert('Giriş başarılı!');
-    } catch (error) {
-      alert('Hata: ' + error.message);
-    }
-  });
-
-  // Kullanıcı Profili Oluşturma
-  async function createUserProfile(user) {
-    await setDoc(doc(db, "users", user.uid), {
-      email: user.email,
-      username: user.email.split('@')[0],
-      status: "online",
+    // Firestore'da kullanıcı profili oluştur
+    await setDoc(doc(db, "users", userCredential.user.uid), {
+      email: email,
       createdAt: serverTimestamp(),
-      lastSeen: serverTimestamp()
+      lastLogin: serverTimestamp()
     });
+    
+    alert("Kayıt başarılı!");
+    window.location.href = "dashboard.html";
+  } catch (error) {
+    console.error("Kayıt hatası:", error);
+    alert("Hata: " + error.message);
   }
+});
 
-  // Oturum Durumu Takibi
-  auth.onAuthStateChanged(user => {
-    if (user) {
-      console.log("Oturum açık:", user.email);
-      updateUserStatus(user.uid, "online");
-    } else {
-      console.log("Oturum kapalı");
-    }
-  });
+// Giriş Yap Fonksiyonu
+document.getElementById('login-btn').addEventListener('click', async () => {
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
 
-  async function updateUserStatus(uid, status) {
-    await setDoc(doc(db, "users", uid), {
-      status: status,
-      lastSeen: serverTimestamp()
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    
+    // Son giriş zamanını güncelle
+    await setDoc(doc(db, "users", auth.currentUser.uid), {
+      lastLogin: serverTimestamp()
     }, { merge: true });
+    
+    alert("Giriş başarılı!");
+    window.location.href = "dashboard.html";
+  } catch (error) {
+    console.error("Giriş hatası:", error);
+    alert("Hata: " + error.message);
   }
 });
