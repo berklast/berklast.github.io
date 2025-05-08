@@ -10,7 +10,6 @@
     :root {
       --primary: #5865F2;
       --primary-dark: #4752C4;
-      --secondary: #57F287;
       --danger: #ED4245;
       --dark: #2F3136;
       --darker: #202225;
@@ -43,33 +42,33 @@
       border-radius: 12px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
       overflow: hidden;
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .auth-header {
-      padding: 2.5rem;
+      padding: 2rem;
       text-align: center;
       background: linear-gradient(135deg, var(--primary), var(--primary-dark));
       color: white;
     }
 
     .auth-header h1 {
-      font-size: 2.2rem;
+      font-size: 1.8rem;
       font-weight: 700;
       margin-bottom: 0.5rem;
     }
 
-    .auth-header p {
-      opacity: 0.9;
-      font-weight: 300;
-    }
-
     .auth-body {
-      padding: 2.5rem;
+      padding: 2rem;
     }
 
     .input-group {
       margin-bottom: 1.5rem;
-      position: relative;
     }
 
     .input-group label {
@@ -81,7 +80,7 @@
 
     .input-group input {
       width: 100%;
-      padding: 14px 16px;
+      padding: 12px 16px;
       border-radius: 6px;
       border: 1px solid rgba(255, 255, 255, 0.1);
       background: var(--darker);
@@ -98,7 +97,7 @@
 
     .btn {
       width: 100%;
-      padding: 14px;
+      padding: 12px;
       border-radius: 6px;
       border: none;
       font-size: 1rem;
@@ -135,7 +134,7 @@
 
     .auth-footer {
       text-align: center;
-      margin-top: 2rem;
+      margin-top: 1.5rem;
       font-size: 0.9rem;
       color: var(--text-muted);
     }
@@ -187,6 +186,31 @@
     </div>
   </div>
 
-  <script type="module" src="js/auth.js"></script>
+  <script type="module">
+    import { 
+      auth, 
+      signInWithEmailAndPassword 
+    } from './js/firebase.js';
+
+    // Giriş Yap Butonu
+    document.getElementById('login-btn').addEventListener('click', async () => {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        window.location.href = "dashboard.html";
+      } catch (error) {
+        const errorElement = document.getElementById('email-error');
+        errorElement.textContent = "Hatalı giriş bilgileri!";
+        errorElement.style.display = 'block';
+      }
+    });
+
+    // Kayıt Ol Butonu
+    document.getElementById('signup-btn').addEventListener('click', () => {
+      window.location.href = "register.html";
+    });
+  </script>
 </body>
 </html>
