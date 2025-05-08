@@ -30,10 +30,9 @@ document.getElementById('register-btn').addEventListener('click', async (e) => {
   }
 
   try {
-    // Kayıt ol
-    await createUserWithEmailAndPassword(auth, email, password);
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    console.log("Kayıt başarılı:", userCredential.user);
     
-    // Başarılı kayıt
     alert("Kayıt başarılı! Giriş sayfasına yönlendiriliyorsunuz...");
     window.location.href = "/dashboard.html";
   } catch (error) {
