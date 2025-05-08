@@ -47,9 +47,15 @@ function updateUserInfo(user) {
         const userData = doc.data();
         if (document.getElementById('username')) {
           document.getElementById('username').textContent = userData.name;
+          document.getElementById('settings-username').value = userData.name;
         }
         if (document.getElementById('user-avatar')) {
-          document.getElementById('user-avatar').src = userData.photoURL || 'https://via.placeholder.com/40';
+          const avatarUrl = userData.photoURL || 'https://via.placeholder.com/40';
+          document.getElementById('user-avatar').src = avatarUrl;
+          document.getElementById('settings-avatar').src = avatarUrl;
+        }
+        if (document.getElementById('settings-email')) {
+          document.getElementById('settings-email').value = user.email;
         }
       }
     });
