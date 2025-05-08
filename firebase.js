@@ -1,11 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
 import { 
-  getAuth, 
-  createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
-  sendEmailVerification
+  getAuth,
+  onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 import { 
   getFirestore,
@@ -16,10 +12,10 @@ import {
   updateDoc,
   arrayUnion,
   arrayRemove,
-  onSnapshot,
+  serverTimestamp,
   query,
   where,
-  serverTimestamp,
+  onSnapshot,
   addDoc
 } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
 
@@ -37,14 +33,26 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+// Kullanıcı durum takibi
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    await updateDoc(doc(db, "users", user.uid), {
+      status: "online",
+      lastSeen: serverTimestamp()
+    });
+    
+    window.addEventListener('beforeunload', async () => {
+      await updateDoc(doc(db, "users", user.uid), {
+        status: "offline",
+        lastSeen: serverTimestamp()
+      });
+    });
+  }
+});
+
 export { 
   auth, 
   db,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-  onAuthStateChanged,
-  sendEmailVerification,
   collection,
   doc,
   setDoc,
@@ -52,9 +60,9 @@ export {
   updateDoc,
   arrayUnion,
   arrayRemove,
-  onSnapshot,
+  serverTimestamp,
   query,
   where,
-  serverTimestamp,
+  onSnapshot,
   addDoc
 };
