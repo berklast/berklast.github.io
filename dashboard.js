@@ -1,246 +1,194 @@
 // dashboard.js
-import { auth, db } from './firebase.js';
 import { 
-    onAuthStateChanged, 
-    signOut,
-    updateProfile,
-    updateEmail,
-    updatePassword
-} from "firebase/auth";
-import { 
-    collection, 
-    query, 
-    where, 
-    onSnapshot, 
-    addDoc, 
-    doc, 
-    getDoc, 
-    updateDoc, 
-    arrayUnion, 
-    arrayRemove,
-    getDocs,
-    setDoc
-} from "firebase/firestore";
+  auth, 
+  db, 
+  onSnapshot, 
+  collection, 
+  query, 
+  where, 
+  addDoc, 
+  doc, 
+  getDoc, 
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+  serverTimestamp
+} from './firebase.js';
 
 // DOM Elements
-const userAvatar = document.getElementById('user-avatar');
-const username = document.getElementById('username');
-const userTag = document.getElementById('user-tag');
 const chatMessages = document.getElementById('chat-messages');
 const messageInput = document.getElementById('message-input');
 const sendBtn = document.getElementById('send-btn');
-const settingsBtn = document.getElementById('settings-btn');
-const settingsModal = document.getElementById('settings-modal');
-const settingsClose = document.getElementById('settings-close');
-const changeUsernameBtn = document.getElementById('change-username-btn');
-const changeEmailBtn = document.getElementById('change-email-btn');
-const changePasswordBtn = document.getElementById('change-password-btn');
-const logoutBtn = document.getElementById('logout-btn');
+const friendsList = document.getElementById('friends-list');
+const addFriendBtn = document.getElementById('add-friend-btn');
+const friendRequestsBtn = document.getElementById('friend-requests-btn');
 
 let currentUser = null;
-let currentUserData = null;
+let currentChatUserId = null;
 
-// Initialize the app
+// Kullanıcı oturumunu kontrol et
 onAuthStateChanged(auth, async (user) => {
-    if (!user) {
-        window.location.href = "index.html";
-        return;
-    }
-    
-    currentUser = user;
-    
-    // Load user data
-    const userDoc = await getDoc(doc(db, "users", user.uid));
-    if (userDoc.exists()) {
-        currentUserData = userDoc.data();
-        updateUI();
-    }
-    
-    // Load messages
-    loadMessages();
-    
-    // Load friends
-    loadFriends();
+  if (!user) {
+    window.location.href = 'index.html';
+    return;
+  }
+  
+  currentUser = user;
+  loadUserData();
+  loadFriends();
+  loadMessages();
 });
 
-function updateUI() {
-    // Set username and avatar
-    username.textContent = currentUserData.username;
-    userTag.textContent = `#${currentUser.uid.substring(0, 4)}`;
-    userAvatar.textContent = currentUserData.username.substring(0, 1).toUpperCase();
-}
-
-// Load messages
+// Mesajları yükle
 function loadMessages() {
-    const messagesQuery = query(collection(db, "messages"), where("channel", "==", "general"));
-    
-    onSnapshot(messagesQuery, (snapshot) => {
-        chatMessages.innerHTML = '';
-        snapshot.forEach((doc) => {
-            const message = doc.data();
-            displayMessage(message);
-        });
+  const messagesQuery = query(
+    collection(db, "messages"),
+    where("users", "array-contains", currentUser.uid)
+  );
+  
+  onSnapshot(messagesQuery, (snapshot) => {
+    chatMessages.innerHTML = '';
+    snapshot.forEach((doc) => {
+      const message = doc.data();
+      displayMessage(message);
     });
+  });
 }
 
-// Display message
+// Mesaj göster
 function displayMessage(message) {
-    const messageGroup = document.createElement('div');
-    messageGroup.className = 'message-group';
-    
-    const messageDiv = document.createElement('div');
-    messageDiv.className = 'message';
-    
-    const avatarDiv = document.createElement('div');
-    avatarDiv.className = 'message-avatar';
-    avatarDiv.title = message.author;
-    avatarDiv.textContent = message.author.substring(0, 1).toUpperCase();
-    
-    const contentDiv = document.createElement('div');
-    contentDiv.className = 'message-content';
-    
-    const headerDiv = document.createElement('div');
-    headerDiv.className = 'message-header';
-    
-    const authorSpan = document.createElement('div');
-    authorSpan.className = 'message-author';
-    authorSpan.textContent = message.author;
-    
-    const timeSpan = document.createElement('div');
-    timeSpan.className = 'message-time';
-    timeSpan.textContent = new Date(message.createdAt?.toDate()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-    
-    const textDiv = document.createElement('div');
-    textDiv.className = 'message-text';
-    textDiv.textContent = message.text;
-    
-    headerDiv.appendChild(authorSpan);
-    headerDiv.appendChild(timeSpan);
-    contentDiv.appendChild(headerDiv);
-    contentDiv.appendChild(textDiv);
-    messageDiv.appendChild(avatarDiv);
-    messageDiv.appendChild(contentDiv);
-    messageGroup.appendChild(messageDiv);
-    
-    chatMessages.appendChild(messageGroup);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+  const messageDiv = document.createElement('div');
+  messageDiv.className = 'message';
+  
+  messageDiv.innerHTML = `
+    <div class="message-avatar ${message.senderId === currentUser.uid ? 'you' : ''}">
+      ${message.senderName.charAt(0).toUpperCase()}
+      ${message.senderId !== currentUser.uid && message.isOnline ? 
+        '<span class="online-dot"></span>' : ''}
+    </div>
+    <div class="message-content">
+      <div class="message-header">
+        <span class="message-author">${message.senderName}</span>
+        <span class="message-time">${new Date(message.timestamp?.toDate()).toLocaleTimeString()}</span>
+      </div>
+      <div class="message-text">${message.text}</div>
+    </div>
+  `;
+  
+  chatMessages.appendChild(messageDiv);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-// Send message
-messageInput.addEventListener('keypress', async (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        await sendMessage();
-    }
+// Mesaj gönder
+sendBtn.addEventListener('click', sendMessage);
+messageInput.addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') sendMessage();
 });
 
 async function sendMessage() {
-    const text = messageInput.value.trim();
-    if (!text || !currentUser || !currentUserData) return;
+  const text = messageInput.value.trim();
+  if (!text || !currentChatUserId) return;
+
+  try {
+    await addDoc(collection(db, "messages"), {
+      text: text,
+      senderId: currentUser.uid,
+      senderName: currentUser.displayName || currentUser.email.split('@')[0],
+      receiverId: currentChatUserId,
+      users: [currentUser.uid, currentChatUserId],
+      timestamp: serverTimestamp(),
+      isRead: false
+    });
     
-    try {
-        await addDoc(collection(db, "messages"), {
-            text: text,
-            author: currentUserData.username,
-            authorId: currentUser.uid,
-            channel: "general",
-            createdAt: new Date()
-        });
-        
-        messageInput.value = '';
-    } catch (error) {
-        console.error("Mesaj gönderilemedi:", error);
-    }
+    messageInput.value = '';
+  } catch (error) {
+    console.error("Mesaj gönderilemedi:", error);
+  }
 }
 
-// Load friends
+// Arkadaşları yükle
 async function loadFriends() {
-    if (!currentUser || !currentUserData) return;
-    
-    const friendsQuery = query(collection(db, "users"), where("__name__", "in", currentUserData.friends));
-    const querySnapshot = await getDocs(friendsQuery);
-    
-    // Burada arkadaş listesini güncelleyecek kodlar olacak
-    // Örnek UI güncellemesi için dashboard.html'de statik arkadaş listesi bulunuyor
+  const userDoc = await getDoc(doc(db, "users", currentUser.uid));
+  if (!userDoc.exists()) return;
+
+  const friends = userDoc.data().friends || [];
+  friendsList.innerHTML = '';
+
+  friends.forEach(async friendId => {
+    const friendDoc = await getDoc(doc(db, "users", friendId));
+    if (friendDoc.exists()) {
+      const friend = friendDoc.data();
+      const isOnline = friend.status === 'online';
+      
+      const friendItem = document.createElement('div');
+      friendItem.className = 'friend-item';
+      friendItem.innerHTML = `
+        <div class="friend-avatar">
+          ${friend.username.charAt(0).toUpperCase()}
+          ${isOnline ? '<span class="online-dot"></span>' : ''}
+        </div>
+        <div class="friend-info">
+          <div class="friend-name">${friend.username}</div>
+          <div class="friend-status">${isOnline ? 'Çevrimiçi' : 'Çevrimdışı'}</div>
+        </div>
+      `;
+      
+      friendItem.addEventListener('click', () => {
+        currentChatUserId = friendId;
+        loadChat(friendId);
+      });
+      
+      friendsList.appendChild(friendItem);
+    }
+  });
 }
 
-// Settings modal
-settingsBtn.addEventListener('click', () => {
-    settingsModal.classList.add('active');
-});
+// Arkadaş ekle
+addFriendBtn.addEventListener('click', async () => {
+  const email = prompt("Arkadaşınızın e-posta adresini girin:");
+  if (!email) return;
 
-settingsClose.addEventListener('click', () => {
-    settingsModal.classList.remove('active');
-});
-
-// Change username
-changeUsernameBtn.addEventListener('click', async () => {
-    const newUsername = prompt("Yeni kullanıcı adınızı girin:", currentUserData.username);
-    if (!newUsername || newUsername.length < 3) {
-        alert("Kullanıcı adı en az 3 karakter olmalıdır!");
-        return;
+  try {
+    // Kullanıcıyı bul
+    const usersQuery = query(collection(db, "users"), where("email", "==", email));
+    const querySnapshot = await getDocs(usersQuery);
+    
+    if (querySnapshot.empty) {
+      alert("Bu e-posta ile kayıtlı kullanıcı bulunamadı!");
+      return;
     }
     
-    try {
-        await updateDoc(doc(db, "users", currentUser.uid), {
-            username: newUsername
-        });
-        
-        currentUserData.username = newUsername;
-        updateUI();
-        alert("Kullanıcı adı başarıyla güncellendi!");
-    } catch (error) {
-        alert("Kullanıcı adı güncellenirken hata oluştu: " + error.message);
-    }
-});
-
-// Change email
-changeEmailBtn.addEventListener('click', async () => {
-    const newEmail = prompt("Yeni e-posta adresinizi girin:", currentUser.email);
-    if (!newEmail || !newEmail.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
-        alert("Geçerli bir e-posta adresi girin!");
-        return;
+    const friendId = querySnapshot.docs[0].id;
+    if (friendId === currentUser.uid) {
+      alert("Kendinize arkadaş isteği gönderemezsiniz!");
+      return;
     }
     
-    try {
-        await updateEmail(currentUser, newEmail);
-        await updateDoc(doc(db, "users", currentUser.uid), {
-            email: newEmail
-        });
-        alert("E-posta adresi başarıyla güncellendi! Lütfen yeni adresinizi doğrulayın.");
-    } catch (error) {
-        alert("E-posta güncellenirken hata oluştu: " + error.message);
-    }
-});
-
-// Change password
-changePasswordBtn.addEventListener('click', async () => {
-    const newPassword = prompt("Yeni şifrenizi girin (en az 6 karakter):");
-    if (!newPassword || newPassword.length < 6) {
-        alert("Şifre en az 6 karakter olmalıdır!");
-        return;
-    }
+    // Arkadaş isteği gönder
+    await addDoc(collection(db, "friendRequests"), {
+      from: currentUser.uid,
+      to: friendId,
+      status: "pending",
+      createdAt: serverTimestamp()
+    });
     
-    try {
-        await updatePassword(currentUser, newPassword);
-        alert("Şifre başarıyla güncellendi!");
-    } catch (error) {
-        alert("Şifre güncellenirken hata oluştu: " + error.message);
-    }
+    alert("Arkadaş isteği gönderildi!");
+  } catch (error) {
+    console.error("Arkadaş eklenirken hata:", error);
+    alert("Hata: " + error.message);
+  }
 });
 
-// Logout
-logoutBtn.addEventListener('click', async () => {
-    try {
-        await signOut(auth);
-        window.location.href = "index.html";
-    } catch (error) {
-        alert("Çıkış yapılırken hata oluştu: " + error.message);
-    }
-});
-
-// Auto-resize textarea
-messageInput.addEventListener('input', function() {
-    this.style.height = 'auto';
-    this.style.height = (this.scrollHeight) + 'px';
-});
+// CSS Eklemeleri (style tag'i içinde)
+/*
+.online-dot {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  background-color: #3BA55C;
+  border-radius: 50%;
+  border: 2px solid var(--dark);
+}
+*/
