@@ -4,9 +4,9 @@ document.getElementById('reset-btn').addEventListener('click', async (e) => {
   e.preventDefault();
   
   const email = document.getElementById('email').value;
-  const emailError = document.getElementById('email-error');
+  const errorElement = document.getElementById('error-message');
 
-  emailError.style.display = 'none';
+  errorElement.style.display = 'none';
 
   try {
     await sendPasswordResetEmail(auth, email);
@@ -17,15 +17,15 @@ document.getElementById('reset-btn').addEventListener('click', async (e) => {
     
     switch(error.code) {
       case "auth/invalid-email":
-        emailError.textContent = "Geçersiz e-posta formatı";
+        errorElement.textContent = "Geçersiz e-posta formatı";
         break;
       case "auth/user-not-found":
-        emailError.textContent = "Bu e-posta kayıtlı değil";
+        errorElement.textContent = "Bu e-posta kayıtlı değil";
         break;
       default:
-        emailError.textContent = "Hata: " + error.message;
+        errorElement.textContent = "Hata: " + error.message;
     }
     
-    emailError.style.display = 'block';
+    errorElement.style.display = 'block';
   }
 });
