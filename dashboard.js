@@ -1,36 +1,35 @@
-import { 
-  auth, 
-  db, 
-  signOut,
-  onAuthStateChanged,
-  collection,
-  addDoc,
-  query,
-  where,
-  onSnapshot,
-  updateDoc
-} from './firebase.js';
+import { auth, signOut, onAuthStateChanged } from './firebase.js';
 
-// Tüm arkadaşlık istekleri ve mesajlaşma fonksiyonları
-class ChatApp {
-  constructor() {
-    this.initAuth();
-    this.initUI();
+// Çıkış Yap Butonu
+document.getElementById('logout-btn').addEventListener('click', async () => {
+  try {
+    await signOut(auth);
+    window.location.href = "/login.html";
+  } catch (error) {
+    console.error("Çıkış yapılamadı:", error);
   }
-  
-  initAuth() {
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        this.currentUser = user;
-        this.loadUserData();
-        this.setupListeners();
-      } else {
-        window.location.href = "login.html";
-      }
-    });
+});
+
+// Kullanıcı Bilgilerini Yükle
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    document.getElementById('username').textContent = user.email.split('@')[0];
+  } else {
+    window.location.href = "/login.html";
   }
-  
-  // Diğer metodlar...
+});
+
+// Mesaj Gönderme Fonksiyonu
+document.getElementById('send-btn').addEventListener('click', sendMessage);
+document.getElementById('message-input').addEventListener('keypress', (e) => {
+  if (e.key === 'Enter') sendMessage();
+});
+
+function sendMessage() {
+  const input = document.getElementById('message-input');
+  const message = input.value.trim();
+  if (message) {
+    // Mesaj gönderme işlemleri
+    input.value = '';
+  }
 }
-
-new ChatApp();
