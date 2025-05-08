@@ -1,41 +1,21 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <!-- Aynı stil ve font tanımları -->
-  <style>
-    /* Premium dashboard stil kodları */
-    .app-container {
-      display: grid;
-      grid-template-columns: 280px 1fr;
-      height: 100vh;
-    }
-    
-    .sidebar {
-      background: var(--dark);
-      border-right: 1px solid rgba(255, 255, 255, 0.05);
-      padding: 1.5rem;
-    }
-    
-    .user-panel {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 1rem;
-      border-radius: 8px;
-      margin-bottom: 2rem;
-      background: rgba(255, 255, 255, 0.05);
-    }
-    
-    /* Diğer dashboard stil tanımları */
-  </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NewDC | Ana Sayfa</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
   <div class="app-container">
     <!-- Sidebar -->
     <div class="sidebar">
       <div class="user-panel">
-        <div class="user-avatar">K</div>
-        <div>
+        <div class="user-avatar">
+          <i class="fas fa-user"></i>
+        </div>
+        <div class="user-info">
           <div class="user-name" id="username">Kullanıcı</div>
           <div class="user-status">Çevrimiçi</div>
         </div>
@@ -43,19 +23,26 @@
       
       <nav class="main-nav">
         <ul>
-          <li><a href="#" class="nav-link active"><i class="fas fa-comment-alt"></i> Sohbet</a></li>
+          <li><a href="#" class="nav-link active"><i class="fas fa-comment"></i> Sohbet</a></li>
           <li><a href="#" class="nav-link"><i class="fas fa-user-friends"></i> Arkadaşlar</a></li>
           <li><a href="#" class="nav-link"><i class="fas fa-cog"></i> Ayarlar</a></li>
+          <li><a href="#" id="logout-btn" class="nav-link"><i class="fas fa-sign-out-alt"></i> Çıkış Yap</a></li>
         </ul>
       </nav>
     </div>
     
     <!-- Main Content -->
     <div class="main-content">
-      <!-- Mesajlaşma arayüzü burada -->
+      <div class="chat-area" id="chat-area">
+        <!-- Mesajlar buraya gelecek -->
+      </div>
+      <div class="message-input-container">
+        <input type="text" class="message-input" id="message-input" placeholder="Mesaj yaz...">
+        <button class="send-btn" id="send-btn"><i class="fas fa-paper-plane"></i></button>
+      </div>
     </div>
   </div>
 
-  <script type="module" src="js/dashboard.js"></script>
+  <script type="module" src="/js/dashboard.js"></script>
 </body>
 </html>
