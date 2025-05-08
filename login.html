@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NewDC - Giriş Yap</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* index.html'deki CSS stilinin aynısını buraya kopyalayın */
+    :root {
+      --primary: #5865F2;
+      --primary-dark: #4752C4;
+      --dark: #2F3136;
+      --darker: #202225;
+      --light: #F2F3F5;
+      --error: #ED4245;
+    }
+    /* Diğer stiller... */
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <div class="logo">NewDC</div>
+    <div class="input-group">
+      <input type="email" id="email" placeholder="E-posta" required>
+      <div class="error-text" id="email-error"></div>
+    </div>
+    <div class="input-group">
+      <input type="password" id="password" placeholder="Şifre" required>
+      <div class="error-text" id="password-error"></div>
+    </div>
+    <button id="login-btn">Giriş Yap</button>
+    <button class="secondary-btn" id="signup-btn">Hesap Oluştur</button>
+    <div class="form-footer">
+      <a href="#">Şifremi Unuttum</a>
+    </div>
+  </div>
+
+  <script type="module">
+    import { 
+      auth, 
+      signInWithEmailAndPassword,
+      db,
+      doc,
+      setDoc,
+      serverTimestamp
+    } from './firebase.js';
+
+    // Giriş Yap Fonksiyonu
+    document.getElementById('login-btn').addEventListener('click', async () => {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        
+        // Son giriş zamanını güncelle
+        await setDoc(doc(db, "users", auth.currentUser.uid), {
+          lastLogin: serverTimestamp()
+        }, { merge: true });
+        
+        window.location.href = "dashboard.html";
+      } catch (error) {
+        console.error("Giriş hatası:", error);
+        const errorElement = document.getElementById('email-error');
+        errorElement.textContent = "Hatalı e-posta veya şifre";
+        errorElement.style.display = 'block';
+      }
+    });
+
+    // Kayıt Ol sayfasına yönlendirme
+    document.getElementById('signup-btn').addEventListener('click', () => {
+      window.location.href = "index.html";
+    });
+  </script>
+</body>
+</html>
