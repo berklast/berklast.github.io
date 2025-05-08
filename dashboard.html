@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NewDC - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #5865F2;
+            --dark: #2C2F33;
+            --darker: #23272A;
+            --light: #FFFFFF;
+            --gray: #99AAB5;
+            --success: #3BA55C;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        body {
+            display: flex;
+            height: 100vh;
+            background-color: var(--darker);
+            color: var(--light);
+        }
+        
+        .sidebar {
+            width: 80px;
+            background-color: var(--dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .server-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--darker);
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .server-icon:hover {
+            border-radius: 30%;
+            background-color: var(--primary);
+        }
+        
+        .server-icon i {
+            font-size: 1.2rem;
+        }
+        
+        .channels {
+            width: 240px;
+            background-color: var(--dark);
+            padding: 20px;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .channel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .channel-title {
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+        
+        .channel-add {
+            cursor: pointer;
+            color: var(--gray);
+        }
+        
+        .channel-list {
+            list-style: none;
+        }
+        
+        .channel-item {
+            padding: 8px 10px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+        }
+        
+        .channel-item:hover {
+            background-color: var(--darker);
+        }
+        
+        .channel-item i {
+            margin-right: 10px;
+            color: var(--gray);
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+        }
+        
+        .chat-title {
+            font-weight: 600;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .message {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            margin-right: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 600;
+        }
+        
+        .message-content {
+            flex: 1;
+        }
+        
+        .message-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        
+        .message-author {
+            font-weight: 600;
+            margin-right: 10px;
+        }
+        
+        .message-time {
+            color: var(--gray);
+            font-size: 0.8rem;
+        }
+        
+        .message-text {
+            line-height: 1.4;
+        }
+        
+        .chat-input {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .chat-input input {
+            flex: 1;
+            padding: 12px 15px;
+            background-color: var(--dark);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            color: var(--light);
+            font-size: 1rem;
+        }
+        
+        .chat-input input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .chat-input button {
+            margin-left: 10px;
+            padding: 12px 20px;
+            background-color: var(--primary);
+            border: none;
+            border-radius: 5px;
+            color: var(--light);
+            cursor: pointer;
+        }
+        
+        .user-panel {
+            width: 240px;
+            background-color: var(--dark);
+            padding: 20px;
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            margin-right: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 600;
+        }
+        
+        .user-info {
+            flex: 1;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .user-status {
+            color: var(--gray);
+            font-size: 0.8rem;
+        }
+        
+        .user-controls i {
+            margin-left: 10px;
+            cursor: pointer;
+            color: var(--gray);
+        }
+        
+        .friends-list {
+            margin-top: 20px;
+        }
+        
+        .friends-title {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        
+        .friend-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            cursor: pointer;
+        }
+        
+        .friend-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: var(--darker);
+            margin-right: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .friend-name {
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="server-icon" id="home-server">
+            <i class="fas fa-home"></i>
+        </div>
+        <div class="server-icon" id="friends-server">
+            <i class="fas fa-user-friends"></i>
+        </div>
+        <div class="server-icon" id="add-server">
+            <i class="fas fa-plus"></i>
+        </div>
+    </div>
+    
+    <div class="channels" id="channels-panel">
+        <div class="channel-header">
+            <div class="channel-title">Arkadaşlar</div>
+            <div class="channel-add"><i class="fas fa-plus"></i></div>
+        </div>
+        
+        <ul class="channel-list">
+            <li class="channel-item active">
+                <i class="fas fa-comment-alt"></i>
+                <span>Genel Sohbet</span>
+            </li>
+            <li class="channel-item">
+                <i class="fas fa-user-plus"></i>
+                <span>Arkadaş Ekle</span>
+            </li>
+            <li class="channel-item">
+                <i class="fas fa-cog"></i>
+                <span>Ayarlar</span>
+            </li>
+        </ul>
+    </div>
+    
+    <div class="main-content">
+        <div class="chat-header">
+            <div class="chat-title"># Genel Sohbet</div>
+        </div>
+        
+        <div class="chat-messages" id="chat-messages">
+            <div class="message">
+                <div class="message-avatar">AD</div>
+                <div class="message-content">
+                    <div class="message-header">
+                        <div class="message-author">Admin</div>
+                        <div class="message-time">Bugün 14:30</div>
+                    </div>
+                    <div class="message-text">
+                        NewDC'ye hoş geldiniz! Buradan arkadaşlarınızla sohbet edebilirsiniz.
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chat-input">
+            <input type="text" id="message-input" placeholder="Bir mesaj yazın...">
+            <button id="send-btn"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+    
+    <div class="user-panel" id="user-panel">
+        <div class="user-profile">
+            <div class="user-avatar" id="user-avatar">US</div>
+            <div class="user-info">
+                <div class="user-name" id="username">Kullanıcı</div>
+                <div class="user-status">Çevrimiçi</div>
+            </div>
+            <div class="user-controls">
+                <i class="fas fa-microphone"></i>
+                <i class="fas fa-headphones"></i>
+                <i class="fas fa-cog"></i>
+            </div>
+        </div>
+        
+        <div class="friends-list">
+            <div class="friends-title">ARKADAŞLAR - 1</div>
+            <div class="friend-item">
+                <div class="friend-avatar">AD</div>
+                <div class="friend-name">Admin</div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="dashboard.js"></script>
+</body>
+</html>
