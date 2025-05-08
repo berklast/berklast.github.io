@@ -3,6 +3,7 @@ import {
   signInWithEmailAndPassword 
 } from './firebase.js';
 
+// Giriş Yap Butonu
 document.getElementById('login-btn').addEventListener('click', async (e) => {
   e.preventDefault();
   
@@ -16,13 +17,10 @@ document.getElementById('login-btn').addEventListener('click', async (e) => {
   passwordError.style.display = 'none';
 
   try {
-    // Giriş yap
-    await signInWithEmailAndPassword(auth, email, password);
-    
-    // Başarılı giriş
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    console.log("Giriş başarılı:", userCredential.user);
     window.location.href = "/dashboard.html";
   } catch (error) {
-    // Hata yönetimi
     console.error("Giriş hatası:", error);
     
     switch(error.code) {
@@ -43,4 +41,10 @@ document.getElementById('login-btn').addEventListener('click', async (e) => {
         emailError.style.display = 'block';
     }
   }
+});
+
+// Kayıt Ol Butonu
+document.getElementById('signup-btn').addEventListener('click', (e) => {
+  e.preventDefault();
+  window.location.href = "/register.html";
 });
