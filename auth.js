@@ -8,7 +8,14 @@ import {
   serverTimestamp
 } from './firebase.js';
 
-// Kayıt Ol Fonksiyonu
+// Hata mesajını göster
+function showError(message) {
+  const errorElement = document.getElementById('auth-error');
+  errorElement.textContent = message;
+  setTimeout(() => errorElement.textContent = '', 5000);
+}
+
+// Kayıt Ol
 document.getElementById('signup-btn').addEventListener('click', async () => {
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
@@ -23,15 +30,15 @@ document.getElementById('signup-btn').addEventListener('click', async () => {
       lastLogin: serverTimestamp()
     });
     
-    alert("Kayıt başarılı!");
+    alert("Kayıt başarılı! Giriş yapılıyor...");
     window.location.href = "dashboard.html";
   } catch (error) {
     console.error("Kayıt hatası:", error);
-    alert("Hata: " + error.message);
+    showError(error.message);
   }
 });
 
-// Giriş Yap Fonksiyonu
+// Giriş Yap
 document.getElementById('login-btn').addEventListener('click', async () => {
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
@@ -44,10 +51,9 @@ document.getElementById('login-btn').addEventListener('click', async () => {
       lastLogin: serverTimestamp()
     }, { merge: true });
     
-    alert("Giriş başarılı!");
     window.location.href = "dashboard.html";
   } catch (error) {
     console.error("Giriş hatası:", error);
-    alert("Hata: " + error.message);
+    showError(error.message);
   }
 });
