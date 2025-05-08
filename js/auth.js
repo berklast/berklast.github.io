@@ -1,16 +1,24 @@
-import { auth, signInWithEmailAndPassword } from './firebase.js';
+// Giriş Formu
+document.getElementById('loginForm')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const email = e.target.elements[0].value;
+    const password = e.target.elements[1].value;
+    alert(`Giriş başarılı: ${email}`);
+    // window.location.href = "dashboard.html"; // Yönlendirme örneği
+});
 
-document.getElementById('login-btn').addEventListener('click', async (e) => {
-  e.preventDefault();
-  
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
-  
-  try {
-    await signInWithEmailAndPassword(auth, email, password);
-    window.location.href = "/dashboard.html";
-  } catch (error) {
-    document.getElementById('password-error').textContent = "Hatalı giriş bilgileri!";
-    document.getElementById('password-error').style.display = 'block';
-  }
+// Kayıt Formu
+document.getElementById('registerForm')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const name = e.target.elements[0].value;
+    const email = e.target.elements[1].value;
+    const password = e.target.elements[2].value;
+    alert(`Kayıt başarılı: ${email}`);
+});
+
+// Şifremi Unuttum Formu
+document.getElementById('forgotPasswordForm')?.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const email = e.target.elements[0].value;
+    alert(`Şifre sıfırlama linki gönderildi: ${email}`);
 });
