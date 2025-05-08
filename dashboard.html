@@ -296,10 +296,22 @@
             flex-shrink: 0;
             cursor: pointer;
             transition: all 0.2s;
+            position: relative;
         }
         
         .message-avatar:hover {
             transform: scale(1.1);
+        }
+        
+        .online-dot {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 10px;
+            height: 10px;
+            background-color: var(--success);
+            border-radius: 50%;
+            border: 2px solid var(--darker);
         }
         
         .message-content {
@@ -407,6 +419,7 @@
             font-size: 0.8rem;
             cursor: pointer;
             transition: all 0.2s;
+            position: relative;
         }
         
         .user-avatar:hover {
@@ -495,6 +508,7 @@
             align-items: center;
             font-weight: 600;
             font-size: 0.8rem;
+            position: relative;
         }
         
         .friend-info {
@@ -689,6 +703,38 @@
             font-size: 0.85rem;
         }
         
+        /* Friend Requests */
+        .request-item {
+            padding: 12px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+        }
+        
+        .request-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            margin-right: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 600;
+        }
+        
+        .request-info {
+            flex: 1;
+        }
+        
+        .request-name {
+            font-weight: 500;
+        }
+        
+        .request-actions {
+            display: flex;
+        }
+        
         /* Animations */
         @keyframes fadeIn {
             from { opacity: 0; }
@@ -729,7 +775,7 @@
         </div>
         <div class="server-icon" id="friends-server">
             <i class="fas fa-user-friends"></i>
-            <div class="notification">3</div>
+            <div class="notification" id="friend-requests-count">0</div>
         </div>
         <div class="divider"></div>
         <div class="server-icon" id="add-server">
@@ -741,7 +787,7 @@
     <div class="channels" id="channels-panel">
         <div class="channel-header">
             <div class="channel-title">Arkadaşlar</div>
-            <div class="channel-add"><i class="fas fa-plus"></i></div>
+            <div class="channel-add"><i class="fas fa-plus" id="add-friend-btn"></i></div>
         </div>
         
         <div class="channel-list">
@@ -749,7 +795,7 @@
                 <span>Genel</span>
                 <i class="fas fa-chevron-down"></i>
             </div>
-            <div class="channel-item active">
+            <div class="channel-item active" id="general-chat">
                 <i class="fas fa-comment-alt"></i>
                 <span>Genel Sohbet</span>
             </div>
@@ -758,25 +804,21 @@
                 <span>Arkadaşlar</span>
                 <i class="fas fa-chevron-down"></i>
             </div>
-            <div class="channel-item">
-                <i class="fas fa-user-plus"></i>
-                <span>Arkadaş Ekle</span>
-            </div>
-            <div class="channel-item">
-                <i class="fas fa-user-check"></i>
+            <div class="channel-item" id="friend-requests-btn">
+                <i class="fas fa-user-clock"></i>
                 <span>Arkadaş İstekleri</span>
-                <div class="notification">2</div>
+                <div class="notification" id="friend-requests-badge">0</div>
             </div>
             
             <div class="channel-category">
                 <span>Ayarlar</span>
                 <i class="fas fa-chevron-down"></i>
             </div>
-            <div class="channel-item">
+            <div class="channel-item" id="settings-btn">
                 <i class="fas fa-cog"></i>
                 <span>Hesap Ayarları</span>
             </div>
-            <div class="channel-item">
+            <div class="channel-item" id="logout-btn">
                 <i class="fas fa-sign-out-alt"></i>
                 <span>Çıkış Yap</span>
             </div>
@@ -786,76 +828,18 @@
     <!-- Main Content -->
     <div class="main-content">
         <div class="chat-header">
-            <div class="chat-title"># Genel Sohbet</div>
-            <div class="chat-description">Herkesin katılabileceği genel sohbet odası</div>
+            <div class="chat-title" id="chat-title"># Genel Sohbet</div>
+            <div class="chat-description" id="chat-description">Herkesin katılabileceği genel sohbet odası</div>
             <div class="chat-members">
-                <div class="member-count">Çevrimiçi: 5</div>
-                <div class="member-avatars">
-                    <div class="member-avatar" title="Kullanıcı1">K1</div>
-                    <div class="member-avatar" title="Kullanıcı2">K2</div>
-                    <div class="member-avatar" title="Kullanıcı3">K3</div>
+                <div class="member-count" id="online-count">Çevrimiçi: 0</div>
+                <div class="member-avatars" id="online-users">
+                    <!-- Online kullanıcı avatar buraya gelecek -->
                 </div>
             </div>
         </div>
         
         <div class="chat-messages" id="chat-messages">
-            <div class="message-group">
-                <div class="message">
-                    <div class="message-avatar" title="Sistem">S</div>
-                    <div class="message-content">
-                        <div class="message-header">
-                            <div class="message-author">Sistem</div>
-                            <div class="message-time">Bugün 14:30</div>
-                        </div>
-                        <div class="message-text">
-                            NewDC'ye hoş geldiniz! Buradan arkadaşlarınızla sohbet edebilirsiniz.
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="message-group">
-                <div class="message">
-                    <div class="message-avatar" title="Ahmet">A</div>
-                    <div class="message-content">
-                        <div class="message-header">
-                            <div class="message-author">Ahmet</div>
-                            <div class="message-time">Bugün 14:35</div>
-                        </div>
-                        <div class="message-text">
-                            Merhaba arkadaşlar! Nasılsınız?
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="message">
-                    <div class="message-avatar" title="Ahmet">A</div>
-                    <div class="message-content">
-                        <div class="message-header">
-                            <div class="message-author">Ahmet</div>
-                            <div class="message-time">Bugün 14:36</div>
-                        </div>
-                        <div class="message-text">
-                            Bu platform çok güzel görünüyor, tebrikler!
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="message-group">
-                <div class="message">
-                    <div class="message-avatar" title="Mehmet">M</div>
-                    <div class="message-content">
-                        <div class="message-header">
-                            <div class="message-author">Mehmet</div>
-                            <div class="message-time">Bugün 14:38</div>
-                        </div>
-                        <div class="message-text">
-                            Selam Ahmet! İyiyim, sen nasılsın?
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <!-- Mesajlar buraya gelecek -->
         </div>
         
         <div class="chat-input-container">
@@ -880,104 +864,31 @@
             <div class="user-controls">
                 <i class="fas fa-microphone user-control" title="Mikrofon"></i>
                 <i class="fas fa-headphones user-control" title="Kulaklık"></i>
-                <i class="fas fa-cog user-control" title="Ayarlar" id="settings-btn"></i>
+                <i class="fas fa-cog user-control" title="Ayarlar"></i>
             </div>
         </div>
         
         <div class="friends-container">
             <div class="friends-header">
-                <div class="friends-title">Arkadaşlar</div>
-                <div class="friends-count">3</div>
+                <div class="friends-title">ARKADAŞLAR</div>
+                <div class="friends-count" id="friends-count">0</div>
             </div>
             
-            <div class="friend-item">
-                <div class="friend-avatar" title="Ahmet">A</div>
-                <div class="friend-info">
-                    <div class="friend-name">Ahmet</div>
-                    <div class="friend-status">Çevrimiçi</div>
-                </div>
-                <div class="friend-actions">
-                    <i class="fas fa-comment friend-action" title="Mesaj Gönder"></i>
-                    <i class="fas fa-user-minus friend-action" title="Arkadaşlıktan Çıkar"></i>
-                </div>
-            </div>
-            
-            <div class="friend-item">
-                <div class="friend-avatar" title="Mehmet">M</div>
-                <div class="friend-info">
-                    <div class="friend-name">Mehmet</div>
-                    <div class="friend-status">Çevrimdışı</div>
-                </div>
-                <div class="friend-actions">
-                    <i class="fas fa-comment friend-action" title="Mesaj Gönder"></i>
-                    <i class="fas fa-user-minus friend-action" title="Arkadaşlıktan Çıkar"></i>
-                </div>
-            </div>
-            
-            <div class="friend-item">
-                <div class="friend-avatar" title="Ayşe">A</div>
-                <div class="friend-info">
-                    <div class="friend-name">Ayşe</div>
-                    <div class="friend-status">Rahatsız Etmeyin</div>
-                </div>
-                <div class="friend-actions">
-                    <i class="fas fa-comment friend-action" title="Mesaj Gönder"></i>
-                    <i class="fas fa-user-minus friend-action" title="Arkadaşlıktan Çıkar"></i>
-                </div>
+            <div class="friends-list" id="friends-list">
+                <!-- Arkadaş listesi buraya gelecek -->
             </div>
         </div>
     </div>
     
-    <!-- Settings Modal -->
-    <div class="modal" id="settings-modal">
+    <!-- Friend Requests Modal -->
+    <div class="modal" id="requests-modal">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="modal-title">Hesap Ayarları</div>
-                <i class="fas fa-times modal-close" id="settings-close"></i>
+                <div class="modal-title">Arkadaş İstekleri</div>
+                <i class="fas fa-times modal-close" id="requests-close"></i>
             </div>
-            <div class="modal-body">
-                <div class="settings-section">
-                    <div class="settings-title">Profil</div>
-                    
-                    <div class="settings-item">
-                        <div class="settings-item-info">
-                            <div class="settings-item-title">Kullanıcı Adı</div>
-                            <div class="settings-item-description">Diğer kullanıcıların sizi göreceği isim</div>
-                        </div>
-                        <button class="btn btn-secondary" id="change-username-btn">Değiştir</button>
-                    </div>
-                    
-                    <div class="settings-item">
-                        <div class="settings-item-info">
-                            <div class="settings-item-title">E-posta</div>
-                            <div class="settings-item-description">example@newdc.com</div>
-                        </div>
-                        <button class="btn btn-secondary" id="change-email-btn">Değiştir</button>
-                    </div>
-                    
-                    <div class="settings-item">
-                        <div class="settings-item-info">
-                            <div class="settings-item-title">Şifre</div>
-                            <div class="settings-item-description">••••••••</div>
-                        </div>
-                        <button class="btn btn-secondary" id="change-password-btn">Değiştir</button>
-                    </div>
-                </div>
-                
-                <div class="settings-section">
-                    <div class="settings-title">Gizlilik</div>
-                    
-                    <div class="settings-item">
-                        <div class="settings-item-info">
-                            <div class="settings-item-title">Arkadaşlık İstekleri</div>
-                            <div class="settings-item-description">Herkes bana arkadaşlık isteği gönderebilir</div>
-                        </div>
-                        <button class="btn btn-secondary" id="privacy-settings-btn">Ayarlar</button>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-danger" id="logout-btn">Çıkış Yap</button>
+            <div class="modal-body" id="requests-list">
+                <!-- Arkadaş istekleri buraya gelecek -->
             </div>
         </div>
     </div>
