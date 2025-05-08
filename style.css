@@ -1,0 +1,62 @@
+:root {
+  --primary: #5865F2;
+  --primary-dark: #4752C4;
+  --danger: #ED4245;
+  --success: #57F287;
+  --dark: #2F3136;
+  --darker: #202225;
+  --light: #F2F3F5;
+  --text-muted: #B9BBBE;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  background-color: var(--darker);
+  color: var(--light);
+  height: 100vh;
+}
+
+/* Auth Sayfaları için */
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(88, 101, 242, 0.15) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(87, 242, 135, 0.15) 0%, transparent 50%);
+}
+
+.auth-card {
+  width: 420px;
+  background: var(--dark);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+}
+
+/* Dashboard için */
+.app-container {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  height: 100vh;
+}
+
+.sidebar {
+  background: var(--dark);
+  padding: 1rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Diğer stiller... (önceki örneklerdeki gibi) */
