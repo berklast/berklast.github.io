@@ -1,373 +1,246 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NewDC - Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        :root {
-            --primary: #5865F2;
-            --dark: #2C2F33;
-            --darker: #23272A;
-            --light: #FFFFFF;
-            --gray: #99AAB5;
-            --success: #3BA55C;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-        
-        body {
-            display: flex;
-            height: 100vh;
-            background-color: var(--darker);
-            color: var(--light);
-        }
-        
-        .sidebar {
-            width: 80px;
-            background-color: var(--dark);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px 0;
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .server-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background-color: var(--darker);
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        
-        .server-icon:hover {
-            border-radius: 30%;
-            background-color: var(--primary);
-        }
-        
-        .server-icon i {
-            font-size: 1.2rem;
-        }
-        
-        .channels {
-            width: 240px;
-            background-color: var(--dark);
-            padding: 20px;
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .channel-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .channel-title {
-            font-weight: 600;
-            font-size: 1.2rem;
-        }
-        
-        .channel-add {
-            cursor: pointer;
-            color: var(--gray);
-        }
-        
-        .channel-list {
-            list-style: none;
-        }
-        
-        .channel-item {
-            padding: 8px 10px;
-            border-radius: 5px;
-            margin-bottom: 5px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-        }
-        
-        .channel-item:hover {
-            background-color: var(--darker);
-        }
-        
-        .channel-item i {
-            margin-right: 10px;
-            color: var(--gray);
-        }
-        
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .chat-header {
-            padding: 15px 20px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            align-items: center;
-        }
-        
-        .chat-title {
-            font-weight: 600;
-        }
-        
-        .chat-messages {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-        }
-        
-        .message {
-            display: flex;
-            margin-bottom: 20px;
-        }
-        
-        .message-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: var(--primary);
-            margin-right: 15px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: 600;
-        }
-        
-        .message-content {
-            flex: 1;
-        }
-        
-        .message-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 5px;
-        }
-        
-        .message-author {
-            font-weight: 600;
-            margin-right: 10px;
-        }
-        
-        .message-time {
-            color: var(--gray);
-            font-size: 0.8rem;
-        }
-        
-        .message-text {
-            line-height: 1.4;
-        }
-        
-        .chat-input {
-            padding: 15px 20px;
-            display: flex;
-            align-items: center;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .chat-input input {
-            flex: 1;
-            padding: 12px 15px;
-            background-color: var(--dark);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
-            color: var(--light);
-            font-size: 1rem;
-        }
-        
-        .chat-input input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-        
-        .chat-input button {
-            margin-left: 10px;
-            padding: 12px 20px;
-            background-color: var(--primary);
-            border: none;
-            border-radius: 5px;
-            color: var(--light);
-            cursor: pointer;
-        }
-        
-        .user-panel {
-            width: 240px;
-            background-color: var(--dark);
-            padding: 20px;
-            border-left: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .user-profile {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: var(--primary);
-            margin-right: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: 600;
-        }
-        
-        .user-info {
-            flex: 1;
-        }
-        
-        .user-name {
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-        
-        .user-status {
-            color: var(--gray);
-            font-size: 0.8rem;
-        }
-        
-        .user-controls i {
-            margin-left: 10px;
-            cursor: pointer;
-            color: var(--gray);
-        }
-        
-        .friends-list {
-            margin-top: 20px;
-        }
-        
-        .friends-title {
-            color: var(--gray);
-            font-size: 0.9rem;
-            margin-bottom: 10px;
-        }
-        
-        .friend-item {
-            display: flex;
-            align-items: center;
-            padding: 8px 0;
-            cursor: pointer;
-        }
-        
-        .friend-avatar {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background-color: var(--darker);
-            margin-right: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-        
-        .friend-name {
-            font-size: 0.9rem;
-        }
-    </style>
-</head>
-<body>
-    <div class="sidebar">
-        <div class="server-icon" id="home-server">
-            <i class="fas fa-home"></i>
-        </div>
-        <div class="server-icon" id="friends-server">
-            <i class="fas fa-user-friends"></i>
-        </div>
-        <div class="server-icon" id="add-server">
-            <i class="fas fa-plus"></i>
-        </div>
-    </div>
-    
-    <div class="channels" id="channels-panel">
-        <div class="channel-header">
-            <div class="channel-title">Arkadaşlar</div>
-            <div class="channel-add"><i class="fas fa-plus"></i></div>
-        </div>
-        
-        <ul class="channel-list">
-            <li class="channel-item active">
-                <i class="fas fa-comment-alt"></i>
-                <span>Genel Sohbet</span>
-            </li>
-            <li class="channel-item">
-                <i class="fas fa-user-plus"></i>
-                <span>Arkadaş Ekle</span>
-            </li>
-            <li class="channel-item">
-                <i class="fas fa-cog"></i>
-                <span>Ayarlar</span>
-            </li>
-        </ul>
-    </div>
-    
-    <div class="main-content">
-        <div class="chat-header">
-            <div class="chat-title"># Genel Sohbet</div>
-        </div>
-        
-        <div class="chat-messages" id="chat-messages">
-            <div class="message">
-                <div class="message-avatar">AD</div>
-                <div class="message-content">
-                    <div class="message-header">
-                        <div class="message-author">Admin</div>
-                        <div class="message-time">Bugün 14:30</div>
-                    </div>
-                    <div class="message-text">
-                        NewDC'ye hoş geldiniz! Buradan arkadaşlarınızla sohbet edebilirsiniz.
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="chat-input">
-            <input type="text" id="message-input" placeholder="Bir mesaj yazın...">
-            <button id="send-btn"><i class="fas fa-paper-plane"></i></button>
-        </div>
-    </div>
-    
-    <div class="user-panel" id="user-panel">
-        <div class="user-profile">
-            <div class="user-avatar" id="user-avatar">US</div>
-            <div class="user-info">
-                <div class="user-name" id="username">Kullanıcı</div>
-                <div class="user-status">Çevrimiçi</div>
-            </div>
-            <div class="user-controls">
-                <i class="fas fa-microphone"></i>
-                <i class="fas fa-headphones"></i>
-                <i class="fas fa-cog"></i>
-            </div>
-        </div>
-        
-        <div class="friends-list">
-            <div class="friends-title">ARKADAŞLAR - 1</div>
-            <div class="friend-item">
-                <div class="friend-avatar">AD</div>
-                <div class="friend-name">Admin</div>
-            </div>
-        </div>
-    </div>
+// dashboard.js
+import { auth, db } from './firebase.js';
+import { 
+    onAuthStateChanged, 
+    signOut,
+    updateProfile,
+    updateEmail,
+    updatePassword
+} from "firebase/auth";
+import { 
+    collection, 
+    query, 
+    where, 
+    onSnapshot, 
+    addDoc, 
+    doc, 
+    getDoc, 
+    updateDoc, 
+    arrayUnion, 
+    arrayRemove,
+    getDocs,
+    setDoc
+} from "firebase/firestore";
 
-    <script type="module" src="dashboard.js"></script>
-</body>
-</html>
+// DOM Elements
+const userAvatar = document.getElementById('user-avatar');
+const username = document.getElementById('username');
+const userTag = document.getElementById('user-tag');
+const chatMessages = document.getElementById('chat-messages');
+const messageInput = document.getElementById('message-input');
+const sendBtn = document.getElementById('send-btn');
+const settingsBtn = document.getElementById('settings-btn');
+const settingsModal = document.getElementById('settings-modal');
+const settingsClose = document.getElementById('settings-close');
+const changeUsernameBtn = document.getElementById('change-username-btn');
+const changeEmailBtn = document.getElementById('change-email-btn');
+const changePasswordBtn = document.getElementById('change-password-btn');
+const logoutBtn = document.getElementById('logout-btn');
+
+let currentUser = null;
+let currentUserData = null;
+
+// Initialize the app
+onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+        window.location.href = "index.html";
+        return;
+    }
+    
+    currentUser = user;
+    
+    // Load user data
+    const userDoc = await getDoc(doc(db, "users", user.uid));
+    if (userDoc.exists()) {
+        currentUserData = userDoc.data();
+        updateUI();
+    }
+    
+    // Load messages
+    loadMessages();
+    
+    // Load friends
+    loadFriends();
+});
+
+function updateUI() {
+    // Set username and avatar
+    username.textContent = currentUserData.username;
+    userTag.textContent = `#${currentUser.uid.substring(0, 4)}`;
+    userAvatar.textContent = currentUserData.username.substring(0, 1).toUpperCase();
+}
+
+// Load messages
+function loadMessages() {
+    const messagesQuery = query(collection(db, "messages"), where("channel", "==", "general"));
+    
+    onSnapshot(messagesQuery, (snapshot) => {
+        chatMessages.innerHTML = '';
+        snapshot.forEach((doc) => {
+            const message = doc.data();
+            displayMessage(message);
+        });
+    });
+}
+
+// Display message
+function displayMessage(message) {
+    const messageGroup = document.createElement('div');
+    messageGroup.className = 'message-group';
+    
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message';
+    
+    const avatarDiv = document.createElement('div');
+    avatarDiv.className = 'message-avatar';
+    avatarDiv.title = message.author;
+    avatarDiv.textContent = message.author.substring(0, 1).toUpperCase();
+    
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'message-content';
+    
+    const headerDiv = document.createElement('div');
+    headerDiv.className = 'message-header';
+    
+    const authorSpan = document.createElement('div');
+    authorSpan.className = 'message-author';
+    authorSpan.textContent = message.author;
+    
+    const timeSpan = document.createElement('div');
+    timeSpan.className = 'message-time';
+    timeSpan.textContent = new Date(message.createdAt?.toDate()).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    
+    const textDiv = document.createElement('div');
+    textDiv.className = 'message-text';
+    textDiv.textContent = message.text;
+    
+    headerDiv.appendChild(authorSpan);
+    headerDiv.appendChild(timeSpan);
+    contentDiv.appendChild(headerDiv);
+    contentDiv.appendChild(textDiv);
+    messageDiv.appendChild(avatarDiv);
+    messageDiv.appendChild(contentDiv);
+    messageGroup.appendChild(messageDiv);
+    
+    chatMessages.appendChild(messageGroup);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+// Send message
+messageInput.addEventListener('keypress', async (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        await sendMessage();
+    }
+});
+
+async function sendMessage() {
+    const text = messageInput.value.trim();
+    if (!text || !currentUser || !currentUserData) return;
+    
+    try {
+        await addDoc(collection(db, "messages"), {
+            text: text,
+            author: currentUserData.username,
+            authorId: currentUser.uid,
+            channel: "general",
+            createdAt: new Date()
+        });
+        
+        messageInput.value = '';
+    } catch (error) {
+        console.error("Mesaj gönderilemedi:", error);
+    }
+}
+
+// Load friends
+async function loadFriends() {
+    if (!currentUser || !currentUserData) return;
+    
+    const friendsQuery = query(collection(db, "users"), where("__name__", "in", currentUserData.friends));
+    const querySnapshot = await getDocs(friendsQuery);
+    
+    // Burada arkadaş listesini güncelleyecek kodlar olacak
+    // Örnek UI güncellemesi için dashboard.html'de statik arkadaş listesi bulunuyor
+}
+
+// Settings modal
+settingsBtn.addEventListener('click', () => {
+    settingsModal.classList.add('active');
+});
+
+settingsClose.addEventListener('click', () => {
+    settingsModal.classList.remove('active');
+});
+
+// Change username
+changeUsernameBtn.addEventListener('click', async () => {
+    const newUsername = prompt("Yeni kullanıcı adınızı girin:", currentUserData.username);
+    if (!newUsername || newUsername.length < 3) {
+        alert("Kullanıcı adı en az 3 karakter olmalıdır!");
+        return;
+    }
+    
+    try {
+        await updateDoc(doc(db, "users", currentUser.uid), {
+            username: newUsername
+        });
+        
+        currentUserData.username = newUsername;
+        updateUI();
+        alert("Kullanıcı adı başarıyla güncellendi!");
+    } catch (error) {
+        alert("Kullanıcı adı güncellenirken hata oluştu: " + error.message);
+    }
+});
+
+// Change email
+changeEmailBtn.addEventListener('click', async () => {
+    const newEmail = prompt("Yeni e-posta adresinizi girin:", currentUser.email);
+    if (!newEmail || !newEmail.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
+        alert("Geçerli bir e-posta adresi girin!");
+        return;
+    }
+    
+    try {
+        await updateEmail(currentUser, newEmail);
+        await updateDoc(doc(db, "users", currentUser.uid), {
+            email: newEmail
+        });
+        alert("E-posta adresi başarıyla güncellendi! Lütfen yeni adresinizi doğrulayın.");
+    } catch (error) {
+        alert("E-posta güncellenirken hata oluştu: " + error.message);
+    }
+});
+
+// Change password
+changePasswordBtn.addEventListener('click', async () => {
+    const newPassword = prompt("Yeni şifrenizi girin (en az 6 karakter):");
+    if (!newPassword || newPassword.length < 6) {
+        alert("Şifre en az 6 karakter olmalıdır!");
+        return;
+    }
+    
+    try {
+        await updatePassword(currentUser, newPassword);
+        alert("Şifre başarıyla güncellendi!");
+    } catch (error) {
+        alert("Şifre güncellenirken hata oluştu: " + error.message);
+    }
+});
+
+// Logout
+logoutBtn.addEventListener('click', async () => {
+    try {
+        await signOut(auth);
+        window.location.href = "index.html";
+    } catch (error) {
+        alert("Çıkış yapılırken hata oluştu: " + error.message);
+    }
+});
+
+// Auto-resize textarea
+messageInput.addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = (this.scrollHeight) + 'px';
+});
