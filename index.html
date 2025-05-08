@@ -1,218 +1,57 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NewDC - Giriş Yap</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        :root {
-            --primary: #5865F2;
-            --dark: #2C2F33;
-            --darker: #23272A;
-            --light: #FFFFFF;
-            --gray: #99AAB5;
-            --success: #3BA55C;
-            --danger: #ED4245;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
-        
-        body {
-            background-color: var(--darker);
-            color: var(--light);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-image: radial-gradient(circle at 15% 50%, rgba(88, 101, 242, 0.1) 0%, rgba(88, 101, 242, 0) 25%);
-        }
-        
-        .auth-container {
-            background-color: var(--dark);
-            border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-            width: 420px;
-            padding: 40px;
-            text-align: center;
-            animation: fadeIn 0.5s ease-out;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .logo {
-            font-size: 2.8rem;
-            font-weight: 700;
-            margin-bottom: 15px;
-            color: var(--primary);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .logo i {
-            margin-right: 10px;
-        }
-        
-        .subtitle {
-            color: var(--gray);
-            margin-bottom: 30px;
-            font-size: 1rem;
-            line-height: 1.5;
-        }
-        
-        .input-group {
-            margin-bottom: 20px;
-            text-align: left;
-            position: relative;
-        }
-        
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--gray);
-            font-size: 0.9rem;
-            font-weight: 500;
-        }
-        
-        .input-group input {
-            width: 100%;
-            padding: 14px 15px;
-            background-color: var(--darker);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            color: var(--light);
-            font-size: 1rem;
-            transition: all 0.3s;
-        }
-        
-        .input-group input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 2px rgba(88, 101, 242, 0.3);
-        }
-        
-        .btn {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .btn i {
-            margin-right: 8px;
-        }
-        
-        .btn-primary {
-            background-color: var(--primary);
-            color: var(--light);
-        }
-        
-        .btn-primary:hover {
-            background-color: #4752C4;
-            transform: translateY(-2px);
-        }
-        
-        .btn-primary:active {
-            transform: translateY(0);
-        }
-        
-        .divider {
-            display: flex;
-            align-items: center;
-            margin: 25px 0;
-            color: var(--gray);
-            font-size: 0.9rem;
-        }
-        
-        .divider::before, .divider::after {
-            content: "";
-            flex: 1;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        .divider::before {
-            margin-right: 15px;
-        }
-        
-        .divider::after {
-            margin-left: 15px;
-        }
-        
-        .switch-auth {
-            margin-top: 25px;
-            color: var(--gray);
-            font-size: 0.9rem;
-        }
-        
-        .switch-auth a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-        
-        .switch-auth a:hover {
-            text-decoration: underline;
-        }
-        
-        .error-message {
-            color: var(--danger);
-            font-size: 0.85rem;
-            margin-top: 5px;
-            display: none;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Auth Sistemi</title>
+  <style>
+    :root {
+      --darker: #1a1a2e;
+      --light: #f1f1f1;
+    }
+    body {
+      background-color: var(--darker);
+      color: var(--light);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-image: radial-gradient(
+        circle at 15% 50%,
+        rgba(88, 101, 242, 0.1) 0%,
+        rgba(88, 101, 242, 0) 25%
+      );
+      font-family: "Poppins", sans-serif;
+    }
+    .auth-container {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 2rem;
+      border-radius: 10px;
+      width: 300px;
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 5px;
+    }
+    button {
+      background: #5865F2;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-    <div class="auth-container" id="auth-container">
-        <div class="logo"><i class="fab fa-discord"></i>NewDC</div>
-        <div class="subtitle">Sohbet dünyasına katılmak için giriş yapın veya yeni bir hesap oluşturun</div>
-        
-        <div class="input-group">
-            <label for="email">E-posta Adresi</label>
-            <input type="email" id="email" placeholder="ornek@newdc.com" autocomplete="username">
-            <div class="error-message" id="email-error">Geçerli bir e-posta adresi girin</div>
-        </div>
-        
-        <div class="input-group">
-            <label for="password">Şifre</label>
-            <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
-            <div class="error-message" id="password-error">Şifre en az 6 karakter olmalıdır</div>
-        </div>
-        
-        <button class="btn btn-primary" id="login-btn">
-            <i class="fas fa-sign-in-alt"></i> Giriş Yap
-        </button>
-        
-        <div class="divider">VEYA</div>
-        
-        <button class="btn btn-primary" id="register-btn" style="display: none;">
-            <i class="fas fa-user-plus"></i> Kayıt Ol
-        </button>
-        
-        <div class="switch-auth">
-            <span id="switch-text">Hesabınız yok mu?</span>
-            <a href="#" id="switch-link">Kayıt Ol</a>
-        </div>
-    </div>
+  <div class="auth-container" id="auth-container">
+    <input type="email" id="email" placeholder="Email" required>
+    <input type="password" id="password" placeholder="Password" required>
+    <button id="signup-btn">Kayıt Ol</button>
+    <button id="login-btn">Giriş Yap</button>
+  </div>
 
-    <script type="module" src="auth.js"></script>
+  <script type="module" src="firebase.js"></script>
+  <script type="module" src="auth.js"></script>
 </body>
 </html>
