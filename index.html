@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NewDC - Giriş Yap</title>
+    <title>News DC - Premium Sohbet</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -19,60 +19,128 @@
             --danger: #f72585;
             --warning: #f8961e;
             --info: #560bad;
+            --card-bg: #ffffff;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
-
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: 'Poppins', sans-serif;
         }
-
+        
         body {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background-color: #f5f7ff;
+            color: var(--dark);
+            min-height: 100vh;
+        }
+        
+        /* Auth Container */
+        .auth-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            background-color: var(--light);
-        }
-
-        .auth-box {
-            background-color: white;
-            border-radius: 15px;
-            width: 100%;
-            max-width: 420px;
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
-            overflow: hidden;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             padding: 20px;
         }
-
+        
+        .auth-card {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            animation: fadeIn 0.5s ease;
+        }
+        
         .auth-header {
             background: linear-gradient(to right, var(--primary), var(--accent));
             color: white;
-            padding: 25px;
+            padding: 30px;
             text-align: center;
+            position: relative;
         }
-
-        .auth-header h1 {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 10px;
+        
+        .auth-header::after {
+            content: '';
+            position: absolute;
+            bottom: -50px;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background-color: var(--card-bg);
+            border-radius: 30px 30px 0 0;
         }
-
-        .auth-header p {
-            font-size: 14px;
-            opacity: 0.9;
+        
+        .auth-logo {
+            width: 80px;
+            height: 80px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 15px;
+            color: var(--primary);
+            font-size: 32px;
+            font-weight: bold;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
         }
-
+        
+        .auth-tabs {
+            display: flex;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .auth-tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--gray);
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .auth-tab.active {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .auth-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--primary);
+            border-radius: 3px 3px 0 0;
+        }
+        
+        .auth-content {
+            padding: 30px;
+        }
+        
         .auth-form {
-            padding: 25px;
+            display: none;
+            animation: slideUp 0.4s ease;
         }
-
+        
+        .auth-form.active {
+            display: block;
+        }
+        
         .form-group {
             margin-bottom: 20px;
         }
-
+        
         .form-group label {
             display: block;
             margin-bottom: 8px;
@@ -80,21 +148,22 @@
             font-weight: 500;
             color: var(--dark);
         }
-
+        
         .form-control {
             width: 100%;
             padding: 12px 15px;
             border: 1px solid #ddd;
             border-radius: 8px;
             font-size: 14px;
+            transition: border 0.3s;
         }
-
+        
         .form-control:focus {
             border-color: var(--primary);
             outline: none;
             box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
         }
-
+        
         .btn {
             display: inline-block;
             padding: 12px 20px;
@@ -109,13 +178,82 @@
             width: 100%;
             text-align: center;
         }
-
+        
         .btn:hover {
             background-color: var(--primary-dark);
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
         }
-
+        
+        .btn-google {
+            background-color: #4285F4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-google:hover {
+            background-color: #357ABD;
+        }
+        
+        .btn-google i {
+            background-color: white;
+            color: #4285F4;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+        
+        .error-message {
+            background-color: #ffeeee;
+            color: var(--danger);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            animation: fadeIn 0.3s;
+        }
+        
+        .error-message i {
+            margin-right: 10px;
+        }
+        
+        .success-message {
+            background-color: #e8f5e9;
+            color: var(--success);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            animation: fadeIn 0.3s;
+        }
+        
+        .success-message i {
+            margin-right: 10px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
         .divider {
             display: flex;
             align-items: center;
@@ -123,7 +261,7 @@
             color: var(--gray);
             font-size: 14px;
         }
-
+        
         .divider::before, .divider::after {
             content: '';
             flex: 1;
@@ -131,71 +269,112 @@
             background-color: #eee;
             margin: 0 10px;
         }
-
-        .link {
-            color: var(--primary);
-            text-decoration: none;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        .link:hover {
-            text-decoration: underline;
-        }
-
-        .text-center {
-            text-align: center;
-        }
-        
-        /* Animasyon */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
     </style>
 </head>
 <body>
-
-    <div class="auth-box">
-        <div class="auth-header">
-            <div class="auth-logo">ND</div>
-            <h1>NewDC</h1>
-            <p>Sohbet dünyasına katılmak için giriş yapın</p>
-        </div>
-
-        <div class="auth-form">
-            <div class="form-group">
-                <label for="email">E-posta</label>
-                <input type="email" id="email" class="form-control" placeholder="E-posta adresinizi girin">
+    <!-- Auth Container -->
+    <div class="auth-container" id="authContainer">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo">ND</div>
+                <h1>News DC</h1>
+                <p>Premium Sohbet Deneyimi</p>
             </div>
-            <div class="form-group">
-                <label for="password">Şifre</label>
-                <input type="password" id="password" class="form-control" placeholder="Şifrenizi girin">
+            
+            <div class="auth-tabs">
+                <div class="auth-tab active" onclick="switchTab('login')">Giriş Yap</div>
+                <div class="auth-tab" onclick="switchTab('register')">Kayıt Ol</div>
             </div>
-
-            <!-- Giriş Yap Butonları -->
-            <button class="btn" onclick="login()">Giriş Yap</button>
-            <div class="divider">veya</div>
-            <button class="btn btn-secondary" onclick="loginWithGoogle()">
-                <i class="fab fa-google"></i> Google ile Giriş Yap
-            </button>
-            <div class="text-center mt-3">
-                <span class="link" onclick="switchToRegister()">Kayıt Ol</span> | 
-                <span class="link" onclick="forgotPassword()">Şifremi Unuttum</span>
+            
+            <div class="auth-content">
+                <!-- Login Form -->
+                <div class="auth-form active" id="loginForm">
+                    <div class="form-group">
+                        <label for="loginEmail">E-posta</label>
+                        <input type="email" id="loginEmail" class="form-control" placeholder="E-postanızı girin">
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Şifre</label>
+                        <input type="password" id="loginPassword" class="form-control" placeholder="Şifrenizi girin">
+                        <div style="text-align: right; margin-top: 8px;">
+                            <a href="#" style="color: var(--primary); font-size: 13px;" onclick="showForgotPassword()">Şifremi unuttum?</a>
+                        </div>
+                    </div>
+                    <button class="btn" onclick="login()">Giriş Yap</button>
+                    
+                    <div class="divider">veya</div>
+                    
+                    <button class="btn btn-google" onclick="loginWithGoogle()">
+                        <i class="fab fa-google"></i>
+                        <span>Google ile Giriş Yap</span>
+                    </button>
+                </div>
+                
+                <!-- Register Form -->
+                <div class="auth-form" id="registerForm">
+                    <div class="form-group">
+                        <label for="registerName">İsim</label>
+                        <input type="text" id="registerName" class="form-control" placeholder="Adınız ve soyadınız">
+                    </div>
+                    <div class="form-group">
+                        <label for="registerEmail">E-posta</label>
+                        <input type="email" id="registerEmail" class="form-control" placeholder="E-postanızı girin">
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword">Şifre</label>
+                        <input type="password" id="registerPassword" class="form-control" placeholder="Şifrenizi oluşturun (en az 6 karakter)">
+                    </div>
+                    <div class="form-group">
+                        <label for="registerConfirmPassword">Şifre Tekrar</label>
+                        <input type="password" id="registerConfirmPassword" class="form-control" placeholder="Şifrenizi tekrar girin">
+                    </div>
+                    <button class="btn" onclick="register()">Kayıt Ol</button>
+                    
+                    <div class="divider">veya</div>
+                    
+                    <button class="btn btn-google" onclick="registerWithGoogle()">
+                        <i class="fab fa-google"></i>
+                        <span>Google ile Kayıt Ol</span>
+                    </button>
+                </div>
+                
+                <!-- Forgot Password Form -->
+                <div class="auth-form" id="forgotPasswordForm">
+                    <div class="form-group">
+                        <label for="forgotEmail">E-posta</label>
+                        <input type="email" id="forgotEmail" class="form-control" placeholder="Kayıtlı e-postanızı girin">
+                    </div>
+                    <button class="btn" onclick="sendPasswordReset()">Şifre Sıfırlama Bağlantısı Gönder</button>
+                    <button class="btn" style="background-color: #eee; color: var(--dark); margin-top: 10px;" onclick="switchTab('login')">
+                        Giriş Sayfasına Dön
+                    </button>
+                </div>
+                
+                <!-- Email Verification Form -->
+                <div class="auth-form" id="verifyEmailForm">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <i class="fas fa-envelope" style="font-size: 48px; color: var(--primary); margin-bottom: 15px;"></i>
+                        <h3>E-posta Doğrulama Gerekli</h3>
+                        <p style="color: var(--gray);">E-postanıza bir doğrulama bağlantısı gönderildi. Lütfen e-postanızı kontrol edin ve bağlantıya tıklayın.</p>
+                    </div>
+                    <button class="btn" onclick="checkEmailVerification()">
+                        <i class="fas fa-check"></i> Doğrulandı, Devam Et
+                    </button>
+                    <button class="btn" style="background-color: #eee; color: var(--dark); margin-top: 10px;" onclick="resendVerificationEmail()">
+                        <i class="fas fa-redo"></i> Bağlantıyı Tekrar Gönder
+                    </button>
+                </div>
             </div>
         </div>
     </div>
-
+    
+    <!-- Firebase and other scripts -->
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
-
+    
     <script>
-        // Firebase'i başlatıyoruz
+        // Firebase configuration - BU KISMI KENDİ BİLGİLERİNİZLE DEĞİŞTİRİN
         const firebaseConfig = {
             apiKey: "AIzaSyDH5GBWQNoZv7LZZ2MbFjh-twI1jZuYqK0",
             authDomain: "newdc-d6404.firebaseapp.com",
@@ -205,62 +384,366 @@
             appId: "1:101292652984:web:59d6b49b400572bec1774d",
             measurementId: "G-NV86JDVJ27"
         };
-
-        firebase.initializeApp(firebaseConfig);
+        
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
-
-        // Giriş yapma işlemi
+        const db = firebase.firestore();
+        
+        // Google provider for authentication
+        const googleProvider = new firebase.auth.GoogleAuthProvider();
+        
+        // Global variables
+        let currentUser = null;
+        
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', () => {
+            initAuth();
+            setupEventListeners();
+        });
+        
+        function initAuth() {
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    currentUser = user;
+                    if (user.emailVerified) {
+                        showApp();
+                        loadUserData(user);
+                    } else {
+                        showVerifyEmailForm();
+                    }
+                } else {
+                    currentUser = null;
+                    showAuth();
+                }
+            }, error => {
+                showError(error, "Auth State Listener");
+            });
+        }
+        
+        function setupEventListeners() {
+            // Tab switching
+            document.querySelectorAll('.auth-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabName = this.textContent.includes('Giriş') ? 'login' : 'register';
+                    switchTab(tabName);
+                });
+            });
+            
+            // Form submissions
+            document.getElementById('loginForm').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') login();
+            });
+            
+            document.getElementById('registerForm').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') register();
+            });
+        }
+        
+        function switchTab(tabName) {
+            document.querySelectorAll('.auth-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.auth-form').forEach(form => {
+                form.classList.remove('active');
+            });
+            
+            if (tabName === 'login') {
+                document.querySelector('.auth-tab:nth-child(1)').classList.add('active');
+                document.getElementById('loginForm').classList.add('active');
+            } else if (tabName === 'register') {
+                document.querySelector('.auth-tab:nth-child(2)').classList.add('active');
+                document.getElementById('registerForm').classList.add('active');
+            }
+        }
+        
+        function showForgotPassword() {
+            document.querySelectorAll('.auth-form').forEach(form => {
+                form.classList.remove('active');
+            });
+            document.getElementById('forgotPasswordForm').classList.add('active');
+        }
+        
+        function showVerifyEmailForm() {
+            document.querySelectorAll('.auth-form').forEach(form => {
+                form.classList.remove('active');
+            });
+            document.getElementById('verifyEmailForm').classList.add('active');
+        }
+        
+        function showAuth() {
+            document.getElementById('authContainer').style.display = 'flex';
+            // Hide app container if exists
+            const appContainer = document.getElementById('appContainer');
+            if (appContainer) appContainer.style.display = 'none';
+        }
+        
+        function showApp() {
+            document.getElementById('authContainer').style.display = 'none';
+            // Show app container if exists
+            const appContainer = document.getElementById('appContainer');
+            if (appContainer) {
+                appContainer.style.display = 'flex';
+            } else {
+                // In a real app, you would load the main app interface here
+                alert('Giriş başarılı! Uygulama arayüzü yükleniyor...');
+            }
+        }
+        
+        function showError(error, context = "") {
+            console.error(context, error);
+            
+            let errorMessage = "Bir hata oluştu";
+            if (error.code) {
+                switch(error.code) {
+                    case "auth/invalid-email":
+                        errorMessage = "Geçersiz e-posta adresi";
+                        break;
+                    case "auth/user-disabled":
+                        errorMessage = "Bu kullanıcı devre dışı bırakılmış";
+                        break;
+                    case "auth/user-not-found":
+                        errorMessage = "Kullanıcı bulunamadı";
+                        break;
+                    case "auth/wrong-password":
+                        errorMessage = "Hatalı şifre";
+                        break;
+                    case "auth/email-already-in-use":
+                        errorMessage = "Bu e-posta zaten kullanımda";
+                        break;
+                    case "auth/operation-not-allowed":
+                        errorMessage = "Bu işlem şu anda izin verilmiyor";
+                        break;
+                    case "auth/weak-password":
+                        errorMessage = "Şifre en az 6 karakter olmalı";
+                        break;
+                    case "auth/too-many-requests":
+                        errorMessage = "Çok fazla deneme yaptınız, lütfen daha sonra tekrar deneyin";
+                        break;
+                }
+            }
+            
+            // Show error message
+            const errorElement = document.createElement('div');
+            errorElement.className = 'error-message';
+            errorElement.innerHTML = `
+                <i class="fas fa-exclamation-circle"></i>
+                <span>${errorMessage}</span>
+            `;
+            
+            // Find the active form and prepend the error message
+            const activeForm = document.querySelector('.auth-form.active');
+            if (activeForm) {
+                // Remove any existing error messages
+                const existingError = activeForm.querySelector('.error-message');
+                if (existingError) existingError.remove();
+                
+                activeForm.prepend(errorElement);
+                
+                // Remove error after 5 seconds
+                setTimeout(() => {
+                    errorElement.remove();
+                }, 5000);
+            } else {
+                alert(errorMessage);
+            }
+        }
+        
+        function showSuccess(message) {
+            // Show success message
+            const successElement = document.createElement('div');
+            successElement.className = 'success-message';
+            successElement.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                <span>${message}</span>
+            `;
+            
+            // Find the active form and prepend the success message
+            const activeForm = document.querySelector('.auth-form.active');
+            if (activeForm) {
+                // Remove any existing messages
+                const existingMsg = activeForm.querySelector('.success-message');
+                if (existingMsg) existingMsg.remove();
+                
+                activeForm.prepend(successElement);
+                
+                // Remove message after 5 seconds
+                setTimeout(() => {
+                    successElement.remove();
+                }, 5000);
+            } else {
+                alert(message);
+            }
+        }
+        
+        // Login with email/password
         function login() {
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value.trim();
-
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            
             if (!email || !password) {
-                alert('Lütfen e-posta ve şifrenizi girin.');
+                showError({ message: "Lütfen e-posta ve şifrenizi girin" });
                 return;
             }
-
+            
             auth.signInWithEmailAndPassword(email, password)
                 .then((userCredential) => {
-                    alert('Giriş başarılı!');
-                    window.location.href = 'dashboard.html'; // Başarıyla giriş yapıldıktan sonra yönlendirme
+                    if (!userCredential.user.emailVerified) {
+                        auth.signOut();
+                        showVerifyEmailForm();
+                        showError({ message: "Lütfen e-postanızı doğrulayın. Doğrulama bağlantısı e-postanıza gönderildi." });
+                    } else {
+                        showSuccess("Giriş başarılı!");
+                    }
                 })
                 .catch((error) => {
-                    alert('Giriş başarısız: ' + error.message);
+                    showError(error, "Login");
                 });
         }
-
-        // Google ile giriş yapma
-        function loginWithGoogle() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            firebase.auth().signInWithPopup(provider)
-                .then((result) => {
-                    alert('Google ile giriş başarılı!');
-                    window.location.href = 'dashboard.html'; // Başarıyla giriş yapıldıktan sonra yönlendirme
-                })
-                .catch((error) => {
-                    alert('Google ile giriş başarısız: ' + error.message);
-                });
-        }
-
-        // Kayıt olma sayfasına yönlendirme
-        function switchToRegister() {
-            window.location.href = 'register.html';  // Kayıt ol sayfasına yönlendirme
-        }
-
-        // Şifre sıfırlama
-        function forgotPassword() {
-            const email = prompt('E-posta adresinizi girin:');
-            if (email) {
-                auth.sendPasswordResetEmail(email)
-                    .then(() => {
-                        alert('Şifre sıfırlama bağlantısı gönderildi.');
-                    })
-                    .catch((error) => {
-                        alert('Hata: ' + error.message);
-                    });
+        
+        // Register with email/password
+        function register() {
+            const name = document.getElementById('registerName').value.trim();
+            const email = document.getElementById('registerEmail').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerConfirmPassword').value;
+            
+            if (!name || !email || !password || !confirmPassword) {
+                showError({ message: "Lütfen tüm alanları doldurun" });
+                return;
             }
+            
+            if (password.length < 6) {
+                showError({ message: "Şifre en az 6 karakter olmalıdır" });
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showError({ message: "Şifreler eşleşmiyor!" });
+                return;
+            }
+            
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Update user profile with display name
+                    return userCredential.user.updateProfile({
+                        displayName: name
+                    }).then(() => {
+                        // Save additional user data to Firestore
+                        return db.collection('users').doc(userCredential.user.uid).set({
+                            name: name,
+                            email: email,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            friends: [],
+                            friendRequests: [],
+                            status: 'online'
+                        }, { merge: true });
+                    }).then(() => {
+                        // Send email verification
+                        return userCredential.user.sendEmailVerification({
+                            url: window.location.href,
+                            handleCodeInApp: true
+                        });
+                    });
+                })
+                .then(() => {
+                    showVerifyEmailForm();
+                    showSuccess("Kayıt başarılı! Lütfen e-postanızı doğrulayın.");
+                })
+                .catch((error) => {
+                    showError(error, "Register");
+                });
         }
-
+        
+        // Login with Google
+        function loginWithGoogle() {
+            auth.signInWithPopup(googleProvider)
+                .then((result) => {
+                    // Check if user exists in Firestore
+                    return db.collection('users').doc(result.user.uid).get()
+                        .then(doc => {
+                            if (!doc.exists) {
+                                // Save user data if new user
+                                return db.collection('users').doc(result.user.uid).set({
+                                    name: result.user.displayName,
+                                    email: result.user.email,
+                                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                                    friends: [],
+                                    friendRequests: [],
+                                    status: 'online'
+                                }, { merge: true });
+                            }
+                        }).then(() => {
+                            showSuccess("Google ile giriş başarılı!");
+                        });
+                })
+                .catch((error) => {
+                    showError(error, "Google Login");
+                });
+        }
+        
+        // Register with Google
+        function registerWithGoogle() {
+            loginWithGoogle(); // Same as login for simplicity
+        }
+        
+        // Send password reset email
+        function sendPasswordReset() {
+            const email = document.getElementById('forgotEmail').value.trim();
+            
+            if (!email) {
+                showError({ message: "Lütfen e-posta adresinizi girin" });
+                return;
+            }
+            
+            auth.sendPasswordResetEmail(email, {
+                url: window.location.href,
+                handleCodeInApp: true
+            })
+                .then(() => {
+                    showSuccess("Şifre sıfırlama bağlantısı e-postanıza gönderildi. Lütfen e-postanızı kontrol edin.");
+                    switchTab('login');
+                })
+                .catch((error) => {
+                    showError(error, "Password Reset");
+                });
+        }
+        
+        // Check email verification status
+        function checkEmailVerification() {
+            auth.currentUser.reload().then(() => {
+                if (auth.currentUser.emailVerified) {
+                    showApp();
+                    loadUserData(auth.currentUser);
+                    showSuccess("E-posta doğrulama başarılı!");
+                } else {
+                    showError({ message: "E-postanız henüz doğrulanmadı. Lütfen e-postanızı kontrol edin ve doğrulama bağlantısına tıklayın." });
+                }
+            }).catch(error => {
+                showError(error, "Email Verification Check");
+            });
+        }
+        
+        // Resend verification email
+        function resendVerificationEmail() {
+            auth.currentUser.sendEmailVerification({
+                url: window.location.href,
+                handleCodeInApp: true
+            })
+                .then(() => {
+                    showSuccess("Doğrulama bağlantısı tekrar gönderildi. Lütfen e-postanızı kontrol edin.");
+                })
+                .catch((error) => {
+                    showError(error, "Resend Verification");
+                });
+        }
+        
+        // Load user data (would be implemented in full app)
+        function loadUserData(user) {
+            console.log("User data loaded:", user);
+            // In full app, this would load friends, messages, etc.
+        }
     </script>
 </body>
 </html>
