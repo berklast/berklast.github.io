@@ -21,6 +21,9 @@
             --info: #560bad;
             --card-bg: #ffffff;
             --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --dark-bg: #1a1a2e;
+            --dark-card: #16213e;
+            --dark-text: #e6e6e6;
         }
         
         * {
@@ -34,6 +37,12 @@
             background-color: #f5f7ff;
             color: var(--dark);
             min-height: 100vh;
+            transition: all 0.3s;
+        }
+
+        body.dark-theme {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
         }
         
         /* Auth Container */
@@ -55,6 +64,11 @@
             overflow: hidden;
             animation: fadeIn 0.5s ease;
         }
+
+        .dark-theme .auth-card {
+            background-color: var(--dark-card);
+            color: var(--dark-text);
+        }
         
         .auth-header {
             background: linear-gradient(to right, var(--primary), var(--accent));
@@ -73,6 +87,10 @@
             height: 60px;
             background-color: var(--card-bg);
             border-radius: 30px 30px 0 0;
+        }
+
+        .dark-theme .auth-header::after {
+            background-color: var(--dark-card);
         }
         
         .auth-logo {
@@ -96,6 +114,10 @@
             display: flex;
             border-bottom: 1px solid #eee;
         }
+
+        .dark-theme .auth-tabs {
+            border-bottom-color: #333;
+        }
         
         .auth-tab {
             flex: 1;
@@ -107,10 +129,18 @@
             transition: all 0.3s;
             position: relative;
         }
+
+        .dark-theme .auth-tab {
+            color: #aaa;
+        }
         
         .auth-tab.active {
             color: var(--primary);
             font-weight: 600;
+        }
+
+        .dark-theme .auth-tab.active {
+            color: var(--accent);
         }
         
         .auth-tab.active::after {
@@ -122,6 +152,10 @@
             height: 3px;
             background-color: var(--primary);
             border-radius: 3px 3px 0 0;
+        }
+
+        .dark-theme .auth-tab.active::after {
+            background-color: var(--accent);
         }
         
         .auth-content {
@@ -148,6 +182,10 @@
             font-weight: 500;
             color: var(--dark);
         }
+
+        .dark-theme .form-group label {
+            color: var(--dark-text);
+        }
         
         .form-control {
             width: 100%;
@@ -156,12 +194,24 @@
             border-radius: 8px;
             font-size: 14px;
             transition: border 0.3s;
+            background-color: white;
+        }
+
+        .dark-theme .form-control {
+            background-color: #333;
+            border-color: #444;
+            color: var(--dark-text);
         }
         
         .form-control:focus {
             border-color: var(--primary);
             outline: none;
             box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        .dark-theme .form-control:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.2);
         }
         
         .btn {
@@ -183,6 +233,10 @@
             background-color: var(--primary-dark);
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        .dark-theme .btn:hover {
+            box-shadow: 0 5px 15px rgba(72, 149, 239, 0.3);
         }
         
         .btn-google {
@@ -218,6 +272,10 @@
             align-items: center;
             animation: fadeIn 0.3s;
         }
+
+        .dark-theme .error-message {
+            background-color: #3a1a1a;
+        }
         
         .error-message i {
             margin-right: 10px;
@@ -232,6 +290,11 @@
             display: flex;
             align-items: center;
             animation: fadeIn 0.3s;
+        }
+
+        .dark-theme .success-message {
+            background-color: #1a3a1a;
+            color: #4cc9f0;
         }
         
         .success-message i {
@@ -261,6 +324,10 @@
             color: var(--gray);
             font-size: 14px;
         }
+
+        .dark-theme .divider {
+            color: #666;
+        }
         
         .divider::before, .divider::after {
             content: '';
@@ -270,11 +337,20 @@
             margin: 0 10px;
         }
 
+        .dark-theme .divider::before,
+        .dark-theme .divider::after {
+            background-color: #444;
+        }
+
         /* App Container Styles */
         #appContainer {
             display: none;
             min-height: 100vh;
             background-color: #f0f2f5;
+        }
+
+        .dark-theme #appContainer {
+            background-color: var(--dark-bg);
         }
 
         .app-header {
@@ -289,6 +365,10 @@
             width: 100%;
             top: 0;
             z-index: 1000;
+        }
+
+        .dark-theme .app-header {
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         }
 
         .app-logo {
@@ -338,6 +418,11 @@
             z-index: 1001;
         }
 
+        .dark-theme .dropdown-menu {
+            background-color: var(--dark-card);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
         .dropdown-menu.show {
             display: block;
             animation: slideUp 0.3s ease;
@@ -352,9 +437,17 @@
             transition: all 0.2s;
         }
 
+        .dark-theme .dropdown-item {
+            color: var(--dark-text);
+        }
+
         .dropdown-item i {
             margin-right: 10px;
             color: var(--gray);
+        }
+
+        .dark-theme .dropdown-item i {
+            color: #777;
         }
 
         .dropdown-item:hover {
@@ -362,8 +455,17 @@
             color: var(--primary);
         }
 
+        .dark-theme .dropdown-item:hover {
+            background-color: #1f2a4e;
+            color: var(--accent);
+        }
+
         .dropdown-item:hover i {
             color: var(--primary);
+        }
+
+        .dark-theme .dropdown-item:hover i {
+            color: var(--accent);
         }
 
         .app-content {
@@ -379,6 +481,12 @@
             height: 100%;
             overflow-y: auto;
             padding: 20px 0;
+            transition: all 0.3s;
+        }
+
+        .dark-theme .sidebar {
+            background-color: var(--dark-card);
+            border-right-color: #333;
         }
 
         .sidebar-section {
@@ -394,8 +502,17 @@
             align-items: center;
         }
 
+        .dark-theme .sidebar-title {
+            color: #777;
+        }
+
         .sidebar-title i {
             cursor: pointer;
+            color: var(--gray);
+        }
+
+        .dark-theme .sidebar-title i {
+            color: #777;
         }
 
         .sidebar-item {
@@ -404,6 +521,11 @@
             align-items: center;
             cursor: pointer;
             transition: all 0.2s;
+            color: var(--dark);
+        }
+
+        .dark-theme .sidebar-item {
+            color: var(--dark-text);
         }
 
         .sidebar-item.active {
@@ -412,8 +534,18 @@
             color: var(--primary);
         }
 
+        .dark-theme .sidebar-item.active {
+            background-color: #1f2a4e;
+            border-left-color: var(--accent);
+            color: var(--accent);
+        }
+
         .sidebar-item:hover:not(.active) {
             background-color: #f9f9f9;
+        }
+
+        .dark-theme .sidebar-item:hover:not(.active) {
+            background-color: #1a2238;
         }
 
         .sidebar-item i {
@@ -472,6 +604,11 @@
             align-items: center;
         }
 
+        .dark-theme .chat-header {
+            background-color: var(--dark-card);
+            border-bottom-color: #333;
+        }
+
         .chat-user {
             display: flex;
             align-items: center;
@@ -494,10 +631,18 @@
             font-weight: 500;
         }
 
+        .dark-theme .chat-user-name {
+            color: var(--dark-text);
+        }
+
         .chat-user-status {
             font-size: 12px;
             color: var(--gray);
             margin-top: 2px;
+        }
+
+        .dark-theme .chat-user-status {
+            color: #777;
         }
 
         .chat-actions {
@@ -519,9 +664,18 @@
             transition: all 0.2s;
         }
 
+        .dark-theme .chat-action-btn {
+            background-color: #1f2a4e;
+            color: var(--accent);
+        }
+
         .chat-action-btn:hover {
             background-color: var(--primary);
             color: white;
+        }
+
+        .dark-theme .chat-action-btn:hover {
+            background-color: var(--accent);
         }
 
         .messages-container {
@@ -529,6 +683,10 @@
             padding: 20px;
             overflow-y: auto;
             background-color: #f9f9f9;
+        }
+
+        .dark-theme .messages-container {
+            background-color: #0f0f1a;
         }
 
         .message {
@@ -558,6 +716,11 @@
             flex-shrink: 0;
         }
 
+        .dark-theme .message-avatar {
+            background-color: #444;
+            color: #eee;
+        }
+
         .message-outgoing .message-avatar {
             margin-right: 0;
             margin-left: 10px;
@@ -574,11 +737,23 @@
             border-radius: 18px;
             position: relative;
             word-wrap: break-word;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .message-bubble:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
         }
 
         .message-incoming .message-bubble {
             background-color: white;
             border-top-left-radius: 4px;
+        }
+
+        .dark-theme .message-incoming .message-bubble {
+            background-color: #333;
+            color: var(--dark-text);
         }
 
         .message-outgoing .message-bubble {
@@ -598,8 +773,58 @@
             color: var(--gray);
         }
 
+        .dark-theme .message-incoming .message-time {
+            color: #777;
+        }
+
         .message-outgoing .message-time {
             color: rgba(255, 255, 255, 0.7);
+        }
+
+        .message-reactions {
+            display: flex;
+            margin-top: 5px;
+        }
+
+        .reaction-btn {
+            background: rgba(0,0,0,0.05);
+            border-radius: 12px;
+            padding: 2px 6px;
+            margin-right: 5px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .reaction-btn:hover {
+            background: rgba(67, 97, 238, 0.1);
+            transform: scale(1.1);
+        }
+
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            color: var(--gray);
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background-color: var(--gray);
+            border-radius: 50%;
+            margin: 0 2px;
+            animation: typingAnimation 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: 0s; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typingAnimation {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-5px); }
         }
 
         .message-input-container {
@@ -608,6 +833,11 @@
             border-top: 1px solid #eee;
             display: flex;
             align-items: center;
+        }
+
+        .dark-theme .message-input-container {
+            background-color: var(--dark-card);
+            border-top-color: #333;
         }
 
         .message-input {
@@ -620,11 +850,23 @@
             max-height: 120px;
             outline: none;
             transition: border 0.3s;
+            background-color: white;
+        }
+
+        .dark-theme .message-input {
+            background-color: #333;
+            border-color: #444;
+            color: var(--dark-text);
         }
 
         .message-input:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        .dark-theme .message-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.1);
         }
 
         .send-btn {
@@ -662,8 +904,157 @@
             transition: all 0.2s;
         }
 
+        .dark-theme .attachment-btn {
+            background-color: #1f2a4e;
+            color: var(--accent);
+        }
+
         .attachment-btn:hover {
             background-color: #e6ebff;
+        }
+
+        .dark-theme .attachment-btn:hover {
+            background-color: #2a3a6e;
+        }
+
+        /* Emoji Picker */
+        .emoji-picker-container {
+            position: absolute;
+            bottom: 80px;
+            right: 20px;
+            width: 300px;
+            height: 350px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            display: none;
+            z-index: 1000;
+        }
+
+        .dark-theme .emoji-picker-container {
+            background-color: var(--dark-card);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        .emoji-picker-header {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dark-theme .emoji-picker-header {
+            border-bottom-color: #333;
+        }
+
+        .emoji-picker-tabs {
+            display: flex;
+        }
+
+        .emoji-picker-tab {
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-right: 5px;
+            font-size: 16px;
+        }
+
+        .emoji-picker-tab.active {
+            background-color: #f5f7ff;
+        }
+
+        .dark-theme .emoji-picker-tab.active {
+            background-color: #1f2a4e;
+        }
+
+        .emoji-picker-search {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .dark-theme .emoji-picker-search {
+            border-bottom-color: #333;
+        }
+
+        .emoji-search-input {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        .dark-theme .emoji-search-input {
+            background-color: #333;
+            border-color: #444;
+            color: var(--dark-text);
+        }
+
+        .emoji-picker-body {
+            height: 230px;
+            overflow-y: auto;
+            padding: 10px;
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 5px;
+        }
+
+        .emoji-item {
+            font-size: 20px;
+            cursor: pointer;
+            text-align: center;
+            padding: 5px;
+            border-radius: 5px;
+            transition: all 0.2s;
+        }
+
+        .emoji-item:hover {
+            background-color: #f5f7ff;
+            transform: scale(1.2);
+        }
+
+        .dark-theme .emoji-item:hover {
+            background-color: #1f2a4e;
+        }
+
+        .emoji-category-title {
+            font-size: 12px;
+            color: var(--gray);
+            padding: 5px 10px;
+            grid-column: 1 / -1;
+        }
+
+        .dark-theme .emoji-category-title {
+            color: #777;
+        }
+
+        .emoji-picker-footer {
+            padding: 10px;
+            border-top: 1px solid #eee;
+        }
+
+        .dark-theme .emoji-picker-footer {
+            border-top-color: #333;
+        }
+
+        .recent-emojis {
+            display: flex;
+            gap: 5px;
+            overflow-x: auto;
+            padding: 5px 0;
+        }
+
+        .recent-emoji {
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px;
+            transition: all 0.2s;
+        }
+
+        .recent-emoji:hover {
+            transform: scale(1.2);
         }
 
         /* Modal Styles */
@@ -695,6 +1086,10 @@
             animation: slideUp 0.3s ease;
         }
 
+        .dark-theme .modal-content {
+            background-color: var(--dark-card);
+        }
+
         .modal-header {
             padding: 15px 20px;
             border-bottom: 1px solid #eee;
@@ -703,9 +1098,17 @@
             align-items: center;
         }
 
+        .dark-theme .modal-header {
+            border-bottom-color: #333;
+        }
+
         .modal-title {
             font-weight: 600;
             font-size: 18px;
+        }
+
+        .dark-theme .modal-title {
+            color: var(--dark-text);
         }
 
         .modal-close {
@@ -714,6 +1117,10 @@
             font-size: 20px;
             cursor: pointer;
             color: var(--gray);
+        }
+
+        .dark-theme .modal-close {
+            color: #777;
         }
 
         .modal-body {
@@ -725,6 +1132,10 @@
             border-top: 1px solid #eee;
             display: flex;
             justify-content: flex-end;
+        }
+
+        .dark-theme .modal-footer {
+            border-top-color: #333;
         }
 
         .modal-btn {
@@ -751,8 +1162,17 @@
             border: none;
         }
 
+        .dark-theme .modal-btn-secondary {
+            background-color: #333;
+            color: var(--dark-text);
+        }
+
         .modal-btn-secondary:hover {
             background-color: #ddd;
+        }
+
+        .dark-theme .modal-btn-secondary:hover {
+            background-color: #444;
         }
 
         .search-input {
@@ -762,6 +1182,13 @@
             border-radius: 25px;
             margin-bottom: 15px;
             font-size: 14px;
+            background-color: white;
+        }
+
+        .dark-theme .search-input {
+            background-color: #333;
+            border-color: #444;
+            color: var(--dark-text);
         }
 
         .user-list {
@@ -777,12 +1204,20 @@
             transition: all 0.2s;
         }
 
+        .dark-theme .user-item {
+            border-bottom-color: #333;
+        }
+
         .user-item:last-child {
             border-bottom: none;
         }
 
         .user-item:hover {
             background-color: #f9f9f9;
+        }
+
+        .dark-theme .user-item:hover {
+            background-color: #1a2238;
         }
 
         .user-avatar-small {
@@ -807,9 +1242,29 @@
             font-weight: 500;
         }
 
+        .dark-theme .user-name {
+            color: var(--dark-text);
+        }
+
         .user-email {
             font-size: 12px;
             color: var(--gray);
+        }
+
+        .dark-theme .user-email {
+            color: #777;
+        }
+
+        .user-status {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #ccc;
+            margin-left: 10px;
+        }
+
+        .user-status.online {
+            background-color: var(--success);
         }
 
         .add-friend-btn {
@@ -827,6 +1282,11 @@
             background-color: var(--primary-dark);
         }
 
+        .add-friend-btn.pending {
+            background-color: #6c757d;
+            cursor: default;
+        }
+
         /* Settings Page Styles */
         .settings-container {
             flex: 1;
@@ -842,6 +1302,11 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
 
+        .dark-theme .settings-section {
+            background-color: var(--dark-card);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
         .settings-title {
             font-size: 16px;
             font-weight: 600;
@@ -849,6 +1314,10 @@
             color: var(--primary);
             display: flex;
             align-items: center;
+        }
+
+        .dark-theme .settings-title {
+            color: var(--accent);
         }
 
         .settings-title i {
@@ -871,12 +1340,24 @@
             color: var(--dark);
         }
 
-        .form-row input {
+        .dark-theme .form-row label {
+            color: var(--dark-text);
+        }
+
+        .form-row input, .form-row select {
             flex: 1;
             padding: 10px 15px;
             border: 1px solid #ddd;
             border-radius: 5px;
             font-size: 14px;
+            background-color: white;
+        }
+
+        .dark-theme .form-row input,
+        .dark-theme .form-row select {
+            background-color: #333;
+            border-color: #444;
+            color: var(--dark-text);
         }
 
         .form-row button {
@@ -897,6 +1378,109 @@
         .verification-code-container {
             display: none;
             margin-top: 10px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
+        }
+
+        /* Theme Options */
+        .theme-options {
+            display: flex;
+            gap: 15px;
+        }
+
+        .theme-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 5px;
+            transition: all 0.2s;
+        }
+
+        .theme-option:hover {
+            background-color: #f5f7ff;
+        }
+
+        .dark-theme .theme-option:hover {
+            background-color: #1f2a4e;
+        }
+
+        .theme-option.active {
+            background-color: #e6ebff;
+            border: 1px solid var(--primary);
+        }
+
+        .dark-theme .theme-option.active {
+            background-color: #2a3a6e;
+            border-color: var(--accent);
+        }
+
+        .theme-preview {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-bottom: 5px;
+            border: 2px solid #ddd;
+        }
+
+        .dark-theme .theme-preview {
+            border-color: #444;
+        }
+
+        .theme-option.light .theme-preview {
+            background: linear-gradient(135deg, #f5f7ff 50%, #4361ee 50%);
+        }
+
+        .theme-option.dark .theme-preview {
+            background: linear-gradient(135deg, #1a1a2e 50%, #4895ef 50%);
+        }
+
+        .theme-option.blue .theme-preview {
+            background: linear-gradient(135deg, #4361ee 50%, #4895ef 50%);
         }
 
         /* Responsive */
@@ -938,6 +1522,24 @@
                 margin-top: 10px;
                 width: 100%;
             }
+
+            .emoji-picker-container {
+                width: 280px;
+                right: 10px;
+            }
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+            100% { transform: translateY(0px); }
         }
     </style>
 </head>
@@ -1056,6 +1658,7 @@
                         <i class="fas fa-cog"></i>
                         <span>Ayarlar</span>
                     </div>
+                    <div class="dropdown-divider"></div>
                     <div class="dropdown-item" onclick="logout()">
                         <i class="fas fa-sign-out-alt"></i>
                         <span>Çıkış Yap</span>
@@ -1067,10 +1670,15 @@
         <div class="app-content">
             <!-- Sidebar -->
             <div class="sidebar" id="sidebar">
+                <div class="sidebar-search">
+                    <input type="text" placeholder="Arkadaş ara..." id="friendSearch">
+                    <i class="fas fa-search"></i>
+                </div>
+                
                 <div class="sidebar-section">
                     <div class="sidebar-title">
                         <span>Arkadaşlar</span>
-                        <i class="fas fa-plus" onclick="showAddFriendModal()"></i>
+                        <i class="fas fa-user-plus" onclick="showAddFriendModal()"></i>
                     </div>
                     <div id="friendsList">
                         <!-- Arkadaşlar buraya dinamik olarak eklenecek -->
@@ -1097,14 +1705,20 @@
                             <div class="chat-user-avatar" id="currentChatAvatar">?</div>
                             <div>
                                 <div class="chat-user-name" id="currentChatName">Sohbet Seçin</div>
-                                <div class="chat-user-status" id="currentChatStatus"></div>
+                                <div class="chat-user-status" id="currentChatStatus">
+                                    <span id="typingIndicator" class="typing-indicator" style="display:none;">
+                                        <span class="typing-dot"></span>
+                                        <span class="typing-dot"></span>
+                                        <span class="typing-dot"></span>
+                                    </span>
+                                </div>
                             </div>
                         </div>
                         <div class="chat-actions">
-                            <div class="chat-action-btn">
-                                <i class="fas fa-search"></i>
+                            <div class="chat-action-btn" onclick="toggleEmojiPicker()">
+                                <i class="far fa-smile"></i>
                             </div>
-                            <div class="chat-action-btn">
+                            <div class="chat-action-btn" onclick="showChatOptions()">
                                 <i class="fas fa-ellipsis-v"></i>
                             </div>
                         </div>
@@ -1127,6 +1741,31 @@
                             <i class="fas fa-paper-plane"></i>
                         </button>
                     </div>
+
+                    <!-- Emoji Picker -->
+                    <div class="emoji-picker-container" id="emojiPicker">
+                        <div class="emoji-picker-header">
+                            <div class="emoji-picker-tabs">
+                                <span class="emoji-picker-tab active" data-category="smileys">😀</span>
+                                <span class="emoji-picker-tab" data-category="people">👍</span>
+                                <span class="emoji-picker-tab" data-category="nature">🐶</span>
+                                <span class="emoji-picker-tab" data-category="food">🍕</span>
+                                <span class="emoji-picker-tab" data-category="activities">⚽</span>
+                            </div>
+                            <i class="fas fa-times" onclick="toggleEmojiPicker()"></i>
+                        </div>
+                        <div class="emoji-picker-search">
+                            <input type="text" class="emoji-search-input" placeholder="Emoji ara..." id="emojiSearchInput">
+                        </div>
+                        <div class="emoji-picker-body" id="emojiPickerBody">
+                            <!-- Emojiler buraya dinamik olarak eklenecek -->
+                        </div>
+                        <div class="emoji-picker-footer">
+                            <div class="recent-emojis" id="recentEmojis">
+                                <!-- Son kullanılan emojiler -->
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
                 <!-- Settings Container (Hidden by default) -->
@@ -1141,6 +1780,11 @@
                                 <label for="settingsName">İsim:</label>
                                 <input type="text" id="settingsName" placeholder="Adınız ve soyadınız">
                                 <button onclick="updateProfileName()">Güncelle</button>
+                            </div>
+                            <div class="form-row">
+                                <label>Profil Fotoğrafı:</label>
+                                <input type="file" id="profilePhoto" accept="image/*" style="display: none;">
+                                <button onclick="document.getElementById('profilePhoto').click()">Fotoğraf Seç</button>
                             </div>
                         </div>
                     </div>
@@ -1191,6 +1835,32 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="settings-section">
+                        <div class="settings-title">
+                            <i class="fas fa-palette"></i>
+                            <span>Tema Ayarları</span>
+                        </div>
+                        <div class="settings-form">
+                            <div class="form-row">
+                                <label>Tema Seçin:</label>
+                                <div class="theme-options">
+                                    <div class="theme-option light active" data-theme="light" onclick="changeTheme('light')">
+                                        <div class="theme-preview"></div>
+                                        <span>Açık</span>
+                                    </div>
+                                    <div class="theme-option dark" data-theme="dark" onclick="changeTheme('dark')">
+                                        <div class="theme-preview"></div>
+                                        <span>Koyu</span>
+                                    </div>
+                                    <div class="theme-option blue" data-theme="blue" onclick="changeTheme('blue')">
+                                        <div class="theme-preview"></div>
+                                        <span>Mavi</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1205,9 +1875,37 @@
             </div>
             <div class="modal-body">
                 <input type="text" class="search-input" id="friendSearchInput" placeholder="Kullanıcı adı veya e-posta ara...">
+                <div class="search-filters">
+                    <span class="filter-option active" data-filter="all">Tümü</span>
+                    <span class="filter-option" data-filter="online">Çevrimiçi</span>
+                    <span class="filter-option" data-filter="recent">Son Aktif</span>
+                </div>
                 <ul class="user-list" id="userSearchResults">
                     <!-- Arama sonuçları buraya eklenecek -->
                 </ul>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-secondary" onclick="closeAddFriendModal()">Kapat</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Chat Options Modal -->
+    <div class="modal" id="chatOptionsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Sohbet Seçenekleri</div>
+                <button class="modal-close" onclick="closeChatOptionsModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="dropdown-item" onclick="clearChatHistory()">
+                    <i class="fas fa-trash-alt"></i>
+                    <span>Sohbet Geçmişini Temizle</span>
+                </div>
+                <div class="dropdown-item" onclick="blockUser()">
+                    <i class="fas fa-ban"></i>
+                    <span>Kullanıcıyı Engelle</span>
+                </div>
             </div>
         </div>
     </div>
@@ -1216,9 +1914,10 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-storage-compat.js"></script>
     
     <script>
-        // Firebase configuration - BU KISMI KENDİ BİLGİLERİNİZLE DEĞİŞTİRİN
+        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyDH5GBWQNoZv7LZZ2MbFjh-twI1jZuYqK0",
             authDomain: "newdc-d6404.firebaseapp.com",
@@ -1233,6 +1932,7 @@
         const app = firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
+        const storage = firebase.storage();
         
         // Google provider for authentication
         const googleProvider = new firebase.auth.GoogleAuthProvider();
@@ -1243,530 +1943,905 @@
         let currentChatUser = null;
         let unsubscribeMessages = null;
         let emailVerificationCode = null;
+        let recentEmojis = JSON.parse(localStorage.getItem('recentEmojis')) || [];
+        let isTyping = false;
+        let typingTimeout = null;
+        
+        // Emoji categories
+        const emojiCategories = {
+            smileys: ['😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇', '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚'],
+            people: ['👍', '👎', '👌', '✌️', '🤞', '🤟', '🤘', '👋', '🤚', '🖐️', '✋', '🖖', '👏', '🙌', '👐', '🤲', '🤝', '🙏'],
+            nature: ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮', '🐷', '🐸', '🐵', '🐔', '🐧', '🐦', '🦄', '🐝'],
+            food: ['🍎', '🍐', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🍒', '🍑', '🍍', '🥥', '🥝', '🍅', '🥑', '🍆', '🥦', '🥕', '🌽', '🍕'],
+            activities: ['⚽', '🏀', '🏈', '⚾', '🎾', '🏐', '🏉', '🎱', '🏓', '🏸', '🥊', '🥋', '🎯', '🎮', '🎲', '🧩', '🎨', '🎤', '🎧', '🎺']
+        };
         
         // Initialize the app
-        document.addEventListener('DOMContentLoaded', () => {
-            initAuth();
-            setupEventListeners();
-        });
-        
-        function initAuth() {
+        function initApp() {
+            initEmojiPicker();
             auth.onAuthStateChanged(user => {
                 if (user) {
                     currentUser = user;
-                    updateUserAvatar();
-                    if (user.emailVerified) {
-                        showApp();
-                        loadUserData(user);
-                        // Update email field in settings
-                        document.getElementById('settingsEmail').value = user.email;
-                        document.getElementById('settingsName').value = user.displayName || '';
-                    } else {
+                    setupUserUI();
+                    loadFriends();
+                    loadFriendRequests();
+                    
+                    // Check if email is verified
+                    if (!user.emailVerified) {
                         showVerifyEmailForm();
                     }
                 } else {
-                    currentUser = null;
-                    showAuth();
+                    showAuthContainer();
                 }
-            }, error => {
-                showError(error, "Auth State Listener");
             });
+            
+            // Load theme preference
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            changeTheme(savedTheme);
+            
+            // Setup event listeners
+            document.getElementById('messageInput').addEventListener('input', handleTyping);
+            document.getElementById('friendSearch').addEventListener('input', searchFriends);
+            document.getElementById('emojiSearchInput').addEventListener('input', searchEmojis);
+            document.getElementById('profilePhoto').addEventListener('change', uploadProfilePhoto);
         }
         
-        function setupEventListeners() {
-            // Tab switching
-            document.querySelectorAll('.auth-tab').forEach(tab => {
+        // Initialize emoji picker
+        function initEmojiPicker() {
+            const emojiPickerBody = document.getElementById('emojiPickerBody');
+            emojiPickerBody.innerHTML = '';
+            
+            // Add emojis by category
+            for (const [category, emojis] of Object.entries(emojiCategories)) {
+                const categorySection = document.createElement('div');
+                categorySection.className = 'emoji-category';
+                categorySection.dataset.category = category;
+                
+                const categoryTitle = document.createElement('div');
+                categoryTitle.className = 'emoji-category-title';
+                categoryTitle.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+                categorySection.appendChild(categoryTitle);
+                
+                const emojiContainer = document.createElement('div');
+                emojiContainer.className = 'emoji-category-items';
+                emojiContainer.style.display = category === 'smileys' ? 'grid' : 'none';
+                
+                emojis.forEach(emoji => {
+                    const emojiItem = document.createElement('div');
+                    emojiItem.className = 'emoji-item';
+                    emojiItem.textContent = emoji;
+                    emojiItem.onclick = () => insertEmoji(emoji);
+                    emojiContainer.appendChild(emojiItem);
+                });
+                
+                categorySection.appendChild(emojiContainer);
+                emojiPickerBody.appendChild(categorySection);
+            }
+            
+            // Setup emoji tab click handlers
+            document.querySelectorAll('.emoji-picker-tab').forEach(tab => {
                 tab.addEventListener('click', function() {
-                    const tabName = this.textContent.includes('Giriş') ? 'login' : 'register';
-                    switchTab(tabName);
+                    const category = this.dataset.category;
+                    
+                    // Update active tab
+                    document.querySelectorAll('.emoji-picker-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show selected category
+                    document.querySelectorAll('.emoji-category-items').forEach(items => {
+                        items.style.display = 'none';
+                    });
+                    
+                    const categoryItems = document.querySelector(`.emoji-category[data-category="${category}"] .emoji-category-items`);
+                    if (categoryItems) {
+                        categoryItems.style.display = 'grid';
+                    }
                 });
             });
             
-            // Form submissions
-            document.getElementById('loginForm').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') login();
-            });
+            // Load recent emojis
+            updateRecentEmojisUI();
+        }
+        
+        // Update recent emojis UI
+        function updateRecentEmojisUI() {
+            const recentEmojisContainer = document.getElementById('recentEmojis');
+            recentEmojisContainer.innerHTML = '';
             
-            document.getElementById('registerForm').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') register();
-            });
+            if (recentEmojis.length === 0) {
+                recentEmojisContainer.innerHTML = '<span style="color: var(--gray); font-size: 12px;">Son kullanılan emoji yok</span>';
+                return;
+            }
             
-            // Message input
-            document.getElementById('messageInput').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendMessage();
+            recentEmojis.forEach(emoji => {
+                const emojiElement = document.createElement('span');
+                emojiElement.className = 'recent-emoji';
+                emojiElement.textContent = emoji;
+                emojiElement.onclick = () => insertEmoji(emoji);
+                recentEmojisContainer.appendChild(emojiElement);
+            });
+        }
+        
+        // Save recent emojis to localStorage
+        function saveRecentEmojis() {
+            localStorage.setItem('recentEmojis', JSON.stringify(recentEmojis));
+        }
+        
+        // Insert emoji into message input
+        function insertEmoji(emoji) {
+            const messageInput = document.getElementById('messageInput');
+            const startPos = messageInput.selectionStart;
+            const endPos = messageInput.selectionEnd;
+            
+            messageInput.value = messageInput.value.substring(0, startPos) + emoji + messageInput.value.substring(endPos);
+            messageInput.focus();
+            messageInput.selectionStart = messageInput.selectionEnd = startPos + emoji.length;
+            
+            // Add to recent emojis
+            if (!recentEmojis.includes(emoji)) {
+                recentEmojis.unshift(emoji);
+                if (recentEmojis.length > 12) {
+                    recentEmojis.pop();
                 }
-            });
-            
-            // Friend search input
-            document.getElementById('friendSearchInput').addEventListener('input', function() {
-                searchUsers(this.value.trim());
-            });
+                saveRecentEmojis();
+                updateRecentEmojisUI();
+            }
         }
         
-        function loadUserData(user) {
-            console.log("User data loaded:", user);
+        // Search emojis
+        function searchEmojis() {
+            const searchTerm = this.value.toLowerCase();
+            if (!searchTerm) {
+                initEmojiPicker();
+                return;
+            }
             
-            // Load friends
-            loadFriends();
+            const emojiPickerBody = document.getElementById('emojiPickerBody');
+            emojiPickerBody.innerHTML = '';
             
-            // Load friend requests
-            loadFriendRequests();
-        }
-        
-        function loadFriends() {
-            if (!currentUser) return;
+            const results = [];
             
-            db.collection('users').doc(currentUser.uid).collection('friends')
-                .where('status', '==', 'accepted')
-                .onSnapshot(snapshot => {
-                    const friendsList = document.getElementById('friendsList');
-                    friendsList.innerHTML = '';
-                    
-                    snapshot.forEach(doc => {
-                        const friendData = doc.data();
-                        addFriendToSidebar(friendData, doc.id);
-                    });
+            for (const [category, emojis] of Object.entries(emojiCategories)) {
+                emojis.forEach(emoji => {
+                    if (emoji.includes(searchTerm)) {
+                        results.push(emoji);
+                    }
                 });
-        }
-        
-        function loadFriendRequests() {
-            if (!currentUser) return;
+            }
             
-            db.collection('users').doc(currentUser.uid).collection('friendRequests')
-                .where('status', '==', 'pending')
-                .onSnapshot(snapshot => {
-                    const friendRequestsList = document.getElementById('friendRequestsList');
-                    friendRequestsList.innerHTML = '';
-                    
-                    // Update badge count
-                    document.getElementById('friendRequestsBadge').textContent = snapshot.size;
-                    
-                    snapshot.forEach(doc => {
-                        const requestData = doc.data();
-                        addFriendRequestToSidebar(requestData, doc.id);
-                    });
-                });
-        }
-        
-        function addFriendToSidebar(friendData, friendId) {
-            const friendsList = document.getElementById('friendsList');
+            if (results.length === 0) {
+                emojiPickerBody.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 20px; color: var(--gray);">Sonuç bulunamadı</div>';
+                return;
+            }
             
-            const friendItem = document.createElement('div');
-            friendItem.className = 'sidebar-item';
-            friendItem.innerHTML = `
-                <div class="user-avatar-small" style="background-color: ${getRandomColor()}">
-                    ${friendData.name.charAt(0).toUpperCase()}
-                </div>
-                <span>${friendData.name}</span>
-            `;
-            
-            friendItem.addEventListener('click', () => {
-                openChat(friendId, friendData);
+            results.forEach(emoji => {
+                const emojiItem = document.createElement('div');
+                emojiItem.className = 'emoji-item';
+                emojiItem.textContent = emoji;
+                emojiItem.onclick = () => insertEmoji(emoji);
+                emojiPickerBody.appendChild(emojiItem);
             });
-            
-            friendsList.appendChild(friendItem);
         }
         
-        function addFriendRequestToSidebar(requestData, requestId) {
-            const friendRequestsList = document.getElementById('friendRequestsList');
-            
-            const requestItem = document.createElement('div');
-            requestItem.className = 'sidebar-item';
-            requestItem.innerHTML = `
-                <div class="user-avatar-small" style="background-color: ${getRandomColor()}">
-                    ${requestData.senderName.charAt(0).toUpperCase()}
-                </div>
-                <span>${requestData.senderName}</span>
-                <div class="friend-request-actions">
-                    <div class="friend-request-btn accept-btn" onclick="acceptFriendRequest('${requestId}', '${requestData.senderId}', '${requestData.senderName}')">
-                        <i class="fas fa-check"></i>
-                    </div>
-                    <div class="friend-request-btn reject-btn" onclick="rejectFriendRequest('${requestId}')">
-                        <i class="fas fa-times"></i>
-                    </div>
-                </div>
-            `;
-            
-            friendRequestsList.appendChild(requestItem);
+        // Toggle emoji picker
+        function toggleEmojiPicker() {
+            const picker = document.getElementById('emojiPicker');
+            picker.style.display = picker.style.display === 'block' ? 'none' : 'block';
         }
         
-        function openChat(friendId, friendData) {
-            // Close previous chat listener
-            if (unsubscribeMessages) unsubscribeMessages();
+        // Handle typing indicator
+        function handleTyping() {
+            if (!currentChat) return;
             
-            // Update current chat info
-            currentChat = `private_${[currentUser.uid, friendId].sort().join('_')}`;
-            currentChatUser = friendData;
+            if (!isTyping) {
+                isTyping = true;
+                // Send typing started event to Firebase
+                db.collection('chats').doc(currentChat).update({
+                    [`typing.${currentUser.uid}`]: true
+                });
+            }
             
-            // Update UI
-            document.getElementById('currentChatName').textContent = friendData.name;
-            document.getElementById('currentChatAvatar').textContent = friendData.name.charAt(0).toUpperCase();
-            document.getElementById('currentChatAvatar').style.backgroundColor = getRandomColor();
-            document.getElementById('currentChatStatus').textContent = 'çevrimiçi';
-            document.getElementById('messageInputContainer').style.display = 'flex';
+            // Reset typing status after 3 seconds of inactivity
+            clearTimeout(typingTimeout);
+            typingTimeout = setTimeout(() => {
+                isTyping = false;
+                db.collection('chats').doc(currentChat).update({
+                    [`typing.${currentUser.uid}`]: false
+                });
+            }, 3000);
+        }
+        
+        // Show typing indicator for other user
+        function setupTypingListener(chatId) {
+            db.collection('chats').doc(chatId).onSnapshot(doc => {
+                const data = doc.data();
+                if (!data || !data.typing) return;
+                
+                const otherUserId = Object.keys(data.participants).find(id => id !== currentUser.uid);
+                const isTyping = data.typing[otherUserId];
+                
+                const typingIndicator = document.getElementById('typingIndicator');
+                typingIndicator.style.display = isTyping ? 'flex' : 'none';
+            });
+        }
+        
+        // Upload profile photo
+        function uploadProfilePhoto(e) {
+            const file = e.target.files[0];
+            if (!file) return;
             
-            // Clear messages container
+            const storageRef = storage.ref(`profile_photos/${currentUser.uid}`);
+            const uploadTask = storageRef.put(file);
+            
+            uploadTask.on('state_changed', 
+                (snapshot) => {
+                    // Progress monitoring can be added here
+                }, 
+                (error) => {
+                    showError('Profil fotoğrafı yüklenirken hata oluştu: ' + error.message);
+                }, 
+                () => {
+                    uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                        // Update user profile with new photo URL
+                        db.collection('users').doc(currentUser.uid).update({
+                            photoURL: downloadURL
+                        }).then(() => {
+                            showSuccess('Profil fotoğrafı başarıyla güncellendi!');
+                            document.getElementById('userAvatar').style.backgroundImage = `url(${downloadURL})`;
+                            document.getElementById('userAvatar').textContent = '';
+                        }).catch(error => {
+                            showError('Profil güncellenirken hata oluştu: ' + error.message);
+                        });
+                    });
+                }
+            );
+        }
+        
+        // Add friend function
+        async function addFriend(userId) {
+            try {
+                // Check if friend request already exists
+                const existingRequest = await db.collection('friendRequests')
+                    .where('from', '==', currentUser.uid)
+                    .where('to', '==', userId)
+                    .where('status', '==', 'pending')
+                    .get();
+                
+                if (!existingRequest.empty) {
+                    showError('Bu kullanıcıya zaten bir arkadaşlık isteği gönderdiniz');
+                    return;
+                }
+                
+                // Create new friend request
+                await db.collection('friendRequests').add({
+                    from: currentUser.uid,
+                    to: userId,
+                    status: 'pending',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                showSuccess('Arkadaşlık isteği gönderildi!');
+                closeAddFriendModal();
+            } catch (error) {
+                console.error('Arkadaş ekleme hatası:', error);
+                showError('Arkadaş eklenirken bir hata oluştu: ' + error.message);
+            }
+        }
+        
+        // Accept friend request
+        async function acceptFriendRequest(requestId) {
+            try {
+                // Update request status
+                await db.collection('friendRequests').doc(requestId).update({
+                    status: 'accepted',
+                    acceptedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // Add to friends list for both users
+                const requestDoc = await db.collection('friendRequests').doc(requestId).get();
+                const requestData = requestDoc.data();
+                
+                await db.collection('users').doc(requestData.from).update({
+                    [`friends.${requestData.to}`]: true
+                });
+                
+                await db.collection('users').doc(requestData.to).update({
+                    [`friends.${requestData.from}`]: true
+                });
+                
+                showSuccess('Arkadaşlık isteği kabul edildi!');
+                loadFriendRequests();
+                loadFriends();
+            } catch (error) {
+                console.error('Arkadaşlık isteği kabul hatası:', error);
+                showError('Arkadaşlık isteği kabul edilirken hata oluştu: ' + error.message);
+            }
+        }
+        
+        // Reject friend request
+        async function rejectFriendRequest(requestId) {
+            try {
+                await db.collection('friendRequests').doc(requestId).update({
+                    status: 'rejected',
+                    rejectedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                showSuccess('Arkadaşlık isteği reddedildi');
+                loadFriendRequests();
+            } catch (error) {
+                console.error('Arkadaşlık isteği reddetme hatası:', error);
+                showError('Arkadaşlık isteği reddedilirken hata oluştu: ' + error.message);
+            }
+        }
+        
+        // Load friends list
+        async function loadFriends() {
+            try {
+                const userDoc = await db.collection('users').doc(currentUser.uid).get();
+                const userData = userDoc.data();
+                
+                if (!userData.friends) {
+                    document.getElementById('friendsList').innerHTML = '<div class="sidebar-item">Henüz arkadaşınız yok</div>';
+                    return;
+                }
+                
+                const friendIds = Object.keys(userData.friends);
+                if (friendIds.length === 0) {
+                    document.getElementById('friendsList').innerHTML = '<div class="sidebar-item">Henüz arkadaşınız yok</div>';
+                    return;
+                }
+                
+                const friendsList = document.getElementById('friendsList');
+                friendsList.innerHTML = '';
+                
+                const friendsSnapshot = await db.collection('users')
+                    .where(firebase.firestore.FieldPath.documentId(), 'in', friendIds)
+                    .get();
+                
+                friendsSnapshot.forEach(doc => {
+                    const friendData = doc.data();
+                    const friendItem = document.createElement('div');
+                    friendItem.className = 'sidebar-item friend-item';
+                    friendItem.onclick = () => openChat(doc.id, friendData);
+                    
+                    friendItem.innerHTML = `
+                        <div class="user-avatar-small" style="${friendData.photoURL ? `background-image: url(${friendData.photoURL})` : ''}">
+                            ${friendData.photoURL ? '' : friendData.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div style="flex: 1;">
+                            <div>${friendData.name}</div>
+                            <div class="user-status ${friendData.isOnline ? 'online' : ''}"></div>
+                        </div>
+                    `;
+                    
+                    friendsList.appendChild(friendItem);
+                });
+            } catch (error) {
+                console.error('Arkadaş listesi yüklenirken hata:', error);
+                showError('Arkadaş listesi yüklenirken hata oluştu: ' + error.message);
+            }
+        }
+        
+        // Load friend requests
+        async function loadFriendRequests() {
+            try {
+                const requestsSnapshot = await db.collection('friendRequests')
+                    .where('to', '==', currentUser.uid)
+                    .where('status', '==', 'pending')
+                    .orderBy('createdAt', 'desc')
+                    .get();
+                
+                const requestsList = document.getElementById('friendRequestsList');
+                requestsList.innerHTML = '';
+                
+                if (requestsSnapshot.empty) {
+                    document.getElementById('friendRequestsBadge').textContent = '0';
+                    requestsList.innerHTML = '<div class="sidebar-item">Bekleyen arkadaşlık isteği yok</div>';
+                    return;
+                }
+                
+                document.getElementById('friendRequestsBadge').textContent = requestsSnapshot.size.toString();
+                
+                // Get all sender IDs
+                const senderIds = requestsSnapshot.docs.map(doc => doc.data().from);
+                
+                // Get sender details
+                const sendersSnapshot = await db.collection('users')
+                    .where(firebase.firestore.FieldPath.documentId(), 'in', senderIds)
+                    .get();
+                
+                const sendersMap = {};
+                sendersSnapshot.forEach(doc => {
+                    sendersMap[doc.id] = doc.data();
+                });
+                
+                requestsSnapshot.forEach(doc => {
+                    const requestData = doc.data();
+                    const senderData = sendersMap[requestData.from];
+                    
+                    if (!senderData) return;
+                    
+                    const requestItem = document.createElement('div');
+                    requestItem.className = 'sidebar-item';
+                    
+                    requestItem.innerHTML = `
+                        <div class="user-avatar-small" style="${senderData.photoURL ? `background-image: url(${senderData.photoURL})` : ''}">
+                            ${senderData.photoURL ? '' : senderData.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div style="flex: 1;">
+                            <div>${senderData.name}</div>
+                            <small>Arkadaşlık isteği gönderdi</small>
+                        </div>
+                        <div class="friend-request-actions">
+                            <div class="friend-request-btn accept-btn" onclick="acceptFriendRequest('${doc.id}')">
+                                <i class="fas fa-check"></i>
+                            </div>
+                            <div class="friend-request-btn reject-btn" onclick="rejectFriendRequest('${doc.id}')">
+                                <i class="fas fa-times"></i>
+                            </div>
+                        </div>
+                    `;
+                    
+                    requestsList.appendChild(requestItem);
+                });
+            } catch (error) {
+                console.error('Arkadaş istekleri yüklenirken hata:', error);
+                showError('Arkadaş istekleri yüklenirken hata oluştu: ' + error.message);
+            }
+        }
+        
+        // Search users for adding friends
+        async function searchUsers(searchTerm) {
+            try {
+                const usersList = document.getElementById('userSearchResults');
+                usersList.innerHTML = '<div class="sidebar-item">Aranıyor...</div>';
+                
+                // Search by name
+                const nameSnapshot = await db.collection('users')
+                    .where('name', '>=', searchTerm)
+                    .where('name', '<=', searchTerm + '\uf8ff')
+                    .limit(10)
+                    .get();
+                
+                // Search by email
+                const emailSnapshot = await db.collection('users')
+                    .where('email', '>=', searchTerm)
+                    .where('email', '<=', searchTerm + '\uf8ff')
+                    .limit(10)
+                    .get();
+                
+                // Combine results
+                const usersMap = {};
+                
+                nameSnapshot.forEach(doc => {
+                    if (doc.id !== currentUser.uid) {
+                        usersMap[doc.id] = doc.data();
+                    }
+                });
+                
+                emailSnapshot.forEach(doc => {
+                    if (doc.id !== currentUser.uid) {
+                        usersMap[doc.id] = doc.data();
+                    }
+                });
+                
+                const users = Object.values(usersMap);
+                
+                if (users.length === 0) {
+                    usersList.innerHTML = '<div class="sidebar-item">Kullanıcı bulunamadı</div>';
+                    return;
+                }
+                
+                usersList.innerHTML = '';
+                
+                // Check existing friend requests
+                const existingRequests = await db.collection('friendRequests')
+                    .where('from', '==', currentUser.uid)
+                    .where('status', '==', 'pending')
+                    .get();
+                
+                const requestedUserIds = existingRequests.docs.map(doc => doc.data().to);
+                
+                users.forEach(user => {
+                    const userItem = document.createElement('li');
+                    userItem.className = 'user-item';
+                    
+                    const isAlreadyFriend = user.friends && user.friends[currentUser.uid];
+                    const isRequested = requestedUserIds.includes(user.uid);
+                    
+                    userItem.innerHTML = `
+                        <div class="user-avatar-small" style="${user.photoURL ? `background-image: url(${user.photoURL})` : ''}">
+                            ${user.photoURL ? '' : user.name.charAt(0).toUpperCase()}
+                        </div>
+                        <div class="user-info">
+                            <div class="user-name">${user.name}</div>
+                            <div class="user-email">${user.email}</div>
+                        </div>
+                        <button class="add-friend-btn ${isAlreadyFriend ? 'pending' : isRequested ? 'pending' : ''}" 
+                                onclick="${isAlreadyFriend || isRequested ? '' : `addFriend('${user.uid}')`}" 
+                                ${isAlreadyFriend || isRequested ? 'disabled' : ''}>
+                            ${isAlreadyFriend ? 'Arkadaş' : isRequested ? 'İstek Gönderildi' : 'Ekle'}
+                        </button>
+                    `;
+                    
+                    usersList.appendChild(userItem);
+                });
+            } catch (error) {
+                console.error('Kullanıcı arama hatası:', error);
+                showError('Kullanıcı aranırken hata oluştu: ' + error.message);
+            }
+        }
+        
+        // Open chat with a user
+        async function openChat(userId, userData) {
+            try {
+                // Check if chat already exists
+                const chatSnapshot = await db.collection('chats')
+                    .where(`participants.${currentUser.uid}`, '==', true)
+                    .where(`participants.${userId}`, '==', true)
+                    .limit(1)
+                    .get();
+                
+                let chatId;
+                
+                if (chatSnapshot.empty) {
+                    // Create new chat
+                    const newChat = await db.collection('chats').add({
+                        participants: {
+                            [currentUser.uid]: true,
+                            [userId]: true
+                        },
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        lastMessage: '',
+                        lastMessageTime: null
+                    });
+                    
+                    chatId = newChat.id;
+                } else {
+                    chatId = chatSnapshot.docs[0].id;
+                }
+                
+                currentChat = chatId;
+                currentChatUser = userData;
+                
+                // Update UI
+                document.getElementById('currentChatName').textContent = userData.name;
+                document.getElementById('currentChatAvatar').textContent = userData.name.charAt(0).toUpperCase();
+                document.getElementById('currentChatAvatar').style.backgroundImage = userData.photoURL ? `url(${userData.photoURL})` : '';
+                
+                document.getElementById('messageInputContainer').style.display = 'flex';
+                
+                // Load messages
+                loadMessages(chatId);
+                
+                // Setup typing listener
+                setupTypingListener(chatId);
+            } catch (error) {
+                console.error('Sohbet açma hatası:', error);
+                showError('Sohbet açılırken hata oluştu: ' + error.message);
+            }
+        }
+        
+        // Load messages for a chat
+        function loadMessages(chatId) {
             const messagesContainer = document.getElementById('messagesContainer');
             messagesContainer.innerHTML = '';
             
-            // Load messages
-            unsubscribeMessages = db.collection('chats').doc(currentChat).collection('messages')
+            // Unsubscribe from previous listener if exists
+            if (unsubscribeMessages) {
+                unsubscribeMessages();
+            }
+            
+            unsubscribeMessages = db.collection('messages')
+                .where('chatId', '==', chatId)
                 .orderBy('timestamp', 'asc')
                 .onSnapshot(snapshot => {
-                    snapshot.docChanges().forEach(change => {
-                        if (change.type === 'added') {
-                            addMessageToUI(change.doc.data());
-                        }
+                    messagesContainer.innerHTML = '';
+                    
+                    snapshot.forEach(doc => {
+                        const message = doc.data();
+                        displayMessage(message);
                     });
                     
                     // Scroll to bottom
                     messagesContainer.scrollTop = messagesContainer.scrollHeight;
                 }, error => {
-                    console.error("Error loading messages:", error);
+                    console.error('Mesajlar dinlenirken hata:', error);
+                    showError('Mesajlar yüklenirken hata oluştu: ' + error.message);
                 });
         }
         
-        function addMessageToUI(message) {
+        // Display a message
+        function displayMessage(message) {
             const messagesContainer = document.getElementById('messagesContainer');
-            const isOutgoing = message.senderId === currentUser.uid;
             
+            const isOutgoing = message.senderId === currentUser.uid;
             const messageElement = document.createElement('div');
             messageElement.className = `message ${isOutgoing ? 'message-outgoing' : 'message-incoming'}`;
             
-            const time = new Date(message.timestamp?.toDate()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const avatarContent = isOutgoing ? 
+                currentUser.displayName?.charAt(0).toUpperCase() || 'U' : 
+                currentChatUser.name.charAt(0).toUpperCase();
             
             messageElement.innerHTML = `
-                ${!isOutgoing ? `<div class="message-avatar" style="background-color: ${getRandomColor()}">${currentChatUser.name.charAt(0).toUpperCase()}</div>` : ''}
+                ${!isOutgoing ? `
+                    <div class="message-avatar" style="${currentChatUser.photoURL ? `background-image: url(${currentChatUser.photoURL})` : ''}">
+                        ${currentChatUser.photoURL ? '' : avatarContent}
+                    </div>
+                ` : ''}
+                
                 <div class="message-content">
-                    <div class="message-bubble">${message.text}</div>
-                    <div class="message-time">${time}</div>
+                    <div class="message-bubble">${message.content}</div>
+                    <div class="message-time">${formatTime(message.timestamp?.toDate())}</div>
+                    
+                    ${message.reactions && Object.keys(message.reactions).length > 0 ? `
+                        <div class="message-reactions">
+                            ${Object.entries(message.reactions).map(([emoji, users]) => `
+                                <div class="reaction-btn" onclick="reactToMessage('${message.id}', '${emoji}')">
+                                    ${emoji} ${users.length}
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : ''}
                 </div>
-                ${isOutgoing ? `<div class="message-avatar" style="background-color: ${getRandomColor()}">${currentUser.displayName.charAt(0).toUpperCase()}</div>` : ''}
+                
+                ${isOutgoing ? `
+                    <div class="message-avatar" style="${currentUser.photoURL ? `background-image: url(${currentUser.photoURL})` : ''}">
+                        ${currentUser.photoURL ? '' : avatarContent}
+                    </div>
+                ` : ''}
             `;
             
             messagesContainer.appendChild(messageElement);
-            
-            // Scroll to bottom
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
         
-        function sendMessage() {
-            if (!currentChat || !currentUser) return;
+        // Format time
+        function formatTime(date) {
+            if (!date) return '';
             
-            const input = document.getElementById('messageInput');
-            const messageText = input.value.trim();
-            
-            if (!messageText) return;
-            
-            // Add message to Firestore
-            db.collection('chats').doc(currentChat).collection('messages').add({
-                text: messageText,
-                senderId: currentUser.uid,
-                senderName: currentUser.displayName || 'Anonim',
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            }).catch(error => {
-                console.error("Error sending message: ", error);
-                showError(error, "Send Message");
-            });
-            
-            // Clear input
-            input.value = '';
+            const hours = date.getHours().toString().padStart(2, '0');
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+            return `${hours}:${minutes}`;
         }
         
-        function searchUsers(query) {
-            if (!query || query.length < 2) {
-                document.getElementById('userSearchResults').innerHTML = '';
-                return;
+        // Send message
+        async function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+            
+            if (!message || !currentChat) return;
+            
+            try {
+                // Add message to Firestore
+                await db.collection('messages').add({
+                    chatId: currentChat,
+                    senderId: currentUser.uid,
+                    content: message,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    reactions: {},
+                    status: 'sent'
+                });
+                
+                // Update last message in chat
+                await db.collection('chats').doc(currentChat).update({
+                    lastMessage: message,
+                    lastMessageTime: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // Clear input
+                messageInput.value = '';
+            } catch (error) {
+                console.error('Mesaj gönderme hatası:', error);
+                showError('Mesaj gönderilirken hata oluştu: ' + error.message);
             }
-            
-            // Search by name or email
-            db.collection('users')
-                .where('name', '>=', query)
-                .where('name', '<=', query + '\uf8ff')
-                .get()
-                .then(snapshot => {
-                    const resultsContainer = document.getElementById('userSearchResults');
-                    resultsContainer.innerHTML = '';
+        }
+        
+        // React to message
+        async function reactToMessage(messageId, emoji) {
+            try {
+                const messageRef = db.collection('messages').doc(messageId);
+                const messageDoc = await messageRef.get();
+                
+                if (!messageDoc.exists) return;
+                
+                const messageData = messageDoc.data();
+                const reactions = messageData.reactions || {};
+                
+                // Initialize reaction if not exists
+                if (!reactions[emoji]) {
+                    reactions[emoji] = [];
+                }
+                
+                // Check if user already reacted with this emoji
+                const userIndex = reactions[emoji].indexOf(currentUser.uid);
+                
+                if (userIndex !== -1) {
+                    // Remove reaction
+                    reactions[emoji].splice(userIndex, 1);
                     
-                    if (snapshot.empty) {
-                        resultsContainer.innerHTML = '<li style="padding: 15px; text-align: center; color: var(--gray);">Kullanıcı bulunamadı</li>';
-                        return;
+                    // Remove emoji if no reactions left
+                    if (reactions[emoji].length === 0) {
+                        delete reactions[emoji];
                     }
-                    
-                    snapshot.forEach(doc => {
-                        // Don't show current user in results
-                        if (doc.id === currentUser.uid) return;
-                        
-                        const userData = doc.data();
-                        const userItem = document.createElement('li');
-                        userItem.className = 'user-item';
-                        userItem.innerHTML = `
-                            <div class="user-avatar-small" style="background-color: ${getRandomColor()}">
-                                ${userData.name.charAt(0).toUpperCase()}
-                            </div>
-                            <div class="user-info">
-                                <div class="user-name">${userData.name}</div>
-                                <div class="user-email">${userData.email}</div>
-                            </div>
-                            <button class="add-friend-btn" onclick="sendFriendRequest('${doc.id}', '${userData.name}')">
-                                Ekle
-                            </button>
-                        `;
-                        
-                        resultsContainer.appendChild(userItem);
-                    });
-                })
-                .catch(error => {
-                    console.error("Error searching users:", error);
+                } else {
+                    // Add reaction
+                    reactions[emoji].push(currentUser.uid);
+                }
+                
+                // Update message
+                await messageRef.update({
+                    reactions: reactions
                 });
+            } catch (error) {
+                console.error('Tepki verme hatası:', error);
+                showError('Tepki verilirken hata oluştu: ' + error.message);
+            }
         }
         
-        function sendFriendRequest(receiverId, receiverName) {
-            if (!currentUser) return;
-            
-            // Check if request already exists
-            db.collection('users').doc(receiverId).collection('friendRequests')
-                .where('senderId', '==', currentUser.uid)
-                .where('status', '==', 'pending')
-                .get()
-                .then(snapshot => {
-                    if (!snapshot.empty) {
-                        showError({ message: "Bu kullanıcıya zaten bir arkadaş isteği gönderdiniz" });
-                        return;
-                    }
-                    
-                    // Create friend request
-                    const requestData = {
-                        senderId: currentUser.uid,
-                        senderName: currentUser.displayName || 'Anonim',
-                        receiverId: receiverId,
-                        receiverName: receiverName,
-                        status: 'pending',
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                    };
-                    
-                    // Add to receiver's requests
-                    db.collection('users').doc(receiverId).collection('friendRequests').add(requestData)
-                        .then(() => {
-                            showSuccess("Arkadaş isteği gönderildi!");
-                            closeAddFriendModal();
-                        })
-                        .catch(error => {
-                            console.error("Error sending friend request:", error);
-                            showError(error, "Send Friend Request");
-                        });
-                });
-        }
-        
-        function acceptFriendRequest(requestId, senderId, senderName) {
-            if (!currentUser) return;
-            
-            // Update request status
-            db.collection('users').doc(currentUser.uid).collection('friendRequests').doc(requestId).update({
-                status: 'accepted',
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            })
-            .then(() => {
-                // Add to friends list for both users
-                const currentUserData = {
-                    userId: currentUser.uid,
-                    name: currentUser.displayName || 'Anonim',
-                    status: 'accepted',
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                };
-                
-                const senderUserData = {
-                    userId: senderId,
-                    name: senderName,
-                    status: 'accepted',
-                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                };
-                
-                // Add to current user's friends
-                db.collection('users').doc(currentUser.uid).collection('friends').doc(senderId).set(senderUserData);
-                
-                // Add to sender's friends
-                db.collection('users').doc(senderId).collection('friends').doc(currentUser.uid).set(currentUserData);
-                
-                showSuccess(`${senderName} arkadaş olarak eklendi!`);
-            })
-            .catch(error => {
-                console.error("Error accepting friend request:", error);
-                showError(error, "Accept Friend Request");
-            });
-        }
-        
-        function rejectFriendRequest(requestId) {
-            if (!currentUser) return;
-            
-            // Delete the request
-            db.collection('users').doc(currentUser.uid).collection('friendRequests').doc(requestId).delete()
-                .then(() => {
-                    showSuccess("Arkadaş isteği reddedildi");
-                })
-                .catch(error => {
-                    console.error("Error rejecting friend request:", error);
-                    showError(error, "Reject Friend Request");
-                });
-        }
-        
+        // Show add friend modal
         function showAddFriendModal() {
             document.getElementById('addFriendModal').classList.add('show');
             document.getElementById('friendSearchInput').focus();
         }
         
+        // Close add friend modal
         function closeAddFriendModal() {
             document.getElementById('addFriendModal').classList.remove('show');
             document.getElementById('friendSearchInput').value = '';
             document.getElementById('userSearchResults').innerHTML = '';
         }
         
-        function showProfile() {
-            // Hide chat container and show settings
-            document.getElementById('chatContainer').style.display = 'none';
-            document.getElementById('settingsContainer').style.display = 'block';
-            toggleDropdown();
+        // Show chat options modal
+        function showChatOptionsModal() {
+            document.getElementById('chatOptionsModal').classList.add('show');
         }
         
-        function showSettings() {
-            // Hide chat container and show settings
-            document.getElementById('chatContainer').style.display = 'none';
-            document.getElementById('settingsContainer').style.display = 'block';
-            toggleDropdown();
+        // Close chat options modal
+        function closeChatOptionsModal() {
+            document.getElementById('chatOptionsModal').classList.remove('show');
         }
         
-        function updateProfileName() {
-            const newName = document.getElementById('settingsName').value.trim();
+        // Clear chat history
+        async function clearChatHistory() {
+            if (!currentChat) return;
             
-            if (!newName) {
-                showError({ message: "Lütfen bir isim girin" });
+            if (!confirm('Bu sohbetin geçmişini temizlemek istediğinize emin misiniz? Bu işlem geri alınamaz.')) {
                 return;
             }
             
-            currentUser.updateProfile({
-                displayName: newName
-            }).then(() => {
-                // Update in Firestore
-                db.collection('users').doc(currentUser.uid).update({
-                    name: newName
-                }).then(() => {
-                    showSuccess("İsim başarıyla güncellendi!");
-                    updateUserAvatar();
-                }).catch(error => {
-                    console.error("Error updating name in Firestore:", error);
-                    showError(error, "Update Name");
+            try {
+                // Delete all messages in this chat
+                const messagesSnapshot = await db.collection('messages')
+                    .where('chatId', '==', currentChat)
+                    .get();
+                
+                const batch = db.batch();
+                messagesSnapshot.forEach(doc => {
+                    batch.delete(doc.ref);
                 });
-            }).catch(error => {
-                console.error("Error updating profile:", error);
-                showError(error, "Update Profile");
+                
+                await batch.commit();
+                
+                // Update last message in chat
+                await db.collection('chats').doc(currentChat).update({
+                    lastMessage: '',
+                    lastMessageTime: null
+                });
+                
+                showSuccess('Sohbet geçmişi temizlendi');
+                closeChatOptionsModal();
+            } catch (error) {
+                console.error('Sohbet geçmişi temizleme hatası:', error);
+                showError('Sohbet geçmişi temizlenirken hata oluştu: ' + error.message);
+            }
+        }
+        
+        // Block user
+        async function blockUser() {
+            if (!currentChat || !currentChatUser) return;
+            
+            if (!confirm(`${currentChatUser.name} kullanıcısını engellemek istediğinize emin misiniz? Bu kullanıcı size mesaj gönderemeyecek.`)) {
+                return;
+            }
+            
+            try {
+                // Add to blocked users list
+                await db.collection('users').doc(currentUser.uid).update({
+                    [`blockedUsers.${currentChatUser.uid}`]: true
+                });
+                
+                // Remove from friends list
+                await db.collection('users').doc(currentUser.uid).update({
+                    [`friends.${currentChatUser.uid}`]: firebase.firestore.FieldValue.delete()
+                });
+                
+                await db.collection('users').doc(currentChatUser.uid).update({
+                    [`friends.${currentUser.uid}`]: firebase.firestore.FieldValue.delete()
+                });
+                
+                showSuccess(`${currentChatUser.name} kullanıcısı engellendi`);
+                closeChatOptionsModal();
+                loadFriends();
+                
+                // Close current chat
+                currentChat = null;
+                currentChatUser = null;
+                document.getElementById('currentChatName').textContent = 'Sohbet Seçin';
+                document.getElementById('currentChatAvatar').textContent = '?';
+                document.getElementById('currentChatAvatar').style.backgroundImage = '';
+                document.getElementById('messageInputContainer').style.display = 'none';
+                document.getElementById('messagesContainer').innerHTML = `
+                    <div style="text-align: center; padding: 40px; color: var(--gray);">
+                        <i class="fas fa-comments" style="font-size: 48px; margin-bottom: 15px;"></i>
+                        <h3>Bir sohbet seçin</h3>
+                        <p>Arkadaşlarınızla gerçek zamanlı olarak mesajlaşmaya başlayın</p>
+                    </div>
+                `;
+                
+                if (unsubscribeMessages) {
+                    unsubscribeMessages();
+                    unsubscribeMessages = null;
+                }
+            } catch (error) {
+                console.error('Kullanıcı engelleme hatası:', error);
+                showError('Kullanıcı engellenirken hata oluştu: ' + error.message);
+            }
+        }
+        
+        // Search friends in sidebar
+        function searchFriends() {
+            const searchTerm = this.value.toLowerCase();
+            const friendItems = document.querySelectorAll('.friend-item');
+            
+            if (!searchTerm) {
+                friendItems.forEach(item => item.style.display = 'flex');
+                return;
+            }
+            
+            friendItems.forEach(item => {
+                const friendName = item.querySelector('div > div:first-child').textContent.toLowerCase();
+                if (friendName.includes(searchTerm)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
             });
         }
         
-        function sendEmailVerificationCode() {
-            const newEmail = document.getElementById('newEmail').value.trim();
+        // Change theme
+        function changeTheme(theme) {
+            document.body.classList.remove('dark-theme', 'blue-theme');
             
-            if (!newEmail) {
-                showError({ message: "Lütfen yeni e-posta adresinizi girin" });
-                return;
+            if (theme === 'dark') {
+                document.body.classList.add('dark-theme');
+            } else if (theme === 'blue') {
+                document.body.classList.add('blue-theme');
             }
             
-            // Generate a random 6-digit code
-            emailVerificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-            
-            // In a real app, you would send this code to the user's email
-            // For demo purposes, we'll just show it in an alert
-            alert(`Demo amaçlı - Doğrulama kodunuz: ${emailVerificationCode}\nGerçek uygulamada bu kod e-postanıza gönderilecektir.`);
-            
-            // Show verification code input
-            document.getElementById('emailVerificationContainer').style.display = 'block';
-        }
-        
-        function verifyEmailAndUpdate() {
-            const newEmail = document.getElementById('newEmail').value.trim();
-            const code = document.getElementById('verificationCode').value.trim();
-            
-            if (!newEmail || !code) {
-                showError({ message: "Lütfen yeni e-posta ve doğrulama kodunu girin" });
-                return;
-            }
-            
-            if (code !== emailVerificationCode) {
-                showError({ message: "Doğrulama kodu hatalı!" });
-                return;
-            }
-            
-            currentUser.updateEmail(newEmail).then(() => {
-                // Update in Firestore
-                db.collection('users').doc(currentUser.uid).update({
-                    email: newEmail
-                }).then(() => {
-                    showSuccess("E-posta adresi başarıyla güncellendi!");
-                    document.getElementById('settingsEmail').value = newEmail;
-                    document.getElementById('newEmail').value = '';
-                    document.getElementById('verificationCode').value = '';
-                    document.getElementById('emailVerificationContainer').style.display = 'none';
-                    
-                    // Send verification email
-                    currentUser.sendEmailVerification().then(() => {
-                        showSuccess("Doğrulama e-postası gönderildi. Lütfen e-postanızı kontrol edin.");
-                    }).catch(error => {
-                        console.error("Error sending verification email:", error);
-                    });
-                }).catch(error => {
-                    console.error("Error updating email in Firestore:", error);
-                    showError(error, "Update Email");
-                });
-            }).catch(error => {
-                console.error("Error updating email:", error);
-                showError(error, "Update Email");
+            // Update active theme option
+            document.querySelectorAll('.theme-option').forEach(option => {
+                option.classList.remove('active');
             });
+            
+            document.querySelector(`.theme-option[data-theme="${theme}"]`).classList.add('active');
+            
+            // Save preference
+            localStorage.setItem('theme', theme);
         }
         
-        function updatePassword() {
-            const currentPassword = document.getElementById('currentPassword').value;
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmNewPassword = document.getElementById('confirmNewPassword').value;
-            
-            if (!currentPassword || !newPassword || !confirmNewPassword) {
-                showError({ message: "Lütfen tüm alanları doldurun" });
-                return;
-            }
-            
-            if (newPassword.length < 6) {
-                showError({ message: "Şifre en az 6 karakter olmalıdır" });
-                return;
-            }
-            
-            if (newPassword !== confirmNewPassword) {
-                showError({ message: "Yeni şifreler eşleşmiyor!" });
-                return;
-            }
-            
-            // Reauthenticate user
-            const credential = firebase.auth.EmailAuthProvider.credential(
-                currentUser.email,
-                currentPassword
-            );
-            
-            currentUser.reauthenticateWithCredential(credential).then(() => {
-                // Update password
-                currentUser.updatePassword(newPassword).then(() => {
-                    showSuccess("Şifre başarıyla güncellendi!");
-                    document.getElementById('currentPassword').value = '';
-                    document.getElementById('newPassword').value = '';
-                    document.getElementById('confirmNewPassword').value = '';
-                }).catch(error => {
-                    console.error("Error updating password:", error);
-                    showError(error, "Update Password");
-                });
-            }).catch(error => {
-                console.error("Error reauthenticating:", error);
-                showError({ message: "Mevcut şifre hatalı!" });
-            });
+        // Show auth container
+        function showAuthContainer() {
+            document.getElementById('authContainer').style.display = 'flex';
+            document.getElementById('appContainer').style.display = 'none';
         }
         
+        // Show app container
+        function showAppContainer() {
+            document.getElementById('authContainer').style.display = 'none';
+            document.getElementById('appContainer').style.display = 'block';
+        }
+        
+        // Switch between auth tabs
         function switchTab(tabName) {
             document.querySelectorAll('.auth-tab').forEach(tab => {
                 tab.classList.remove('active');
@@ -1776,322 +2851,214 @@
                 form.classList.remove('active');
             });
             
-            if (tabName === 'login') {
-                document.querySelector('.auth-tab:nth-child(1)').classList.add('active');
-                document.getElementById('loginForm').classList.add('active');
-            } else if (tabName === 'register') {
-                document.querySelector('.auth-tab:nth-child(2)').classList.add('active');
-                document.getElementById('registerForm').classList.add('active');
-            }
+            document.querySelector(`.auth-tab[onclick="switchTab('${tabName}')"]`).classList.add('active');
+            document.getElementById(`${tabName}Form`).classList.add('active');
         }
         
+        // Show forgot password form
         function showForgotPassword() {
-            document.querySelectorAll('.auth-form').forEach(form => {
-                form.classList.remove('active');
-            });
-            document.getElementById('forgotPasswordForm').classList.add('active');
+            switchTab('forgotPassword');
         }
         
+        // Show verify email form
         function showVerifyEmailForm() {
-            document.querySelectorAll('.auth-form').forEach(form => {
-                form.classList.remove('active');
-            });
-            document.getElementById('verifyEmailForm').classList.add('active');
-        }
-        
-        function showAuth() {
-            document.getElementById('authContainer').style.display = 'flex';
-            document.getElementById('appContainer').style.display = 'none';
-        }
-        
-        function showApp() {
-            document.getElementById('authContainer').style.display = 'none';
-            document.getElementById('appContainer').style.display = 'flex';
-        }
-        
-        function toggleDropdown() {
-            document.getElementById('dropdownMenu').classList.toggle('show');
-        }
-        
-        function updateUserAvatar() {
-            if (currentUser) {
-                const avatar = document.getElementById('userAvatar');
-                const displayName = currentUser.displayName || 'Kullanıcı';
-                avatar.textContent = displayName.charAt(0).toUpperCase();
-                avatar.style.backgroundColor = getRandomColor();
-            }
-        }
-        
-        function getRandomColor() {
-            const colors = ['#4361ee', '#3f37c9', '#4895ef', '#4cc9f0', '#560bad', '#b5179e'];
-            return colors[Math.floor(Math.random() * colors.length)];
-        }
-        
-        function showError(error, context = "") {
-            console.error(context, error);
-            
-            let errorMessage = "Bir hata oluştu";
-            if (error.code) {
-                switch(error.code) {
-                    case "auth/invalid-email":
-                        errorMessage = "Geçersiz e-posta adresi";
-                        break;
-                    case "auth/user-disabled":
-                        errorMessage = "Bu kullanıcı devre dışı bırakılmış";
-                        break;
-                    case "auth/user-not-found":
-                        errorMessage = "Kullanıcı bulunamadı";
-                        break;
-                    case "auth/wrong-password":
-                        errorMessage = "Hatalı şifre";
-                        break;
-                    case "auth/email-already-in-use":
-                        errorMessage = "Bu e-posta zaten kullanımda";
-                        break;
-                    case "auth/operation-not-allowed":
-                        errorMessage = "Bu işlem şu anda izin verilmiyor";
-                        break;
-                    case "auth/weak-password":
-                        errorMessage = "Şifre en az 6 karakter olmalı";
-                        break;
-                    case "auth/too-many-requests":
-                        errorMessage = "Çok fazla deneme yaptınız, lütfen daha sonra tekrar deneyin";
-                        break;
-                    case "auth/requires-recent-login":
-                        errorMessage = "Bu işlem için son zamanlarda tekrar giriş yapmanız gerekiyor";
-                        break;
-                }
-            } else if (error.message) {
-                errorMessage = error.message;
-            }
-            
-            // Show error message
-            const errorElement = document.createElement('div');
-            errorElement.className = 'error-message';
-            errorElement.innerHTML = `
-                <i class="fas fa-exclamation-circle"></i>
-                <span>${errorMessage}</span>
-            `;
-            
-            // Find the active form and prepend the error message
-            const activeForm = document.querySelector('.auth-form.active');
-            if (activeForm) {
-                // Remove any existing error messages
-                const existingError = activeForm.querySelector('.error-message');
-                if (existingError) existingError.remove();
-                
-                activeForm.prepend(errorElement);
-                
-                // Remove error after 5 seconds
-                setTimeout(() => {
-                    errorElement.remove();
-                }, 5000);
-            } else {
-                alert(errorMessage);
-            }
-        }
-        
-        function showSuccess(message) {
-            // Show success message
-            const successElement = document.createElement('div');
-            successElement.className = 'success-message';
-            successElement.innerHTML = `
-                <i class="fas fa-check-circle"></i>
-                <span>${message}</span>
-            `;
-            
-            // Find the active form and prepend the success message
-            const activeForm = document.querySelector('.auth-form.active');
-            if (activeForm) {
-                // Remove any existing messages
-                const existingMsg = activeForm.querySelector('.success-message');
-                if (existingMsg) existingMsg.remove();
-                
-                activeForm.prepend(successElement);
-                
-                // Remove message after 5 seconds
-                setTimeout(() => {
-                    successElement.remove();
-                }, 5000);
-            } else {
-                alert(message);
-            }
+            switchTab('verifyEmail');
         }
         
         // Login with email/password
-        function login() {
-            const email = document.getElementById('loginEmail').value.trim();
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             
             if (!email || !password) {
-                showError({ message: "Lütfen e-posta ve şifrenizi girin" });
+                showError('Lütfen e-posta ve şifrenizi girin');
                 return;
             }
             
-            auth.signInWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    if (!userCredential.user.emailVerified) {
-                        auth.signOut();
-                        showVerifyEmailForm();
-                        showError({ message: "Lütfen e-postanızı doğrulayın. Doğrulama bağlantısı e-postanıza gönderildi." });
-                    } else {
-                        showSuccess("Giriş başarılı!");
-                    }
-                })
-                .catch((error) => {
-                    showError(error, "Login");
-                });
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                
+                if (!userCredential.user.emailVerified) {
+                    showVerifyEmailForm();
+                    return;
+                }
+                
+                showAppContainer();
+            } catch (error) {
+                console.error('Giriş hatası:', error);
+                showError('Giriş yapılırken hata oluştu: ' + error.message);
+            }
         }
         
-        // Register with email/password
-        function register() {
-            const name = document.getElementById('registerName').value.trim();
-            const email = document.getElementById('registerEmail').value.trim();
+        // Register new user
+        async function register() {
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
             const password = document.getElementById('registerPassword').value;
             const confirmPassword = document.getElementById('registerConfirmPassword').value;
             
             if (!name || !email || !password || !confirmPassword) {
-                showError({ message: "Lütfen tüm alanları doldurun" });
+                showError('Lütfen tüm alanları doldurun');
                 return;
             }
             
             if (password.length < 6) {
-                showError({ message: "Şifre en az 6 karakter olmalıdır" });
+                showError('Şifre en az 6 karakter olmalıdır');
                 return;
             }
             
             if (password !== confirmPassword) {
-                showError({ message: "Şifreler eşleşmiyor!" });
+                showError('Şifreler eşleşmiyor');
                 return;
             }
             
-            auth.createUserWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    // Update user profile with display name
-                    return userCredential.user.updateProfile({
-                        displayName: name
-                    }).then(() => {
-                        // Save additional user data to Firestore
-                        return db.collection('users').doc(userCredential.user.uid).set({
-                            name: name,
-                            email: email,
-                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                            status: 'online'
-                        }, { merge: true });
-                    }).then(() => {
-                        // Send email verification
-                        return userCredential.user.sendEmailVerification({
-                            url: window.location.href,
-                            handleCodeInApp: true
-                        });
-                    });
-                })
-                .then(() => {
-                    showVerifyEmailForm();
-                    showSuccess("Kayıt başarılı! Lütfen e-postanızı doğrulayın.");
-                })
-                .catch((error) => {
-                    showError(error, "Register");
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                
+                // Send verification email
+                await userCredential.user.sendEmailVerification();
+                
+                // Save user data to Firestore
+                await db.collection('users').doc(userCredential.user.uid).set({
+                    uid: userCredential.user.uid,
+                    name: name,
+                    email: email,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    isOnline: true
                 });
+                
+                showVerifyEmailForm();
+            } catch (error) {
+                console.error('Kayıt hatası:', error);
+                showError('Kayıt olurken hata oluştu: ' + error.message);
+            }
         }
         
         // Login with Google
-        function loginWithGoogle() {
-            auth.signInWithPopup(googleProvider)
-                .then((result) => {
-                    // Check if user exists in Firestore
-                    return db.collection('users').doc(result.user.uid).get()
-                        .then(doc => {
-                            if (!doc.exists) {
-                                // Save user data if new user
-                                return db.collection('users').doc(result.user.uid).set({
-                                    name: result.user.displayName,
-                                    email: result.user.email,
-                                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                                    status: 'online'
-                                }, { merge: true });
-                            }
-                        }).then(() => {
-                            showSuccess("Google ile giriş başarılı!");
-                        });
-                })
-                .catch((error) => {
-                    showError(error, "Google Login");
-                });
+        async function loginWithGoogle() {
+            try {
+                const result = await auth.signInWithPopup(googleProvider);
+                const user = result.user;
+                
+                // Check if user exists in Firestore
+                const userDoc = await db.collection('users').doc(user.uid).get();
+                
+                if (!userDoc.exists) {
+                    // Save user data to Firestore
+                    await db.collection('users').doc(user.uid).set({
+                        uid: user.uid,
+                        name: user.displayName,
+                        email: user.email,
+                        photoURL: user.photoURL,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        isOnline: true
+                    });
+                } else {
+                    // Update online status
+                    await db.collection('users').doc(user.uid).update({
+                        isOnline: true
+                    });
+                }
+                
+                showAppContainer();
+            } catch (error) {
+                console.error('Google ile giriş hatası:', error);
+                showError('Google ile giriş yapılırken hata oluştu: ' + error.message);
+            }
         }
         
         // Register with Google
-        function registerWithGoogle() {
-            loginWithGoogle(); // Same as login for simplicity
+        async function registerWithGoogle() {
+            await loginWithGoogle();
         }
         
         // Send password reset email
-        function sendPasswordReset() {
-            const email = document.getElementById('forgotEmail').value.trim();
+        async function sendPasswordReset() {
+            const email = document.getElementById('forgotEmail').value;
             
             if (!email) {
-                showError({ message: "Lütfen e-posta adresinizi girin" });
+                showError('Lütfen e-posta adresinizi girin');
                 return;
             }
             
-            auth.sendPasswordResetEmail(email, {
-                url: window.location.href,
-                handleCodeInApp: true
-            })
-                .then(() => {
-                    showSuccess("Şifre sıfırlama bağlantısı e-postanıza gönderildi. Lütfen e-postanızı kontrol edin.");
-                    switchTab('login');
-                })
-                .catch((error) => {
-                    showError(error, "Password Reset");
-                });
+            try {
+                await auth.sendPasswordResetEmail(email);
+                showSuccess('Şifre sıfırlama bağlantısı gönderildi. Lütfen e-postanızı kontrol edin.');
+            } catch (error) {
+                console.error('Şifre sıfırlama hatası:', error);
+                showError('Şifre sıfırlama bağlantısı gönderilirken hata oluştu: ' + error.message);
+            }
         }
         
-        // Check email verification status
-        function checkEmailVerification() {
-            auth.currentUser.reload().then(() => {
+        // Check email verification
+        async function checkEmailVerification() {
+            try {
+                await auth.currentUser.reload();
+                
                 if (auth.currentUser.emailVerified) {
-                    showApp();
-                    loadUserData(auth.currentUser);
-                    showSuccess("E-posta doğrulama başarılı!");
+                    showAppContainer();
                 } else {
-                    showError({ message: "E-postanız henüz doğrulanmadı. Lütfen e-postanızı kontrol edin ve doğrulama bağlantısına tıklayın." });
+                    showError('E-posta adresiniz henüz doğrulanmadı');
                 }
-            }).catch(error => {
-                showError(error, "Email Verification Check");
-            });
+            } catch (error) {
+                console.error('E-posta doğrulama kontrol hatası:', error);
+                showError('E-posta doğrulama kontrol edilirken hata oluştu: ' + error.message);
+            }
         }
         
         // Resend verification email
-        function resendVerificationEmail() {
-            auth.currentUser.sendEmailVerification({
-                url: window.location.href,
-                handleCodeInApp: true
-            })
-                .then(() => {
-                    showSuccess("Doğrulama bağlantısı tekrar gönderildi. Lütfen e-postanızı kontrol edin.");
-                })
-                .catch((error) => {
-                    showError(error, "Resend Verification");
-                });
+        async function resendVerificationEmail() {
+            try {
+                await auth.currentUser.sendEmailVerification();
+                showSuccess('Doğrulama e-postası tekrar gönderildi. Lütfen e-postanızı kontrol edin.');
+            } catch (error) {
+                console.error('Doğrulama e-postası gönderme hatası:', error);
+                showError('Doğrulama e-postası gönderilirken hata oluştu: ' + error.message);
+            }
         }
         
-        function logout() {
-            auth.signOut().then(() => {
-                showSuccess("Başarıyla çıkış yapıldı.");
-                // Hide settings and show chat container
-                document.getElementById('settingsContainer').style.display = 'none';
-                document.getElementById('chatContainer').style.display = 'flex';
-            }).catch(error => {
-                showError(error, "Logout");
+        // Setup user UI after login
+        async function setupUserUI() {
+            const userDoc = await db.collection('users').doc(currentUser.uid).get();
+            const userData = userDoc.data();
+            
+            // Set user avatar
+            const userAvatar = document.getElementById('userAvatar');
+            if (userData.photoURL) {
+                userAvatar.style.backgroundImage = `url(${userData.photoURL})`;
+                userAvatar.textContent = '';
+            } else {
+                userAvatar.textContent = userData.name.charAt(0).toUpperCase();
+            }
+            
+            // Set user name in settings
+            document.getElementById('settingsName').value = userData.name;
+            document.getElementById('settingsEmail').value = userData.email;
+            
+            // Set online status
+            await db.collection('users').doc(currentUser.uid).update({
+                isOnline: true
             });
-            toggleDropdown();
+            
+            // Set offline status when user closes the page
+            window.addEventListener('beforeunload', async () => {
+                await db.collection('users').doc(currentUser.uid).update({
+                    isOnline: false,
+                    lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+                });
+            });
+        }
+        
+        // Toggle dropdown menu
+        function toggleDropdown() {
+            const dropdown = document.getElementById('dropdownMenu');
+            dropdown.classList.toggle('show');
         }
         
         // Close dropdown when clicking outside
         window.onclick = function(event) {
             if (!event.target.matches('.user-avatar')) {
-                const dropdowns = document.getElementsByClassName("dropdown-menu");
+                const dropdowns = document.getElementsByClassName('dropdown-menu');
                 for (let i = 0; i < dropdowns.length; i++) {
                     const openDropdown = dropdowns[i];
                     if (openDropdown.classList.contains('show')) {
@@ -2100,6 +3067,228 @@
                 }
             }
         }
+        
+        // Show profile
+        function showProfile() {
+            // In a real app, this would show the user's profile
+            alert('Profil sayfası yakında gelecek!');
+        }
+        
+        // Show settings
+        function showSettings() {
+            document.getElementById('chatContainer').style.display = 'none';
+            document.getElementById('settingsContainer').style.display = 'block';
+            document.getElementById('dropdownMenu').classList.remove('show');
+        }
+        
+        // Show chat
+        function showChat() {
+            document.getElementById('settingsContainer').style.display = 'none';
+            document.getElementById('chatContainer').style.display = 'flex';
+        }
+        
+        // Update profile name
+        async function updateProfileName() {
+            const newName = document.getElementById('settingsName').value.trim();
+            
+            if (!newName) {
+                showError('Lütfen bir isim girin');
+                return;
+            }
+            
+            try {
+                await db.collection('users').doc(currentUser.uid).update({
+                    name: newName
+                });
+                
+                // Update UI
+                document.getElementById('userAvatar').textContent = newName.charAt(0).toUpperCase();
+                
+                showSuccess('Profil ismi başarıyla güncellendi!');
+            } catch (error) {
+                console.error('Profil güncelleme hatası:', error);
+                showError('Profil güncellenirken hata oluştu: ' + error.message);
+            }
+        }
+        
+        // Send email verification code
+        async function sendEmailVerificationCode() {
+            const newEmail = document.getElementById('newEmail').value.trim();
+            
+            if (!newEmail) {
+                showError('Lütfen yeni e-posta adresinizi girin');
+                return;
+            }
+            
+            // Generate random 6-digit code
+            emailVerificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+            
+            // In a real app, you would send this code to the user's email
+            // For demo purposes, we'll just show it in an alert
+            alert(`Demo amaçlı doğrulama kodunuz: ${emailVerificationCode}\nGerçek bir uygulamada bu kod e-postanıza gönderilir.`);
+            
+            // Show verification input
+            document.getElementById('emailVerificationContainer').style.display = 'block';
+        }
+        
+        // Verify email and update
+        async function verifyEmailAndUpdate() {
+            const code = document.getElementById('verificationCode').value.trim();
+            const newEmail = document.getElementById('newEmail').value.trim();
+            
+            if (!code || !newEmail) {
+                showError('Lütfen doğrulama kodunu ve yeni e-posta adresini girin');
+                return;
+            }
+            
+            if (code !== emailVerificationCode) {
+                showError('Doğrulama kodu hatalı');
+                return;
+            }
+            
+            try {
+                // Update email in Firebase Auth
+                await currentUser.updateEmail(newEmail);
+                
+                // Update email in Firestore
+                await db.collection('users').doc(currentUser.uid).update({
+                    email: newEmail
+                });
+                
+                // Update UI
+                document.getElementById('settingsEmail').value = newEmail;
+                document.getElementById('newEmail').value = '';
+                document.getElementById('verificationCode').value = '';
+                document.getElementById('emailVerificationContainer').style.display = 'none';
+                
+                showSuccess('E-posta adresi başarıyla güncellendi!');
+            } catch (error) {
+                console.error('E-posta güncelleme hatası:', error);
+                showError('E-posta güncellenirken hata oluştu: ' + error.message);
+            }
+        }
+        
+        // Update password
+        async function updatePassword() {
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+            
+            if (!currentPassword || !newPassword || !confirmNewPassword) {
+                showError('Lütfen tüm alanları doldurun');
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                showError('Yeni şifre en az 6 karakter olmalıdır');
+                return;
+            }
+            
+            if (newPassword !== confirmNewPassword) {
+                showError('Yeni şifreler eşleşmiyor');
+                return;
+            }
+            
+            try {
+                // Reauthenticate user
+                const credential = firebase.auth.EmailAuthProvider.credential(
+                    currentUser.email, 
+                    currentPassword
+                );
+                
+                await currentUser.reauthenticateWithCredential(credential);
+                
+                // Update password
+                await currentUser.updatePassword(newPassword);
+                
+                // Clear fields
+                document.getElementById('currentPassword').value = '';
+                document.getElementById('newPassword').value = '';
+                document.getElementById('confirmNewPassword').value = '';
+                
+                showSuccess('Şifre başarıyla güncellendi!');
+            } catch (error) {
+                console.error('Şifre güncelleme hatası:', error);
+                showError('Şifre güncellenirken hata oluştu: ' + error.message);
+            }
+        }
+        
+        // Logout
+        async function logout() {
+            try {
+                // Set offline status
+                await db.collection('users').doc(currentUser.uid).update({
+                    isOnline: false,
+                    lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // Sign out
+                await auth.signOut();
+                
+                // Reset UI
+                currentUser = null;
+                currentChat = null;
+                currentChatUser = null;
+                
+                if (unsubscribeMessages) {
+                    unsubscribeMessages();
+                    unsubscribeMessages = null;
+                }
+                
+                showAuthContainer();
+                switchTab('login');
+            } catch (error) {
+                console.error('Çıkış yapma hatası:', error);
+                showError('Çıkış yapılırken hata oluştu: ' + error.message);
+            }
+        }
+        
+        // Show error message
+        function showError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+            
+            // Insert at the top of the auth content or app content
+            const authContent = document.querySelector('.auth-content');
+            const appContent = document.querySelector('#mainContent');
+            
+            if (authContent) {
+                authContent.insertBefore(errorDiv, authContent.firstChild);
+            } else if (appContent) {
+                appContent.insertBefore(errorDiv, appContent.firstChild);
+            }
+            
+            // Remove after 5 seconds
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+        
+        // Show success message
+        function showSuccess(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success-message';
+            successDiv.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+            
+            // Insert at the top of the auth content or app content
+            const authContent = document.querySelector('.auth-content');
+            const appContent = document.querySelector('#mainContent');
+            
+            if (authContent) {
+                authContent.insertBefore(successDiv, authContent.firstChild);
+            } else if (appContent) {
+                appContent.insertBefore(successDiv, appContent.firstChild);
+            }
+            
+            // Remove after 5 seconds
+            setTimeout(() => {
+                successDiv.remove();
+            }, 5000);
+        }
+        
+        // Initialize the app when the page loads
+        window.onload = initApp;
     </script>
 </body>
 </html>
