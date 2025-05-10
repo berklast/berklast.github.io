@@ -162,8 +162,8 @@
     <div class="auth-box">
         <div class="auth-header">
             <div class="auth-logo">ND</div>
-            <h1>News DC</h1>
-            <p>Modern Sohbet Platformu</p>
+            <h1>NewDC</h1>
+            <p>Sohbet dünyasına katılmak için giriş yapın</p>
         </div>
 
         <!-- Giriş Yap Formu -->
@@ -183,6 +183,10 @@
             <button class="btn btn-secondary" onclick="loginWithGoogle()">
                 <i class="fab fa-google"></i> Google ile Giriş Yap
             </button>
+            <div class="text-center mt-3">
+                <span class="link" onclick="switchToRegister()">Kayıt Ol</span> | 
+                <span class="link" onclick="forgotPassword()">Şifremi Unuttum</span>
+            </div>
         </div>
     </div>
 
@@ -219,7 +223,7 @@
                 .then((userCredential) => {
                     alert('Giriş başarılı!');
                     // Yönlendirme yapılabilir
-                    // window.location.href = 'dashboard.html';
+                    window.location.href = 'dashboard.html';
                 })
                 .catch((error) => {
                     alert('Giriş başarısız: ' + error.message);
@@ -232,13 +236,32 @@
             firebase.auth().signInWithPopup(provider)
                 .then((result) => {
                     alert('Google ile giriş başarılı!');
-                    // Yönlendirme yapılabilir
-                    // window.location.href = 'dashboard.html';
+                    window.location.href = 'dashboard.html';
                 })
                 .catch((error) => {
                     alert('Google ile giriş başarısız: ' + error.message);
                 });
         }
+
+        // Kayıt olma sayfasına yönlendirme
+        function switchToRegister() {
+            window.location.href = 'register.html';  // Burada başka bir sayfaya yönlendirebilirsiniz.
+        }
+
+        // Şifre sıfırlama
+        function forgotPassword() {
+            const email = prompt('E-posta adresinizi girin:');
+            if (email) {
+                auth.sendPasswordResetEmail(email)
+                    .then(() => {
+                        alert('Şifre sıfırlama bağlantısı gönderildi.');
+                    })
+                    .catch((error) => {
+                        alert('Hata: ' + error.message);
+                    });
+            }
+        }
+
     </script>
 </body>
 </html>
