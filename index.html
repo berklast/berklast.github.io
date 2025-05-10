@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News DC - Gerçek Sohbet</title>
+    <title>News DC - Premium Sohbet</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -720,6 +720,41 @@
             padding: 20px;
         }
 
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: all 0.2s;
+        }
+
+        .modal-btn-primary {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+        }
+
+        .modal-btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .modal-btn-secondary {
+            background-color: #eee;
+            color: var(--dark);
+            border: none;
+        }
+
+        .modal-btn-secondary:hover {
+            background-color: #ddd;
+        }
+
         .search-input {
             width: 100%;
             padding: 10px 15px;
@@ -792,6 +827,78 @@
             background-color: var(--primary-dark);
         }
 
+        /* Settings Page Styles */
+        .settings-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .settings-section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .settings-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+        }
+
+        .settings-title i {
+            margin-right: 10px;
+        }
+
+        .settings-form {
+            margin-top: 15px;
+        }
+
+        .form-row {
+            display: flex;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        .form-row label {
+            width: 150px;
+            font-size: 14px;
+            color: var(--dark);
+        }
+
+        .form-row input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-row button {
+            margin-left: 10px;
+            padding: 10px 15px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .form-row button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .verification-code-container {
+            display: none;
+            margin-top: 10px;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .sidebar {
@@ -811,6 +918,26 @@
             .chat-container {
                 width: 100%;
             }
+
+            .form-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .form-row label {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+
+            .form-row input {
+                width: 100%;
+            }
+
+            .form-row button {
+                margin-left: 0;
+                margin-top: 10px;
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -821,7 +948,7 @@
             <div class="auth-header">
                 <div class="auth-logo">ND</div>
                 <h1>News DC</h1>
-                <p>Gerçek Sohbet Deneyimi</p>
+                <p>Premium Sohbet Deneyimi</p>
             </div>
             
             <div class="auth-tabs">
@@ -938,6 +1065,7 @@
         </header>
         
         <div class="app-content">
+            <!-- Sidebar -->
             <div class="sidebar" id="sidebar">
                 <div class="sidebar-section">
                     <div class="sidebar-title">
@@ -960,41 +1088,109 @@
                 </div>
             </div>
             
-            <div class="chat-container">
-                <div class="chat-header">
-                    <div class="chat-user">
-                        <div class="chat-user-avatar" id="currentChatAvatar">?</div>
-                        <div>
-                            <div class="chat-user-name" id="currentChatName">Sohbet Seçin</div>
-                            <div class="chat-user-status" id="currentChatStatus"></div>
+            <!-- Main Content Area -->
+            <div id="mainContent">
+                <!-- Chat Container (Default) -->
+                <div class="chat-container" id="chatContainer">
+                    <div class="chat-header">
+                        <div class="chat-user">
+                            <div class="chat-user-avatar" id="currentChatAvatar">?</div>
+                            <div>
+                                <div class="chat-user-name" id="currentChatName">Sohbet Seçin</div>
+                                <div class="chat-user-status" id="currentChatStatus"></div>
+                            </div>
+                        </div>
+                        <div class="chat-actions">
+                            <div class="chat-action-btn">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <div class="chat-action-btn">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </div>
                         </div>
                     </div>
-                    <div class="chat-actions">
-                        <div class="chat-action-btn">
-                            <i class="fas fa-search"></i>
+                    
+                    <div class="messages-container" id="messagesContainer">
+                        <div style="text-align: center; padding: 40px; color: var(--gray);">
+                            <i class="fas fa-comments" style="font-size: 48px; margin-bottom: 15px;"></i>
+                            <h3>Bir sohbet seçin</h3>
+                            <p>Arkadaşlarınızla gerçek zamanlı olarak mesajlaşmaya başlayın</p>
                         </div>
-                        <div class="chat-action-btn">
-                            <i class="fas fa-ellipsis-v"></i>
-                        </div>
+                    </div>
+                    
+                    <div class="message-input-container" id="messageInputContainer" style="display: none;">
+                        <button class="attachment-btn">
+                            <i class="fas fa-paperclip"></i>
+                        </button>
+                        <textarea class="message-input" id="messageInput" placeholder="Bir mesaj yazın..." rows="1"></textarea>
+                        <button class="send-btn" onclick="sendMessage()">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
                     </div>
                 </div>
                 
-                <div class="messages-container" id="messagesContainer">
-                    <div style="text-align: center; padding: 40px; color: var(--gray);">
-                        <i class="fas fa-comments" style="font-size: 48px; margin-bottom: 15px;"></i>
-                        <h3>Bir sohbet seçin</h3>
-                        <p>Arkadaşlarınızla gerçek zamanlı olarak mesajlaşmaya başlayın</p>
+                <!-- Settings Container (Hidden by default) -->
+                <div class="settings-container" id="settingsContainer" style="display: none;">
+                    <div class="settings-section">
+                        <div class="settings-title">
+                            <i class="fas fa-user-edit"></i>
+                            <span>Profil Bilgileri</span>
+                        </div>
+                        <div class="settings-form">
+                            <div class="form-row">
+                                <label for="settingsName">İsim:</label>
+                                <input type="text" id="settingsName" placeholder="Adınız ve soyadınız">
+                                <button onclick="updateProfileName()">Güncelle</button>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                
-                <div class="message-input-container" id="messageInputContainer" style="display: none;">
-                    <button class="attachment-btn">
-                        <i class="fas fa-paperclip"></i>
-                    </button>
-                    <textarea class="message-input" id="messageInput" placeholder="Bir mesaj yazın..." rows="1"></textarea>
-                    <button class="send-btn" onclick="sendMessage()">
-                        <i class="fas fa-paper-plane"></i>
-                    </button>
+                    
+                    <div class="settings-section">
+                        <div class="settings-title">
+                            <i class="fas fa-envelope"></i>
+                            <span>E-posta Adresi</span>
+                        </div>
+                        <div class="settings-form">
+                            <div class="form-row">
+                                <label for="settingsEmail">Mevcut E-posta:</label>
+                                <input type="email" id="settingsEmail" disabled>
+                            </div>
+                            <div class="form-row">
+                                <label for="newEmail">Yeni E-posta:</label>
+                                <input type="email" id="newEmail" placeholder="Yeni e-posta adresiniz">
+                                <button onclick="sendEmailVerificationCode()">Doğrulama Kodu Gönder</button>
+                            </div>
+                            <div class="verification-code-container" id="emailVerificationContainer">
+                                <div class="form-row">
+                                    <label for="verificationCode">Doğrulama Kodu:</label>
+                                    <input type="text" id="verificationCode" placeholder="E-postanıza gelen kodu girin">
+                                    <button onclick="verifyEmailAndUpdate()">Doğrula ve Güncelle</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <div class="settings-title">
+                            <i class="fas fa-lock"></i>
+                            <span>Şifre Değiştir</span>
+                        </div>
+                        <div class="settings-form">
+                            <div class="form-row">
+                                <label for="currentPassword">Mevcut Şifre:</label>
+                                <input type="password" id="currentPassword" placeholder="Mevcut şifreniz">
+                            </div>
+                            <div class="form-row">
+                                <label for="newPassword">Yeni Şifre:</label>
+                                <input type="password" id="newPassword" placeholder="Yeni şifreniz (en az 6 karakter)">
+                            </div>
+                            <div class="form-row">
+                                <label for="confirmNewPassword">Yeni Şifre Tekrar:</label>
+                                <input type="password" id="confirmNewPassword" placeholder="Yeni şifrenizi tekrar girin">
+                                <button onclick="updatePassword()">Şifreyi Güncelle</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1046,6 +1242,7 @@
         let currentChat = null;
         let currentChatUser = null;
         let unsubscribeMessages = null;
+        let emailVerificationCode = null;
         
         // Initialize the app
         document.addEventListener('DOMContentLoaded', () => {
@@ -1061,6 +1258,9 @@
                     if (user.emailVerified) {
                         showApp();
                         loadUserData(user);
+                        // Update email field in settings
+                        document.getElementById('settingsEmail').value = user.email;
+                        document.getElementById('settingsName').value = user.displayName || '';
                     } else {
                         showVerifyEmailForm();
                     }
@@ -1423,6 +1623,150 @@
             document.getElementById('userSearchResults').innerHTML = '';
         }
         
+        function showProfile() {
+            // Hide chat container and show settings
+            document.getElementById('chatContainer').style.display = 'none';
+            document.getElementById('settingsContainer').style.display = 'block';
+            toggleDropdown();
+        }
+        
+        function showSettings() {
+            // Hide chat container and show settings
+            document.getElementById('chatContainer').style.display = 'none';
+            document.getElementById('settingsContainer').style.display = 'block';
+            toggleDropdown();
+        }
+        
+        function updateProfileName() {
+            const newName = document.getElementById('settingsName').value.trim();
+            
+            if (!newName) {
+                showError({ message: "Lütfen bir isim girin" });
+                return;
+            }
+            
+            currentUser.updateProfile({
+                displayName: newName
+            }).then(() => {
+                // Update in Firestore
+                db.collection('users').doc(currentUser.uid).update({
+                    name: newName
+                }).then(() => {
+                    showSuccess("İsim başarıyla güncellendi!");
+                    updateUserAvatar();
+                }).catch(error => {
+                    console.error("Error updating name in Firestore:", error);
+                    showError(error, "Update Name");
+                });
+            }).catch(error => {
+                console.error("Error updating profile:", error);
+                showError(error, "Update Profile");
+            });
+        }
+        
+        function sendEmailVerificationCode() {
+            const newEmail = document.getElementById('newEmail').value.trim();
+            
+            if (!newEmail) {
+                showError({ message: "Lütfen yeni e-posta adresinizi girin" });
+                return;
+            }
+            
+            // Generate a random 6-digit code
+            emailVerificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+            
+            // In a real app, you would send this code to the user's email
+            // For demo purposes, we'll just show it in an alert
+            alert(`Demo amaçlı - Doğrulama kodunuz: ${emailVerificationCode}\nGerçek uygulamada bu kod e-postanıza gönderilecektir.`);
+            
+            // Show verification code input
+            document.getElementById('emailVerificationContainer').style.display = 'block';
+        }
+        
+        function verifyEmailAndUpdate() {
+            const newEmail = document.getElementById('newEmail').value.trim();
+            const code = document.getElementById('verificationCode').value.trim();
+            
+            if (!newEmail || !code) {
+                showError({ message: "Lütfen yeni e-posta ve doğrulama kodunu girin" });
+                return;
+            }
+            
+            if (code !== emailVerificationCode) {
+                showError({ message: "Doğrulama kodu hatalı!" });
+                return;
+            }
+            
+            currentUser.updateEmail(newEmail).then(() => {
+                // Update in Firestore
+                db.collection('users').doc(currentUser.uid).update({
+                    email: newEmail
+                }).then(() => {
+                    showSuccess("E-posta adresi başarıyla güncellendi!");
+                    document.getElementById('settingsEmail').value = newEmail;
+                    document.getElementById('newEmail').value = '';
+                    document.getElementById('verificationCode').value = '';
+                    document.getElementById('emailVerificationContainer').style.display = 'none';
+                    
+                    // Send verification email
+                    currentUser.sendEmailVerification().then(() => {
+                        showSuccess("Doğrulama e-postası gönderildi. Lütfen e-postanızı kontrol edin.");
+                    }).catch(error => {
+                        console.error("Error sending verification email:", error);
+                    });
+                }).catch(error => {
+                    console.error("Error updating email in Firestore:", error);
+                    showError(error, "Update Email");
+                });
+            }).catch(error => {
+                console.error("Error updating email:", error);
+                showError(error, "Update Email");
+            });
+        }
+        
+        function updatePassword() {
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+            
+            if (!currentPassword || !newPassword || !confirmNewPassword) {
+                showError({ message: "Lütfen tüm alanları doldurun" });
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                showError({ message: "Şifre en az 6 karakter olmalıdır" });
+                return;
+            }
+            
+            if (newPassword !== confirmNewPassword) {
+                showError({ message: "Yeni şifreler eşleşmiyor!" });
+                return;
+            }
+            
+            // Reauthenticate user
+            const credential = firebase.auth.EmailAuthProvider.credential(
+                currentUser.email,
+                currentPassword
+            );
+            
+            currentUser.reauthenticateWithCredential(credential).then(() => {
+                // Update password
+                currentUser.updatePassword(newPassword).then(() => {
+                    showSuccess("Şifre başarıyla güncellendi!");
+                    document.getElementById('currentPassword').value = '';
+                    document.getElementById('newPassword').value = '';
+                    document.getElementById('confirmNewPassword').value = '';
+                }).catch(error => {
+                    console.error("Error updating password:", error);
+                    showError(error, "Update Password");
+                });
+            }).catch(error => {
+                console.error("Error reauthenticating:", error);
+                showError({ message: "Mevcut şifre hatalı!" });
+            });
+        }
+        
         function switchTab(tabName) {
             document.querySelectorAll('.auth-tab').forEach(tab => {
                 tab.classList.remove('active');
@@ -1513,7 +1857,12 @@
                     case "auth/too-many-requests":
                         errorMessage = "Çok fazla deneme yaptınız, lütfen daha sonra tekrar deneyin";
                         break;
+                    case "auth/requires-recent-login":
+                        errorMessage = "Bu işlem için son zamanlarda tekrar giriş yapmanız gerekiyor";
+                        break;
                 }
+            } else if (error.message) {
+                errorMessage = error.message;
             }
             
             // Show error message
@@ -1727,20 +2076,12 @@
                 });
         }
         
-        // User menu functions
-        function showProfile() {
-            alert("Profil sayfası yapım aşamasında!");
-            toggleDropdown();
-        }
-        
-        function showSettings() {
-            alert("Ayarlar sayfası yapım aşamasında!");
-            toggleDropdown();
-        }
-        
         function logout() {
             auth.signOut().then(() => {
                 showSuccess("Başarıyla çıkış yapıldı.");
+                // Hide settings and show chat container
+                document.getElementById('settingsContainer').style.display = 'none';
+                document.getElementById('chatContainer').style.display = 'flex';
             }).catch(error => {
                 showError(error, "Logout");
             });
