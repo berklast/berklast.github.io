@@ -27,7 +27,7 @@
             box-sizing: border-box;
             font-family: 'Poppins', sans-serif;
         }
-        
+
         body {
             background-color: var(--light);
             color: var(--dark);
@@ -42,7 +42,7 @@
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             padding: 20px;
         }
-        
+
         .auth-box {
             background-color: white;
             border-radius: 15px;
@@ -52,7 +52,7 @@
             overflow: hidden;
             animation: fadeIn 0.5s ease;
         }
-        
+
         .auth-header {
             background: linear-gradient(to right, var(--primary), var(--accent));
             color: white;
@@ -70,20 +70,16 @@
             font-size: 14px;
             opacity: 0.9;
         }
-        
-        .auth-form {
-            display: none;
-            animation: slideUp 0.4s ease;
-        }
 
-        .auth-form.active {
+        .auth-form {
             display: block;
+            padding: 15px;
         }
 
         .form-group {
             margin-bottom: 20px;
         }
-        
+
         .form-group label {
             display: block;
             margin-bottom: 8px;
@@ -91,7 +87,7 @@
             font-weight: 500;
             color: var(--dark);
         }
-        
+
         .form-control {
             width: 100%;
             padding: 12px 15px;
@@ -99,13 +95,13 @@
             border-radius: 8px;
             font-size: 14px;
         }
-        
+
         .form-control:focus {
             border-color: var(--primary);
             outline: none;
             box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
         }
-        
+
         .btn {
             display: inline-block;
             padding: 12px 20px;
@@ -120,129 +116,39 @@
             width: 100%;
             text-align: center;
         }
-        
+
         .btn:hover {
             background-color: var(--primary-dark);
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
         }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            animation: fadeIn 0.3s;
-        }
-        
-        .modal-content {
-            background-color: white;
-            border-radius: 12px;
-            width: 100%;
-            max-width: 500px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            animation: slideUp 0.4s;
-        }
-        
-        .message-input-container {
-            padding: 15px 20px;
-            background-color: white;
-            border-top: 1px solid #eee;
+
+        .divider {
             display: flex;
             align-items: center;
-        }
-
-        .message-input {
-            flex: 1;
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 25px;
-            font-size: 14px;
-            outline: none;
-        }
-
-        .message-input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
-        }
-
-        .send-button {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            margin-left: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .send-button:hover {
-            background-color: var(--primary-dark);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
-        }
-
-        /* Arkadaş ekleme modalı */
-        .modal-body {
-            padding: 20px;
-        }
-        
-        .search-results {
-            margin-top: 15px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        
-        .search-item {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            background-color: #f8f9fa;
-        }
-        
-        .search-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: var(--primary);
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-right: 12px;
-            font-weight: bold;
-        }
-
-        .search-info {
-            flex: 1;
-        }
-
-        .search-name {
-            font-weight: 500;
-            margin-bottom: 3px;
-        }
-
-        .search-email {
-            font-size: 12px;
+            margin: 20px 0;
             color: var(--gray);
+            font-size: 14px;
         }
-        
-        /* Firebase kuralları ve güvenlik için JavaScript kodları buraya gelecek */
+
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background-color: #eee;
+            margin: 0 10px;
+        }
+
+        .link {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .link:hover {
+            text-decoration: underline;
+        }
 
     </style>
 </head>
@@ -255,10 +161,10 @@
                 <h1>News DC</h1>
                 <p>Modern Sohbet Platformu</p>
             </div>
-            
+
             <div class="auth-content">
                 <!-- Giriş Formu -->
-                <div class="auth-form active" id="loginForm">
+                <div class="auth-form">
                     <div class="form-group">
                         <label for="loginEmail">E-posta</label>
                         <input type="email" id="loginEmail" class="form-control" placeholder="E-posta adresinizi girin">
@@ -273,59 +179,54 @@
                         <i class="fab fa-google"></i> Google ile Giriş Yap
                     </button>
                 </div>
-
-                <!-- Arkadaş Ekle Modal -->
-                <div class="modal" id="addFriendModal">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <div class="modal-title">Arkadaş Ekle</div>
-                            <div class="modal-close" onclick="closeModal('addFriendModal')">
-                                <i class="fas fa-times"></i>
-                            </div>
-                        </div>
-                        <div class="modal-body">
-                            <div class="form-group">
-                                <label for="friendSearch">Kullanıcı Adı veya E-posta</label>
-                                <input type="text" id="friendSearch" class="form-control" placeholder="Aramak istediğiniz kullanıcıyı girin">
-                            </div>
-                            <button class="btn" onclick="searchFriend()" style="width: 100%;">
-                                <i class="fas fa-search"></i> Ara
-                            </button>
-                            
-                            <div class="search-results" id="searchResults">
-                                <div style="text-align: center; padding: 30px; color: var(--gray);">
-                                    <i class="fas fa-users" style="font-size: 40px; margin-bottom: 10px;"></i>
-                                    <p>Arkadaş eklemek için arama yapın</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 
+                <div class="text-center mt-3">
+                    <span class="link" onclick="switchToRegister()">Kayıt Ol</span>
+                </div>
+
             </div>
         </div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
     <script>
-        // Firebase konfigürasyon ve başlatma
-        const firebaseConfig = {
-            apiKey: "AIzaSyDH5GBWQNoZv7LZZ2MbFjh-twI1jZuYqK0",
-            authDomain: "newdc-d6404.firebaseapp.com",
-            projectId: "newdc-d6404",
-            storageBucket: "newdc-d6404.appspot.com",
-            messagingSenderId: "101292652984",
-            appId: "1:101292652984:web:59d6b49b400572bec1774d",
-            measurementId: "G-NV86JDVJ27"
-        };
+        // Giriş Fonksiyonu
+        function login() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
 
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
-        
-        // Kullanıcı girişi işlemleri ve Firebase işlemleri burada olacak.
+            if (!email || !password) {
+                alert('Lütfen e-posta ve şifrenizi girin.');
+                return;
+            }
+
+            // Firebase giriş işlemi
+            firebase.auth().signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    alert('Giriş başarılı!');
+                    // Kullanıcıyı yönlendirebilirsiniz
+                })
+                .catch((error) => {
+                    alert('Giriş başarısız: ' + error.message);
+                });
+        }
+
+        // Google ile giriş
+        function loginWithGoogle() {
+            var provider = new firebase.auth.GoogleAuthProvider();
+            firebase.auth().signInWithPopup(provider)
+                .then((result) => {
+                    alert('Google ile giriş başarılı!');
+                })
+                .catch((error) => {
+                    alert('Google ile giriş başarısız: ' + error.message);
+                });
+        }
+
+        // Kayıt olma sayfasına geçiş
+        function switchToRegister() {
+            alert('Kayıt olma sayfasına yönlendiriliyorsunuz!');
+            // Burada kayıt olma sayfasına yönlendirme yapılabilir
+        }
     </script>
 </body>
 </html>
