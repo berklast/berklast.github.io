@@ -155,7 +155,6 @@
                 opacity: 1;
             }
         }
-
     </style>
 </head>
 <body>
@@ -167,7 +166,7 @@
             <p>Modern Sohbet Platformu</p>
         </div>
 
-        <!-- Kayıt Ol ve Giriş Yap Formu -->
+        <!-- Giriş Yap Formu -->
         <div class="auth-form">
             <div class="form-group">
                 <label for="email">E-posta</label>
@@ -178,23 +177,21 @@
                 <input type="password" id="password" class="form-control" placeholder="Şifrenizi girin">
             </div>
 
-            <!-- Kayıt Ol ve Giriş Yap Butonları -->
-            <button class="btn" onclick="register()">Kayıt Ol</button>
-            <div class="divider">veya</div>
-            <button class="btn btn-secondary" onclick="login()">Giriş Yap</button>
+            <!-- Giriş Yap Butonları -->
+            <button class="btn" onclick="login()">Giriş Yap</button>
             <div class="divider">veya</div>
             <button class="btn btn-secondary" onclick="loginWithGoogle()">
                 <i class="fab fa-google"></i> Google ile Giriş Yap
             </button>
         </div>
-
-        <div class="text-center mt-3">
-            <span class="link" onclick="switchToRegister()">Kayıt Ol</span>
-        </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
+
     <script>
-        // Firebase'inizi başlatın
+        // Firebase'i başlatıyoruz
         const firebaseConfig = {
             apiKey: "AIzaSyDH5GBWQNoZv7LZZ2MbFjh-twI1jZuYqK0",
             authDomain: "newdc-d6404.firebaseapp.com",
@@ -207,27 +204,6 @@
 
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
-        const db = firebase.firestore();
-
-        // Kayıt olma işlemi
-        function register() {
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value.trim();
-            
-            if (!email || !password) {
-                alert('E-posta ve şifre girmeniz gerekmektedir.');
-                return;
-            }
-
-            auth.createUserWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    alert('Kayıt başarılı!');
-                    // Kullanıcıyı yönlendirebiliriz
-                })
-                .catch((error) => {
-                    alert('Kayıt başarısız: ' + error.message);
-                });
-        }
 
         // Giriş yapma işlemi
         function login() {
@@ -242,32 +218,27 @@
             auth.signInWithEmailAndPassword(email, password)
                 .then((userCredential) => {
                     alert('Giriş başarılı!');
-                    // Kullanıcıyı yönlendirebiliriz
+                    // Yönlendirme yapılabilir
+                    // window.location.href = 'dashboard.html';
                 })
                 .catch((error) => {
                     alert('Giriş başarısız: ' + error.message);
                 });
         }
 
-        // Google ile giriş işlemi
+        // Google ile giriş yapma
         function loginWithGoogle() {
-            var provider = new firebase.auth.GoogleAuthProvider();
+            const provider = new firebase.auth.GoogleAuthProvider();
             firebase.auth().signInWithPopup(provider)
                 .then((result) => {
                     alert('Google ile giriş başarılı!');
+                    // Yönlendirme yapılabilir
+                    // window.location.href = 'dashboard.html';
                 })
                 .catch((error) => {
                     alert('Google ile giriş başarısız: ' + error.message);
                 });
         }
-
-        // Kayıt ol ve giriş sayfası arasında geçiş
-        function switchToRegister() {
-            alert('Kayıt olma sayfasına yönlendiriliyorsunuz!');
-            // Kayıt olma sayfasına yönlendirebilirsiniz
-        }
-
     </script>
-
 </body>
 </html>
