@@ -32,13 +32,10 @@
             background-color: var(--light);
             color: var(--dark);
             min-height: 100vh;
-        }
-        
-        .auth-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            flex-direction: column;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             padding: 20px;
         }
@@ -72,8 +69,7 @@
         }
 
         .auth-form {
-            display: block;
-            padding: 15px;
+            padding: 25px;
         }
 
         .form-group {
@@ -150,67 +146,110 @@
             text-decoration: underline;
         }
 
+        /* Animasyon */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
     </style>
 </head>
 <body>
-    <!-- Giriş Sayfası -->
-    <div class="auth-container" id="authContainer">
-        <div class="auth-box">
-            <div class="auth-header">
-                <div class="auth-logo">ND</div>
-                <h1>News DC</h1>
-                <p>Modern Sohbet Platformu</p>
+
+    <div class="auth-box">
+        <div class="auth-header">
+            <div class="auth-logo">ND</div>
+            <h1>News DC</h1>
+            <p>Modern Sohbet Platformu</p>
+        </div>
+
+        <!-- Kayıt Ol ve Giriş Yap Formu -->
+        <div class="auth-form">
+            <div class="form-group">
+                <label for="email">E-posta</label>
+                <input type="email" id="email" class="form-control" placeholder="E-posta adresinizi girin">
+            </div>
+            <div class="form-group">
+                <label for="password">Şifre</label>
+                <input type="password" id="password" class="form-control" placeholder="Şifrenizi girin">
             </div>
 
-            <div class="auth-content">
-                <!-- Giriş Formu -->
-                <div class="auth-form">
-                    <div class="form-group">
-                        <label for="loginEmail">E-posta</label>
-                        <input type="email" id="loginEmail" class="form-control" placeholder="E-posta adresinizi girin">
-                    </div>
-                    <div class="form-group">
-                        <label for="loginPassword">Şifre</label>
-                        <input type="password" id="loginPassword" class="form-control" placeholder="Şifrenizi girin">
-                    </div>
-                    <button class="btn" onclick="login()">Giriş Yap</button>
-                    <div class="divider">veya</div>
-                    <button class="btn btn-secondary" onclick="loginWithGoogle()">
-                        <i class="fab fa-google"></i> Google ile Giriş Yap
-                    </button>
-                </div>
-                
-                <div class="text-center mt-3">
-                    <span class="link" onclick="switchToRegister()">Kayıt Ol</span>
-                </div>
+            <!-- Kayıt Ol ve Giriş Yap Butonları -->
+            <button class="btn" onclick="register()">Kayıt Ol</button>
+            <div class="divider">veya</div>
+            <button class="btn btn-secondary" onclick="login()">Giriş Yap</button>
+            <div class="divider">veya</div>
+            <button class="btn btn-secondary" onclick="loginWithGoogle()">
+                <i class="fab fa-google"></i> Google ile Giriş Yap
+            </button>
+        </div>
 
-            </div>
+        <div class="text-center mt-3">
+            <span class="link" onclick="switchToRegister()">Kayıt Ol</span>
         </div>
     </div>
 
     <script>
-        // Giriş Fonksiyonu
+        // Firebase'inizi başlatın
+        const firebaseConfig = {
+            apiKey: "AIzaSyDH5GBWQNoZv7LZZ2MbFjh-twI1jZuYqK0",
+            authDomain: "newdc-d6404.firebaseapp.com",
+            projectId: "newdc-d6404",
+            storageBucket: "newdc-d6404.appspot.com",
+            messagingSenderId: "101292652984",
+            appId: "1:101292652984:web:59d6b49b400572bec1774d",
+            measurementId: "G-NV86JDVJ27"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Kayıt olma işlemi
+        function register() {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            
+            if (!email || !password) {
+                alert('E-posta ve şifre girmeniz gerekmektedir.');
+                return;
+            }
+
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    alert('Kayıt başarılı!');
+                    // Kullanıcıyı yönlendirebiliriz
+                })
+                .catch((error) => {
+                    alert('Kayıt başarısız: ' + error.message);
+                });
+        }
+
+        // Giriş yapma işlemi
         function login() {
-            const email = document.getElementById('loginEmail').value.trim();
-            const password = document.getElementById('loginPassword').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
 
             if (!email || !password) {
                 alert('Lütfen e-posta ve şifrenizi girin.');
                 return;
             }
 
-            // Firebase giriş işlemi
-            firebase.auth().signInWithEmailAndPassword(email, password)
+            auth.signInWithEmailAndPassword(email, password)
                 .then((userCredential) => {
                     alert('Giriş başarılı!');
-                    // Kullanıcıyı yönlendirebilirsiniz
+                    // Kullanıcıyı yönlendirebiliriz
                 })
                 .catch((error) => {
                     alert('Giriş başarısız: ' + error.message);
                 });
         }
 
-        // Google ile giriş
+        // Google ile giriş işlemi
         function loginWithGoogle() {
             var provider = new firebase.auth.GoogleAuthProvider();
             firebase.auth().signInWithPopup(provider)
@@ -222,11 +261,13 @@
                 });
         }
 
-        // Kayıt olma sayfasına geçiş
+        // Kayıt ol ve giriş sayfası arasında geçiş
         function switchToRegister() {
             alert('Kayıt olma sayfasına yönlendiriliyorsunuz!');
-            // Burada kayıt olma sayfasına yönlendirme yapılabilir
+            // Kayıt olma sayfasına yönlendirebilirsiniz
         }
+
     </script>
+
 </body>
 </html>
