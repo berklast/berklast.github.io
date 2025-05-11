@@ -3,76 +3,328 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arkadaş Yönetim Sistemi</title>
+    <title>News DC - Premium Sohbet</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #4361ee;
             --primary-dark: #3a56d4;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
             --light: #f8f9fa;
             --dark: #212529;
             --gray: #6c757d;
             --success: #4cc9f0;
             --danger: #f72585;
+            --warning: #f8961e;
+            --info: #560bad;
+            --card-bg: #ffffff;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
         }
         
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Poppins', sans-serif;
         }
         
         body {
-            background-color: #f5f7fa;
+            background-color: #f5f7ff;
             color: var(--dark);
             min-height: 100vh;
         }
         
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
+        /* Auth Container */
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             padding: 20px;
         }
         
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid #e0e0e0;
-            margin-bottom: 30px;
+        .auth-card {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+            animation: fadeIn 0.5s ease;
         }
         
-        .logo {
-            font-size: 24px;
-            font-weight: 600;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-        }
-        
-        .logo i {
-            margin-right: 10px;
-        }
-        
-        .user-menu {
+        .auth-header {
+            background: linear-gradient(to right, var(--primary), var(--accent));
+            color: white;
+            padding: 30px;
+            text-align: center;
             position: relative;
         }
         
+        .auth-header::after {
+            content: '';
+            position: absolute;
+            bottom: -50px;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background-color: var(--card-bg);
+            border-radius: 30px 30px 0 0;
+        }
+        
+        .auth-logo {
+            width: 80px;
+            height: 80px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 15px;
+            color: var(--primary);
+            font-size: 32px;
+            font-weight: bold;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .auth-tabs {
+            display: flex;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .auth-tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--gray);
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .auth-tab.active {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        .auth-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--primary);
+            border-radius: 3px 3px 0 0;
+        }
+        
+        .auth-content {
+            padding: 30px;
+        }
+        
+        .auth-form {
+            display: none;
+            animation: slideUp 0.4s ease;
+        }
+        
+        .auth-form.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--dark);
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border 0.3s;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+        }
+        
+        .btn-google {
+            background-color: #4285F4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .btn-google:hover {
+            background-color: #357ABD;
+        }
+        
+        .btn-google i {
+            background-color: white;
+            color: #4285F4;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+        
+        .error-message {
+            background-color: #ffeeee;
+            color: var(--danger);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            animation: fadeIn 0.3s;
+        }
+        
+        .error-message i {
+            margin-right: 10px;
+        }
+        
+        .success-message {
+            background-color: #e8f5e9;
+            color: var(--success);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            animation: fadeIn 0.3s;
+        }
+        
+        .success-message i {
+            margin-right: 10px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { 
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: var(--gray);
+            font-size: 14px;
+        }
+        
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background-color: #eee;
+            margin: 0 10px;
+        }
+
+        /* App Container Styles */
+        #appContainer {
+            display: none;
+            min-height: 100vh;
+            background-color: #f0f2f5;
+        }
+
+        .app-header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .app-logo {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .app-logo i {
+            margin-right: 10px;
+            font-size: 24px;
+        }
+
+        .user-menu {
+            position: relative;
+        }
+
         .user-avatar {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background-color: var(--primary);
-            color: white;
+            background-color: white;
+            color: var(--primary);
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             font-weight: bold;
+            transition: all 0.3s;
         }
-        
+
+        .user-avatar:hover {
+            transform: scale(1.05);
+        }
+
         .dropdown-menu {
             position: absolute;
             right: 0;
@@ -83,13 +335,14 @@
             width: 200px;
             overflow: hidden;
             display: none;
-            z-index: 100;
+            z-index: 1001;
         }
-        
+
         .dropdown-menu.show {
             display: block;
+            animation: slideUp 0.3s ease;
         }
-        
+
         .dropdown-item {
             padding: 12px 15px;
             display: flex;
@@ -98,94 +351,133 @@
             cursor: pointer;
             transition: all 0.2s;
         }
-        
+
         .dropdown-item i {
             margin-right: 10px;
             color: var(--gray);
         }
-        
+
         .dropdown-item:hover {
             background-color: #f5f7ff;
             color: var(--primary);
         }
-        
+
         .dropdown-item:hover i {
             color: var(--primary);
         }
-        
-        .search-container {
-            background-color: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            margin-bottom: 30px;
-        }
-        
-        .search-box {
-            position: relative;
-            margin-bottom: 20px;
-        }
-        
-        .search-box input {
-            width: 100%;
-            padding: 12px 15px 12px 40px;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s;
-        }
-        
-        .search-box input:focus {
-            border-color: var(--primary);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
-        }
-        
-        .search-box i {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--gray);
-        }
-        
-        .section-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: var(--dark);
+
+        .app-content {
             display: flex;
+            margin-top: 70px;
+            height: calc(100vh - 70px);
+        }
+
+        .sidebar {
+            width: 300px;
+            background-color: white;
+            border-right: 1px solid #eee;
+            height: 100%;
+            overflow-y: auto;
+            padding: 20px 0;
+        }
+
+        .sidebar-section {
+            margin-bottom: 25px;
+        }
+
+        .sidebar-title {
+            padding: 0 20px 10px;
+            font-size: 14px;
+            color: var(--gray);
+            display: flex;
+            justify-content: space-between;
             align-items: center;
         }
-        
-        .section-title i {
-            margin-right: 10px;
+
+        .sidebar-title i {
+            cursor: pointer;
+        }
+
+        .sidebar-item {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .sidebar-item.active {
+            background-color: #f5f7ff;
+            border-left: 3px solid var(--primary);
             color: var(--primary);
         }
-        
-        .user-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
+
+        .sidebar-item:hover:not(.active) {
+            background-color: #f9f9f9;
         }
-        
-        .user-card {
-            background-color: white;
+
+        .sidebar-item i {
+            margin-right: 10px;
+            font-size: 18px;
+        }
+
+        .sidebar-item-badge {
+            margin-left: auto;
+            background-color: var(--primary);
+            color: white;
+            font-size: 12px;
+            padding: 2px 8px;
             border-radius: 10px;
-            padding: 15px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-            transition: all 0.3s;
+        }
+
+        .friend-request-actions {
+            display: flex;
+            margin-left: auto;
+        }
+
+        .friend-request-btn {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .accept-btn {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .reject-btn {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            padding: 15px 20px;
+            background-color: white;
+            border-bottom: 1px solid #eee;
             display: flex;
             align-items: center;
         }
-        
-        .user-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+
+        .chat-user {
+            display: flex;
+            align-items: center;
         }
-        
-        .user-avatar-sm {
+
+        .chat-user-avatar {
             width: 40px;
             height: 40px;
             border-radius: 50%;
@@ -194,124 +486,572 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-right: 15px;
+            margin-right: 10px;
             font-weight: bold;
+        }
+
+        .chat-user-name {
+            font-weight: 500;
+        }
+
+        .chat-user-status {
+            font-size: 12px;
+            color: var(--gray);
+            margin-top: 2px;
+        }
+
+        .chat-actions {
+            margin-left: auto;
+            display: flex;
+        }
+
+        .chat-action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f5f7ff;
+            color: var(--primary);
+            margin-left: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .chat-action-btn:hover {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .messages-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+        }
+
+        .message {
+            display: flex;
+            margin-bottom: 15px;
+        }
+
+        .message-incoming {
+            justify-content: flex-start;
+        }
+
+        .message-outgoing {
+            justify-content: flex-end;
+        }
+
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 10px;
             flex-shrink: 0;
         }
-        
-        .user-info {
-            flex-grow: 1;
+
+        .message-outgoing .message-avatar {
+            margin-right: 0;
+            margin-left: 10px;
+            background-color: var(--primary);
+            color: white;
         }
-        
-        .user-name {
-            font-weight: 600;
-            margin-bottom: 3px;
+
+        .message-content {
+            max-width: 60%;
         }
-        
-        .user-email {
-            font-size: 13px;
+
+        .message-bubble {
+            padding: 10px 15px;
+            border-radius: 18px;
+            position: relative;
+            word-wrap: break-word;
+        }
+
+        .message-incoming .message-bubble {
+            background-color: white;
+            border-top-left-radius: 4px;
+        }
+
+        .message-outgoing .message-bubble {
+            background-color: var(--primary);
+            color: white;
+            border-top-right-radius: 4px;
+        }
+
+        .message-time {
+            font-size: 11px;
+            color: var(--gray);
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        .message-incoming .message-time {
             color: var(--gray);
         }
-        
-        .action-btn {
-            padding: 8px 15px;
-            border-radius: 6px;
+
+        .message-outgoing .message-time {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .message-input-container {
+            padding: 15px;
+            background-color: white;
+            border-top: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
             font-size: 14px;
-            font-weight: 500;
+            resize: none;
+            max-height: 120px;
+            outline: none;
+            transition: border 0.3s;
+        }
+
+        .message-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+
+        .send-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
             cursor: pointer;
             border: none;
             transition: all 0.2s;
         }
-        
-        .add-btn {
+
+        .send-btn:hover {
+            background-color: var(--primary-dark);
+            transform: scale(1.05);
+        }
+
+        .attachment-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background-color: #f5f7ff;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+        }
+
+        .attachment-btn:hover {
+            background-color: #e6ebff;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+            animation: slideUp 0.3s ease;
+        }
+
+        .modal-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--gray);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .modal-btn {
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: all 0.2s;
+        }
+
+        .modal-btn-primary {
             background-color: var(--primary);
             color: white;
+            border: none;
         }
-        
-        .add-btn:hover {
+
+        .modal-btn-primary:hover {
             background-color: var(--primary-dark);
         }
-        
-        .pending-btn {
-            background-color: #e0e0e0;
-            color: #666;
-            cursor: default;
+
+        .modal-btn-secondary {
+            background-color: #eee;
+            color: var(--dark);
+            border: none;
         }
-        
-        .friend-requests {
+
+        .modal-btn-secondary:hover {
+            background-color: #ddd;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .user-list {
+            list-style: none;
+        }
+
+        .user-item {
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .user-item:last-child {
+            border-bottom: none;
+        }
+
+        .user-item:hover {
+            background-color: #f9f9f9;
+        }
+
+        .user-avatar-small {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-weight: 500;
+        }
+
+        .user-email {
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        .add-friend-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .add-friend-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* Settings Page Styles */
+        .settings-container {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .settings-section {
             background-color: white;
             border-radius: 10px;
             padding: 20px;
+            margin-bottom: 20px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
-        
-        .request-item {
+
+        .settings-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--primary);
             display: flex;
             align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #f0f0f0;
         }
-        
-        .request-item:last-child {
-            border-bottom: none;
+
+        .settings-title i {
+            margin-right: 10px;
         }
-        
-        .request-actions {
-            margin-left: auto;
+
+        .settings-form {
+            margin-top: 15px;
+        }
+
+        .form-row {
             display: flex;
-            gap: 10px;
-        }
-        
-        .accept-btn {
-            background-color: var(--success);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            border: none;
-        }
-        
-        .reject-btn {
-            background-color: var(--danger);
-            color: white;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            border: none;
-        }
-        
-        .error-message {
-            background-color: #ffebee;
-            color: #d32f2f;
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 20px;
-            display: none;
-        }
-        
-        .empty-state {
-            text-align: center;
-            padding: 30px;
-            color: var(--gray);
-        }
-        
-        .empty-state i {
-            font-size: 48px;
             margin-bottom: 15px;
-            color: #e0e0e0;
+            align-items: center;
+        }
+
+        .form-row label {
+            width: 150px;
+            font-size: 14px;
+            color: var(--dark);
+        }
+
+        .form-row input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-row button {
+            margin-left: 10px;
+            padding: 10px 15px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .form-row button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .verification-code-container {
+            display: none;
+            margin-top: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 250px;
+                position: fixed;
+                left: -250px;
+                top: 70px;
+                height: calc(100vh - 70px);
+                z-index: 999;
+                transition: all 0.3s;
+            }
+
+            .sidebar.show {
+                left: 0;
+            }
+
+            .chat-container {
+                width: 100%;
+            }
+
+            .form-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .form-row label {
+                width: 100%;
+                margin-bottom: 5px;
+            }
+
+            .form-row input {
+                width: 100%;
+            }
+
+            .form-row button {
+                margin-left: 0;
+                margin-top: 10px;
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="logo">
-                <i class="fas fa-user-friends"></i>
-                <span>Arkadaş Yönetimi</span>
+    <!-- Auth Container -->
+    <div class="auth-container" id="authContainer">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo">ND</div>
+                <h1>News DC</h1>
+                <p>Premium Sohbet Deneyimi</p>
+            </div>
+            
+            <div class="auth-tabs">
+                <div class="auth-tab active" onclick="switchTab('login')">Giriş Yap</div>
+                <div class="auth-tab" onclick="switchTab('register')">Kayıt Ol</div>
+            </div>
+            
+            <div class="auth-content">
+                <!-- Login Form -->
+                <div class="auth-form active" id="loginForm">
+                    <div class="form-group">
+                        <label for="loginEmail">E-posta</label>
+                        <input type="email" id="loginEmail" class="form-control" placeholder="E-postanızı girin">
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Şifre</label>
+                        <input type="password" id="loginPassword" class="form-control" placeholder="Şifrenizi girin">
+                        <div style="text-align: right; margin-top: 8px;">
+                            <a href="#" style="color: var(--primary); font-size: 13px;" onclick="showForgotPassword()">Şifremi unuttum?</a>
+                        </div>
+                    </div>
+                    <button class="btn" onclick="login()">Giriş Yap</button>
+                    
+                    <div class="divider">veya</div>
+                    
+                    <button class="btn btn-google" onclick="loginWithGoogle()">
+                        <i class="fab fa-google"></i>
+                        <span>Google ile Giriş Yap</span>
+                    </button>
+                </div>
+                
+                <!-- Register Form -->
+                <div class="auth-form" id="registerForm">
+                    <div class="form-group">
+                        <label for="registerName">İsim</label>
+                        <input type="text" id="registerName" class="form-control" placeholder="Adınız ve soyadınız">
+                    </div>
+                    <div class="form-group">
+                        <label for="registerEmail">E-posta</label>
+                        <input type="email" id="registerEmail" class="form-control" placeholder="E-postanızı girin">
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword">Şifre</label>
+                        <input type="password" id="registerPassword" class="form-control" placeholder="Şifrenizi oluşturun (en az 6 karakter)">
+                    </div>
+                    <div class="form-group">
+                        <label for="registerConfirmPassword">Şifre Tekrar</label>
+                        <input type="password" id="registerConfirmPassword" class="form-control" placeholder="Şifrenizi tekrar girin">
+                    </div>
+                    <button class="btn" onclick="register()">Kayıt Ol</button>
+                    
+                    <div class="divider">veya</div>
+                    
+                    <button class="btn btn-google" onclick="registerWithGoogle()">
+                        <i class="fab fa-google"></i>
+                        <span>Google ile Kayıt Ol</span>
+                    </button>
+                </div>
+                
+                <!-- Forgot Password Form -->
+                <div class="auth-form" id="forgotPasswordForm">
+                    <div class="form-group">
+                        <label for="forgotEmail">E-posta</label>
+                        <input type="email" id="forgotEmail" class="form-control" placeholder="Kayıtlı e-postanızı girin">
+                    </div>
+                    <button class="btn" onclick="sendPasswordReset()">Şifre Sıfırlama Bağlantısı Gönder</button>
+                    <button class="btn" style="background-color: #eee; color: var(--dark); margin-top: 10px;" onclick="switchTab('login')">
+                        Giriş Sayfasına Dön
+                    </button>
+                </div>
+                
+                <!-- Email Verification Form -->
+                <div class="auth-form" id="verifyEmailForm">
+                    <div style="text-align: center; margin-bottom: 20px;">
+                        <i class="fas fa-envelope" style="font-size: 48px; color: var(--primary); margin-bottom: 15px;"></i>
+                        <h3>E-posta Doğrulama Gerekli</h3>
+                        <p style="color: var(--gray);">E-postanıza bir doğrulama bağlantısı gönderildi. Lütfen e-postanızı kontrol edin ve bağlantıya tıklayın.</p>
+                    </div>
+                    <button class="btn" onclick="checkEmailVerification()">
+                        <i class="fas fa-check"></i> Doğrulandı, Devam Et
+                    </button>
+                    <button class="btn" style="background-color: #eee; color: var(--dark); margin-top: 10px;" onclick="resendVerificationEmail()">
+                        <i class="fas fa-redo"></i> Bağlantıyı Tekrar Gönder
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- App Container -->
+    <div id="appContainer">
+        <header class="app-header">
+            <div class="app-logo">
+                <i class="fas fa-comment-dots"></i>
+                <span>News DC</span>
             </div>
             <div class="user-menu">
                 <div class="user-avatar" id="userAvatar" onclick="toggleDropdown()">U</div>
                 <div class="dropdown-menu" id="dropdownMenu">
+                    <div class="dropdown-item" onclick="showProfile()">
+                        <i class="fas fa-user"></i>
+                        <span>Profil</span>
+                    </div>
                     <div class="dropdown-item" onclick="showSettings()">
                         <i class="fas fa-cog"></i>
                         <span>Ayarlar</span>
@@ -324,374 +1064,1034 @@
             </div>
         </header>
         
-        <div class="search-container">
-            <div class="search-box">
-                <i class="fas fa-search"></i>
-                <input type="text" id="searchBox" placeholder="Arkadaş ara...">
-            </div>
-            
-            <div class="section-title">
-                <i class="fas fa-users"></i>
-                <span>Kullanıcılar</span>
-            </div>
-            
-            <div class="user-list" id="searchResults">
-                <div class="empty-state">
-                    <i class="fas fa-search"></i>
-                    <p>Arama yaparak kullanıcıları bulabilirsiniz</p>
+        <div class="app-content">
+            <!-- Sidebar -->
+            <div class="sidebar" id="sidebar">
+                <div class="sidebar-section">
+                    <div class="sidebar-title">
+                        <span>Arkadaşlar</span>
+                        <i class="fas fa-plus" onclick="showAddFriendModal()"></i>
+                    </div>
+                    <div id="friendsList">
+                        <!-- Arkadaşlar buraya dinamik olarak eklenecek -->
+                    </div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <div class="sidebar-title">
+                        <span>Arkadaş İstekleri</span>
+                        <span class="sidebar-item-badge" id="friendRequestsBadge">0</span>
+                    </div>
+                    <div id="friendRequestsList">
+                        <!-- Arkadaş istekleri buraya dinamik olarak eklenecek -->
+                    </div>
                 </div>
             </div>
             
-            <div class="error-message" id="error"></div>
-        </div>
-        
-        <div class="friend-requests">
-            <div class="section-title">
-                <i class="fas fa-user-clock"></i>
-                <span>Arkadaş İstekleri</span>
-            </div>
-            
-            <div id="friendRequestsList">
-                <div class="empty-state">
-                    <i class="fas fa-envelope"></i>
-                    <p>Bekleyen arkadaşlık isteği bulunmamaktadır</p>
+            <!-- Main Content Area -->
+            <div id="mainContent">
+                <!-- Chat Container (Default) -->
+                <div class="chat-container" id="chatContainer">
+                    <div class="chat-header">
+                        <div class="chat-user">
+                            <div class="chat-user-avatar" id="currentChatAvatar">?</div>
+                            <div>
+                                <div class="chat-user-name" id="currentChatName">Sohbet Seçin</div>
+                                <div class="chat-user-status" id="currentChatStatus"></div>
+                            </div>
+                        </div>
+                        <div class="chat-actions">
+                            <div class="chat-action-btn">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <div class="chat-action-btn">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="messages-container" id="messagesContainer">
+                        <div style="text-align: center; padding: 40px; color: var(--gray);">
+                            <i class="fas fa-comments" style="font-size: 48px; margin-bottom: 15px;"></i>
+                            <h3>Bir sohbet seçin</h3>
+                            <p>Arkadaşlarınızla gerçek zamanlı olarak mesajlaşmaya başlayın</p>
+                        </div>
+                    </div>
+                    
+                    <div class="message-input-container" id="messageInputContainer" style="display: none;">
+                        <button class="attachment-btn">
+                            <i class="fas fa-paperclip"></i>
+                        </button>
+                        <textarea class="message-input" id="messageInput" placeholder="Bir mesaj yazın..." rows="1"></textarea>
+                        <button class="send-btn" onclick="sendMessage()">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Settings Container (Hidden by default) -->
+                <div class="settings-container" id="settingsContainer" style="display: none;">
+                    <div class="settings-section">
+                        <div class="settings-title">
+                            <i class="fas fa-user-edit"></i>
+                            <span>Profil Bilgileri</span>
+                        </div>
+                        <div class="settings-form">
+                            <div class="form-row">
+                                <label for="settingsName">İsim:</label>
+                                <input type="text" id="settingsName" placeholder="Adınız ve soyadınız">
+                                <button onclick="updateProfileName()">Güncelle</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <div class="settings-title">
+                            <i class="fas fa-envelope"></i>
+                            <span>E-posta Adresi</span>
+                        </div>
+                        <div class="settings-form">
+                            <div class="form-row">
+                                <label for="settingsEmail">Mevcut E-posta:</label>
+                                <input type="email" id="settingsEmail" disabled>
+                            </div>
+                            <div class="form-row">
+                                <label for="newEmail">Yeni E-posta:</label>
+                                <input type="email" id="newEmail" placeholder="Yeni e-posta adresiniz">
+                                <button onclick="sendEmailVerificationCode()">Doğrulama Kodu Gönder</button>
+                            </div>
+                            <div class="verification-code-container" id="emailVerificationContainer">
+                                <div class="form-row">
+                                    <label for="verificationCode">Doğrulama Kodu:</label>
+                                    <input type="text" id="verificationCode" placeholder="E-postanıza gelen kodu girin">
+                                    <button onclick="verifyEmailAndUpdate()">Doğrula ve Güncelle</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="settings-section">
+                        <div class="settings-title">
+                            <i class="fas fa-lock"></i>
+                            <span>Şifre Değiştir</span>
+                        </div>
+                        <div class="settings-form">
+                            <div class="form-row">
+                                <label for="currentPassword">Mevcut Şifre:</label>
+                                <input type="password" id="currentPassword" placeholder="Mevcut şifreniz">
+                            </div>
+                            <div class="form-row">
+                                <label for="newPassword">Yeni Şifre:</label>
+                                <input type="password" id="newPassword" placeholder="Yeni şifreniz (en az 6 karakter)">
+                            </div>
+                            <div class="form-row">
+                                <label for="confirmNewPassword">Yeni Şifre Tekrar:</label>
+                                <input type="password" id="confirmNewPassword" placeholder="Yeni şifrenizi tekrar girin">
+                                <button onclick="updatePassword()">Şifreyi Güncelle</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!-- Firebase ve uygulama scriptleri -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    
+    <!-- Add Friend Modal -->
+    <div class="modal" id="addFriendModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Arkadaş Ekle</div>
+                <button class="modal-close" onclick="closeAddFriendModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="text" class="search-input" id="friendSearchInput" placeholder="Kullanıcı adı veya e-posta ara...">
+                <ul class="user-list" id="userSearchResults">
+                    <!-- Arama sonuçları buraya eklenecek -->
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Firebase and other scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore-compat.js"></script>
     
     <script>
-        // Firebase yapılandırma - KENDİ BİLGİLERİNİZLE DEĞİŞTİRİN
+        // Firebase configuration - BU KISMI KENDİ BİLGİLERİNİZLE DEĞİŞTİRİN
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT_ID.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyDH5GBWQNoZv7LZZ2MbFjh-twI1jZuYqK0",
+            authDomain: "newdc-d6404.firebaseapp.com",
+            projectId: "newdc-d6404",
+            storageBucket: "newdc-d6404.appspot.com",
+            messagingSenderId: "101292652984",
+            appId: "1:101292652984:web:59d6b49b400572bec1774d",
+            measurementId: "G-NV86JDVJ27"
         };
-
-        // Firebase'i başlat
-        firebase.initializeApp(firebaseConfig);
+        
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.firestore();
-
-        // Global değişkenler
+        
+        // Google provider for authentication
+        const googleProvider = new firebase.auth.GoogleAuthProvider();
+        
+        // Global variables
         let currentUser = null;
-        let unsubscribeRequests = null;
-
-        // Uygulamayı başlat
-        function initApp() {
+        let currentChat = null;
+        let currentChatUser = null;
+        let unsubscribeMessages = null;
+        let emailVerificationCode = null;
+        
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', () => {
+            initAuth();
+            setupEventListeners();
+        });
+        
+        function initAuth() {
             auth.onAuthStateChanged(user => {
                 if (user) {
                     currentUser = user;
-                    setupUI();
-                    loadFriendRequests();
-                    
-                    // Arama kutusuna event listener ekle
-                    document.getElementById('searchBox').addEventListener('input', searchUsers);
+                    updateUserAvatar();
+                    if (user.emailVerified) {
+                        showApp();
+                        loadUserData(user);
+                        // Update email field in settings
+                        document.getElementById('settingsEmail').value = user.email;
+                        document.getElementById('settingsName').value = user.displayName || '';
+                    } else {
+                        showVerifyEmailForm();
+                    }
                 } else {
-                    // Giriş yapılmamışsa giriş sayfasına yönlendir
-                    window.location.href = 'login.html';
+                    currentUser = null;
+                    showAuth();
                 }
+            }, error => {
+                showError(error, "Auth State Listener");
             });
         }
-
-        // Kullanıcı arayüzünü ayarla
-        function setupUI() {
-            // Kullanıcı avatarını ayarla
-            const userAvatar = document.getElementById('userAvatar');
-            if (currentUser.photoURL) {
-                userAvatar.style.backgroundImage = `url(${currentUser.photoURL})`;
-                userAvatar.textContent = '';
-            } else {
-                userAvatar.textContent = currentUser.displayName ? 
-                    currentUser.displayName.charAt(0).toUpperCase() : 'U';
-            }
+        
+        function setupEventListeners() {
+            // Tab switching
+            document.querySelectorAll('.auth-tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const tabName = this.textContent.includes('Giriş') ? 'login' : 'register';
+                    switchTab(tabName);
+                });
+            });
+            
+            // Form submissions
+            document.getElementById('loginForm').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') login();
+            });
+            
+            document.getElementById('registerForm').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') register();
+            });
+            
+            // Message input
+            document.getElementById('messageInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+            
+            // Friend search input
+            document.getElementById('friendSearchInput').addEventListener('input', function() {
+                searchUsers(this.value.trim());
+            });
         }
-
-        // Kullanıcı ara
-        async function searchUsers() {
-            const searchTerm = document.getElementById('searchBox').value.trim();
-            const searchResults = document.getElementById('searchResults');
-            const errorDiv = document.getElementById('error');
+        
+        function loadUserData(user) {
+            console.log("User data loaded:", user);
             
-            errorDiv.style.display = 'none';
+            // Load friends
+            loadFriends();
             
-            if (searchTerm.length < 2) {
-                searchResults.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-search"></i>
-                        <p>Arama yaparak kullanıcıları bulabilirsiniz</p>
+            // Load friend requests
+            loadFriendRequests();
+        }
+        
+        function loadFriends() {
+            if (!currentUser) return;
+            
+            db.collection('users').doc(currentUser.uid).collection('friends')
+                .where('status', '==', 'accepted')
+                .onSnapshot(snapshot => {
+                    const friendsList = document.getElementById('friendsList');
+                    friendsList.innerHTML = '';
+                    
+                    snapshot.forEach(doc => {
+                        const friendData = doc.data();
+                        addFriendToSidebar(friendData, doc.id);
+                    });
+                });
+        }
+        
+        function loadFriendRequests() {
+            if (!currentUser) return;
+            
+            db.collection('users').doc(currentUser.uid).collection('friendRequests')
+                .where('status', '==', 'pending')
+                .onSnapshot(snapshot => {
+                    const friendRequestsList = document.getElementById('friendRequestsList');
+                    friendRequestsList.innerHTML = '';
+                    
+                    // Update badge count
+                    document.getElementById('friendRequestsBadge').textContent = snapshot.size;
+                    
+                    snapshot.forEach(doc => {
+                        const requestData = doc.data();
+                        addFriendRequestToSidebar(requestData, doc.id);
+                    });
+                });
+        }
+        
+        function addFriendToSidebar(friendData, friendId) {
+            const friendsList = document.getElementById('friendsList');
+            
+            const friendItem = document.createElement('div');
+            friendItem.className = 'sidebar-item';
+            friendItem.innerHTML = `
+                <div class="user-avatar-small" style="background-color: ${getRandomColor()}">
+                    ${friendData.name.charAt(0).toUpperCase()}
+                </div>
+                <span>${friendData.name}</span>
+            `;
+            
+            friendItem.addEventListener('click', () => {
+                openChat(friendId, friendData);
+            });
+            
+            friendsList.appendChild(friendItem);
+        }
+        
+        function addFriendRequestToSidebar(requestData, requestId) {
+            const friendRequestsList = document.getElementById('friendRequestsList');
+            
+            const requestItem = document.createElement('div');
+            requestItem.className = 'sidebar-item';
+            requestItem.innerHTML = `
+                <div class="user-avatar-small" style="background-color: ${getRandomColor()}">
+                    ${requestData.senderName.charAt(0).toUpperCase()}
+                </div>
+                <span>${requestData.senderName}</span>
+                <div class="friend-request-actions">
+                    <div class="friend-request-btn accept-btn" onclick="acceptFriendRequest('${requestId}', '${requestData.senderId}', '${requestData.senderName}')">
+                        <i class="fas fa-check"></i>
                     </div>
-                `;
+                    <div class="friend-request-btn reject-btn" onclick="rejectFriendRequest('${requestId}')">
+                        <i class="fas fa-times"></i>
+                    </div>
+                </div>
+            `;
+            
+            friendRequestsList.appendChild(requestItem);
+        }
+        
+        function openChat(friendId, friendData) {
+            // Close previous chat listener
+            if (unsubscribeMessages) unsubscribeMessages();
+            
+            // Update current chat info
+            currentChat = `private_${[currentUser.uid, friendId].sort().join('_')}`;
+            currentChatUser = friendData;
+            
+            // Update UI
+            document.getElementById('currentChatName').textContent = friendData.name;
+            document.getElementById('currentChatAvatar').textContent = friendData.name.charAt(0).toUpperCase();
+            document.getElementById('currentChatAvatar').style.backgroundColor = getRandomColor();
+            document.getElementById('currentChatStatus').textContent = 'çevrimiçi';
+            document.getElementById('messageInputContainer').style.display = 'flex';
+            
+            // Clear messages container
+            const messagesContainer = document.getElementById('messagesContainer');
+            messagesContainer.innerHTML = '';
+            
+            // Load messages
+            unsubscribeMessages = db.collection('chats').doc(currentChat).collection('messages')
+                .orderBy('timestamp', 'asc')
+                .onSnapshot(snapshot => {
+                    snapshot.docChanges().forEach(change => {
+                        if (change.type === 'added') {
+                            addMessageToUI(change.doc.data());
+                        }
+                    });
+                    
+                    // Scroll to bottom
+                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                }, error => {
+                    console.error("Error loading messages:", error);
+                });
+        }
+        
+        function addMessageToUI(message) {
+            const messagesContainer = document.getElementById('messagesContainer');
+            const isOutgoing = message.senderId === currentUser.uid;
+            
+            const messageElement = document.createElement('div');
+            messageElement.className = `message ${isOutgoing ? 'message-outgoing' : 'message-incoming'}`;
+            
+            const time = new Date(message.timestamp?.toDate()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            messageElement.innerHTML = `
+                ${!isOutgoing ? `<div class="message-avatar" style="background-color: ${getRandomColor()}">${currentChatUser.name.charAt(0).toUpperCase()}</div>` : ''}
+                <div class="message-content">
+                    <div class="message-bubble">${message.text}</div>
+                    <div class="message-time">${time}</div>
+                </div>
+                ${isOutgoing ? `<div class="message-avatar" style="background-color: ${getRandomColor()}">${currentUser.displayName.charAt(0).toUpperCase()}</div>` : ''}
+            `;
+            
+            messagesContainer.appendChild(messageElement);
+            
+            // Scroll to bottom
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+        
+        function sendMessage() {
+            if (!currentChat || !currentUser) return;
+            
+            const input = document.getElementById('messageInput');
+            const messageText = input.value.trim();
+            
+            if (!messageText) return;
+            
+            // Add message to Firestore
+            db.collection('chats').doc(currentChat).collection('messages').add({
+                text: messageText,
+                senderId: currentUser.uid,
+                senderName: currentUser.displayName || 'Anonim',
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).catch(error => {
+                console.error("Error sending message: ", error);
+                showError(error, "Send Message");
+            });
+            
+            // Clear input
+            input.value = '';
+        }
+        
+        function searchUsers(query) {
+            if (!query || query.length < 2) {
+                document.getElementById('userSearchResults').innerHTML = '';
                 return;
             }
-
-            try {
-                searchResults.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-spinner fa-pulse"></i>
-                        <p>Aranıyor...</p>
-                    </div>
-                `;
-
-                // İsimle arama
-                const nameSnapshot = await db.collection('users')
-                    .where('displayName', '>=', searchTerm)
-                    .where('displayName', '<=', searchTerm + '\uf8ff')
-                    .limit(10)
-                    .get();
-
-                // E-posta ile arama
-                const emailSnapshot = await db.collection('users')
-                    .where('email', '>=', searchTerm)
-                    .where('email', '<=', searchTerm + '\uf8ff')
-                    .limit(10)
-                    .get();
-
-                // Sonuçları birleştir ve tekilleştir
-                const usersMap = new Map();
-
-                nameSnapshot.forEach(doc => {
-                    if (doc.id !== currentUser.uid) {
-                        usersMap.set(doc.id, doc.data());
+            
+            // Search by name or email
+            db.collection('users')
+                .where('name', '>=', query)
+                .where('name', '<=', query + '\uf8ff')
+                .get()
+                .then(snapshot => {
+                    const resultsContainer = document.getElementById('userSearchResults');
+                    resultsContainer.innerHTML = '';
+                    
+                    if (snapshot.empty) {
+                        resultsContainer.innerHTML = '<li style="padding: 15px; text-align: center; color: var(--gray);">Kullanıcı bulunamadı</li>';
+                        return;
                     }
+                    
+                    snapshot.forEach(doc => {
+                        // Don't show current user in results
+                        if (doc.id === currentUser.uid) return;
+                        
+                        const userData = doc.data();
+                        const userItem = document.createElement('li');
+                        userItem.className = 'user-item';
+                        userItem.innerHTML = `
+                            <div class="user-avatar-small" style="background-color: ${getRandomColor()}">
+                                ${userData.name.charAt(0).toUpperCase()}
+                            </div>
+                            <div class="user-info">
+                                <div class="user-name">${userData.name}</div>
+                                <div class="user-email">${userData.email}</div>
+                            </div>
+                            <button class="add-friend-btn" onclick="sendFriendRequest('${doc.id}', '${userData.name}')">
+                                Ekle
+                            </button>
+                        `;
+                        
+                        resultsContainer.appendChild(userItem);
+                    });
+                })
+                .catch(error => {
+                    console.error("Error searching users:", error);
                 });
-
-                emailSnapshot.forEach(doc => {
-                    if (doc.id !== currentUser.uid) {
-                        usersMap.set(doc.id, doc.data());
+        }
+        
+        function sendFriendRequest(receiverId, receiverName) {
+            if (!currentUser) return;
+            
+            // Check if request already exists
+            db.collection('users').doc(receiverId).collection('friendRequests')
+                .where('senderId', '==', currentUser.uid)
+                .where('status', '==', 'pending')
+                .get()
+                .then(snapshot => {
+                    if (!snapshot.empty) {
+                        showError({ message: "Bu kullanıcıya zaten bir arkadaş isteği gönderdiniz" });
+                        return;
                     }
-                });
-
-                if (usersMap.size === 0) {
-                    searchResults.innerHTML = `
-                        <div class="empty-state">
-                            <i class="fas fa-user-slash"></i>
-                            <p>Kullanıcı bulunamadı</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                // Bekleyen arkadaşlık isteklerini kontrol et
-                const pendingRequests = await db.collection('friendRequests')
-                    .where('from', '==', currentUser.uid)
-                    .where('status', '==', 'pending')
-                    .get();
-
-                const requestedUserIds = pendingRequests.docs.map(doc => doc.data().to);
-
-                // Kullanıcı listesini oluştur
-                searchResults.innerHTML = '';
-                usersMap.forEach((userData, userId) => {
-                    const isRequested = requestedUserIds.includes(userId);
                     
-                    const userCard = document.createElement('div');
-                    userCard.className = 'user-card';
+                    // Create friend request
+                    const requestData = {
+                        senderId: currentUser.uid,
+                        senderName: currentUser.displayName || 'Anonim',
+                        receiverId: receiverId,
+                        receiverName: receiverName,
+                        status: 'pending',
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    };
                     
-                    userCard.innerHTML = `
-                        <div class="user-avatar-sm" style="${userData.photoURL ? `background-image: url(${userData.photoURL})` : ''}">
-                            ${userData.photoURL ? '' : userData.displayName.charAt(0).toUpperCase()}
-                        </div>
-                        <div class="user-info">
-                            <div class="user-name">${userData.displayName}</div>
-                            <div class="user-email">${userData.email}</div>
-                        </div>
-                        <button class="action-btn ${isRequested ? 'pending-btn' : 'add-btn'}" 
-                                onclick="${isRequested ? '' : `sendFriendRequest('${userId}')`}" 
-                                ${isRequested ? 'disabled' : ''}>
-                            ${isRequested ? 'İstek Gönderildi' : 'Ekle'}
-                        </button>
-                    `;
-                    
-                    searchResults.appendChild(userCard);
-                });
-
-            } catch (error) {
-                console.error('Arama hatası:', error);
-                errorDiv.textContent = 'Arama yapılırken bir hata oluştu: ' + error.message;
-                errorDiv.style.display = 'block';
-            }
-        }
-
-        // Arkadaşlık isteği gönder
-        async function sendFriendRequest(userId) {
-            try {
-                // İsteğin zaten var olup olmadığını kontrol et
-                const existingRequest = await db.collection('friendRequests')
-                    .where('from', '==', currentUser.uid)
-                    .where('to', '==', userId)
-                    .where('status', '==', 'pending')
-                    .get();
-
-                if (!existingRequest.empty) {
-                    showError('Bu kullanıcıya zaten istek gönderdiniz');
-                    return;
-                }
-
-                // Yeni istek oluştur
-                await db.collection('friendRequests').add({
-                    from: currentUser.uid,
-                    to: userId,
-                    status: 'pending',
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-
-                // UI'yı güncelle
-                searchUsers();
-                showSuccess('Arkadaşlık isteği gönderildi!');
-            } catch (error) {
-                console.error('İstek gönderme hatası:', error);
-                showError('İstek gönderilirken hata oluştu: ' + error.message);
-            }
-        }
-
-        // Arkadaşlık isteklerini yükle
-        async function loadFriendRequests() {
-            try {
-                const requestsList = document.getElementById('friendRequestsList');
-                
-                // Önceki listener'ı temizle
-                if (unsubscribeRequests) {
-                    unsubscribeRequests();
-                }
-
-                unsubscribeRequests = db.collection('friendRequests')
-                    .where('to', '==', currentUser.uid)
-                    .where('status', '==', 'pending')
-                    .orderBy('createdAt', 'desc')
-                    .onSnapshot(async snapshot => {
-                        if (snapshot.empty) {
-                            requestsList.innerHTML = `
-                                <div class="empty-state">
-                                    <i class="fas fa-envelope"></i>
-                                    <p>Bekleyen arkadaşlık isteği bulunmamaktadır</p>
-                                </div>
-                            `;
-                            return;
-                        }
-
-                        // Gönderen kullanıcı bilgilerini al
-                        const senderIds = snapshot.docs.map(doc => doc.data().from);
-                        const sendersSnapshot = await db.collection('users')
-                            .where(firebase.firestore.FieldPath.documentId(), 'in', senderIds)
-                            .get();
-
-                        const sendersMap = new Map();
-                        sendersSnapshot.forEach(doc => {
-                            sendersMap.set(doc.id, doc.data());
+                    // Add to receiver's requests
+                    db.collection('users').doc(receiverId).collection('friendRequests').add(requestData)
+                        .then(() => {
+                            showSuccess("Arkadaş isteği gönderildi!");
+                            closeAddFriendModal();
+                        })
+                        .catch(error => {
+                            console.error("Error sending friend request:", error);
+                            showError(error, "Send Friend Request");
                         });
-
-                        // İstek listesini oluştur
-                        requestsList.innerHTML = '';
-                        snapshot.forEach(doc => {
-                            const request = doc.data();
-                            const sender = sendersMap.get(request.from);
-                            
-                            if (!sender) return;
-
-                            const requestItem = document.createElement('div');
-                            requestItem.className = 'request-item';
-                            
-                            requestItem.innerHTML = `
-                                <div class="user-avatar-sm" style="${sender.photoURL ? `background-image: url(${sender.photoURL})` : ''}">
-                                    ${sender.photoURL ? '' : sender.displayName.charAt(0).toUpperCase()}
-                                </div>
-                                <div class="user-info">
-                                    <div class="user-name">${sender.displayName}</div>
-                                    <div class="user-email">${sender.email}</div>
-                                </div>
-                                <div class="request-actions">
-                                    <button class="accept-btn" onclick="respondToRequest('${doc.id}', 'accept')">
-                                        <i class="fas fa-check"></i> Kabul
-                                    </button>
-                                    <button class="reject-btn" onclick="respondToRequest('${doc.id}', 'reject')">
-                                        <i class="fas fa-times"></i> Reddet
-                                    </button>
-                                </div>
-                            `;
-                            
-                            requestsList.appendChild(requestItem);
-                        });
-                    }, error => {
-                        console.error('İstekler dinlenirken hata:', error);
-                        showError('İstekler yüklenirken hata oluştu: ' + error.message);
+                });
+        }
+        
+        function acceptFriendRequest(requestId, senderId, senderName) {
+            if (!currentUser) return;
+            
+            // Update request status
+            db.collection('users').doc(currentUser.uid).collection('friendRequests').doc(requestId).update({
+                status: 'accepted',
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            })
+            .then(() => {
+                // Add to friends list for both users
+                const currentUserData = {
+                    userId: currentUser.uid,
+                    name: currentUser.displayName || 'Anonim',
+                    status: 'accepted',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                const senderUserData = {
+                    userId: senderId,
+                    name: senderName,
+                    status: 'accepted',
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                // Add to current user's friends
+                db.collection('users').doc(currentUser.uid).collection('friends').doc(senderId).set(senderUserData);
+                
+                // Add to sender's friends
+                db.collection('users').doc(senderId).collection('friends').doc(currentUser.uid).set(currentUserData);
+                
+                showSuccess(`${senderName} arkadaş olarak eklendi!`);
+            })
+            .catch(error => {
+                console.error("Error accepting friend request:", error);
+                showError(error, "Accept Friend Request");
+            });
+        }
+        
+        function rejectFriendRequest(requestId) {
+            if (!currentUser) return;
+            
+            // Delete the request
+            db.collection('users').doc(currentUser.uid).collection('friendRequests').doc(requestId).delete()
+                .then(() => {
+                    showSuccess("Arkadaş isteği reddedildi");
+                })
+                .catch(error => {
+                    console.error("Error rejecting friend request:", error);
+                    showError(error, "Reject Friend Request");
+                });
+        }
+        
+        function showAddFriendModal() {
+            document.getElementById('addFriendModal').classList.add('show');
+            document.getElementById('friendSearchInput').focus();
+        }
+        
+        function closeAddFriendModal() {
+            document.getElementById('addFriendModal').classList.remove('show');
+            document.getElementById('friendSearchInput').value = '';
+            document.getElementById('userSearchResults').innerHTML = '';
+        }
+        
+        function showProfile() {
+            // Hide chat container and show settings
+            document.getElementById('chatContainer').style.display = 'none';
+            document.getElementById('settingsContainer').style.display = 'block';
+            toggleDropdown();
+        }
+        
+        function showSettings() {
+            // Hide chat container and show settings
+            document.getElementById('chatContainer').style.display = 'none';
+            document.getElementById('settingsContainer').style.display = 'block';
+            toggleDropdown();
+        }
+        
+        function updateProfileName() {
+            const newName = document.getElementById('settingsName').value.trim();
+            
+            if (!newName) {
+                showError({ message: "Lütfen bir isim girin" });
+                return;
+            }
+            
+            currentUser.updateProfile({
+                displayName: newName
+            }).then(() => {
+                // Update in Firestore
+                db.collection('users').doc(currentUser.uid).update({
+                    name: newName
+                }).then(() => {
+                    showSuccess("İsim başarıyla güncellendi!");
+                    updateUserAvatar();
+                }).catch(error => {
+                    console.error("Error updating name in Firestore:", error);
+                    showError(error, "Update Name");
+                });
+            }).catch(error => {
+                console.error("Error updating profile:", error);
+                showError(error, "Update Profile");
+            });
+        }
+        
+        function sendEmailVerificationCode() {
+            const newEmail = document.getElementById('newEmail').value.trim();
+            
+            if (!newEmail) {
+                showError({ message: "Lütfen yeni e-posta adresinizi girin" });
+                return;
+            }
+            
+            // Generate a random 6-digit code
+            emailVerificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+            
+            // In a real app, you would send this code to the user's email
+            // For demo purposes, we'll just show it in an alert
+            alert(`Demo amaçlı - Doğrulama kodunuz: ${emailVerificationCode}\nGerçek uygulamada bu kod e-postanıza gönderilecektir.`);
+            
+            // Show verification code input
+            document.getElementById('emailVerificationContainer').style.display = 'block';
+        }
+        
+        function verifyEmailAndUpdate() {
+            const newEmail = document.getElementById('newEmail').value.trim();
+            const code = document.getElementById('verificationCode').value.trim();
+            
+            if (!newEmail || !code) {
+                showError({ message: "Lütfen yeni e-posta ve doğrulama kodunu girin" });
+                return;
+            }
+            
+            if (code !== emailVerificationCode) {
+                showError({ message: "Doğrulama kodu hatalı!" });
+                return;
+            }
+            
+            currentUser.updateEmail(newEmail).then(() => {
+                // Update in Firestore
+                db.collection('users').doc(currentUser.uid).update({
+                    email: newEmail
+                }).then(() => {
+                    showSuccess("E-posta adresi başarıyla güncellendi!");
+                    document.getElementById('settingsEmail').value = newEmail;
+                    document.getElementById('newEmail').value = '';
+                    document.getElementById('verificationCode').value = '';
+                    document.getElementById('emailVerificationContainer').style.display = 'none';
+                    
+                    // Send verification email
+                    currentUser.sendEmailVerification().then(() => {
+                        showSuccess("Doğrulama e-postası gönderildi. Lütfen e-postanızı kontrol edin.");
+                    }).catch(error => {
+                        console.error("Error sending verification email:", error);
                     });
-
-            } catch (error) {
-                console.error('İstek yükleme hatası:', error);
-                showError('İstekler yüklenirken hata oluştu: ' + error.message);
+                }).catch(error => {
+                    console.error("Error updating email in Firestore:", error);
+                    showError(error, "Update Email");
+                });
+            }).catch(error => {
+                console.error("Error updating email:", error);
+                showError(error, "Update Email");
+            });
+        }
+        
+        function updatePassword() {
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+            
+            if (!currentPassword || !newPassword || !confirmNewPassword) {
+                showError({ message: "Lütfen tüm alanları doldurun" });
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                showError({ message: "Şifre en az 6 karakter olmalıdır" });
+                return;
+            }
+            
+            if (newPassword !== confirmNewPassword) {
+                showError({ message: "Yeni şifreler eşleşmiyor!" });
+                return;
+            }
+            
+            // Reauthenticate user
+            const credential = firebase.auth.EmailAuthProvider.credential(
+                currentUser.email,
+                currentPassword
+            );
+            
+            currentUser.reauthenticateWithCredential(credential).then(() => {
+                // Update password
+                currentUser.updatePassword(newPassword).then(() => {
+                    showSuccess("Şifre başarıyla güncellendi!");
+                    document.getElementById('currentPassword').value = '';
+                    document.getElementById('newPassword').value = '';
+                    document.getElementById('confirmNewPassword').value = '';
+                }).catch(error => {
+                    console.error("Error updating password:", error);
+                    showError(error, "Update Password");
+                });
+            }).catch(error => {
+                console.error("Error reauthenticating:", error);
+                showError({ message: "Mevcut şifre hatalı!" });
+            });
+        }
+        
+        function switchTab(tabName) {
+            document.querySelectorAll('.auth-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            document.querySelectorAll('.auth-form').forEach(form => {
+                form.classList.remove('active');
+            });
+            
+            if (tabName === 'login') {
+                document.querySelector('.auth-tab:nth-child(1)').classList.add('active');
+                document.getElementById('loginForm').classList.add('active');
+            } else if (tabName === 'register') {
+                document.querySelector('.auth-tab:nth-child(2)').classList.add('active');
+                document.getElementById('registerForm').classList.add('active');
             }
         }
-
-        // İstek yanıtla (kabul/red)
-        async function respondToRequest(requestId, action) {
-            try {
-                const requestRef = db.collection('friendRequests').doc(requestId);
-                const requestDoc = await requestRef.get();
-                
-                if (!requestDoc.exists) {
-                    showError('İstek bulunamadı');
-                    return;
-                }
-
-                const requestData = requestDoc.data();
-                
-                if (action === 'accept') {
-                    // İsteği kabul et
-                    await requestRef.update({
-                        status: 'accepted',
-                        respondedAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-
-                    // Her iki kullanıcının arkadaş listesine ekle
-                    const batch = db.batch();
-                    
-                    batch.update(db.collection('users').doc(requestData.from), {
-                        [`friends.${requestData.to}`]: true
-                    });
-                    
-                    batch.update(db.collection('users').doc(requestData.to), {
-                        [`friends.${requestData.from}`]: true
-                    });
-                    
-                    await batch.commit();
-                    
-                    showSuccess('Arkadaşlık isteği kabul edildi!');
-                } else {
-                    // İsteği reddet
-                    await requestRef.update({
-                        status: 'rejected',
-                        respondedAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                    
-                    showSuccess('Arkadaşlık isteği reddedildi');
-                }
-                
-                // Listeyi yenile
-                loadFriendRequests();
-            } catch (error) {
-                console.error('İstek yanıtlama hatası:', error);
-                showError('İstek yanıtlanırken hata oluştu: ' + error.message);
-            }
+        
+        function showForgotPassword() {
+            document.querySelectorAll('.auth-form').forEach(form => {
+                form.classList.remove('active');
+            });
+            document.getElementById('forgotPasswordForm').classList.add('active');
         }
-
-        // Dropdown menüyü göster/gizle
+        
+        function showVerifyEmailForm() {
+            document.querySelectorAll('.auth-form').forEach(form => {
+                form.classList.remove('active');
+            });
+            document.getElementById('verifyEmailForm').classList.add('active');
+        }
+        
+        function showAuth() {
+            document.getElementById('authContainer').style.display = 'flex';
+            document.getElementById('appContainer').style.display = 'none';
+        }
+        
+        function showApp() {
+            document.getElementById('authContainer').style.display = 'none';
+            document.getElementById('appContainer').style.display = 'flex';
+        }
+        
         function toggleDropdown() {
             document.getElementById('dropdownMenu').classList.toggle('show');
         }
-
-        // Dropdown dışına tıklandığında kapat
+        
+        function updateUserAvatar() {
+            if (currentUser) {
+                const avatar = document.getElementById('userAvatar');
+                const displayName = currentUser.displayName || 'Kullanıcı';
+                avatar.textContent = displayName.charAt(0).toUpperCase();
+                avatar.style.backgroundColor = getRandomColor();
+            }
+        }
+        
+        function getRandomColor() {
+            const colors = ['#4361ee', '#3f37c9', '#4895ef', '#4cc9f0', '#560bad', '#b5179e'];
+            return colors[Math.floor(Math.random() * colors.length)];
+        }
+        
+        function showError(error, context = "") {
+            console.error(context, error);
+            
+            let errorMessage = "Bir hata oluştu";
+            if (error.code) {
+                switch(error.code) {
+                    case "auth/invalid-email":
+                        errorMessage = "Geçersiz e-posta adresi";
+                        break;
+                    case "auth/user-disabled":
+                        errorMessage = "Bu kullanıcı devre dışı bırakılmış";
+                        break;
+                    case "auth/user-not-found":
+                        errorMessage = "Kullanıcı bulunamadı";
+                        break;
+                    case "auth/wrong-password":
+                        errorMessage = "Hatalı şifre";
+                        break;
+                    case "auth/email-already-in-use":
+                        errorMessage = "Bu e-posta zaten kullanımda";
+                        break;
+                    case "auth/operation-not-allowed":
+                        errorMessage = "Bu işlem şu anda izin verilmiyor";
+                        break;
+                    case "auth/weak-password":
+                        errorMessage = "Şifre en az 6 karakter olmalı";
+                        break;
+                    case "auth/too-many-requests":
+                        errorMessage = "Çok fazla deneme yaptınız, lütfen daha sonra tekrar deneyin";
+                        break;
+                    case "auth/requires-recent-login":
+                        errorMessage = "Bu işlem için son zamanlarda tekrar giriş yapmanız gerekiyor";
+                        break;
+                }
+            } else if (error.message) {
+                errorMessage = error.message;
+            }
+            
+            // Show error message
+            const errorElement = document.createElement('div');
+            errorElement.className = 'error-message';
+            errorElement.innerHTML = `
+                <i class="fas fa-exclamation-circle"></i>
+                <span>${errorMessage}</span>
+            `;
+            
+            // Find the active form and prepend the error message
+            const activeForm = document.querySelector('.auth-form.active');
+            if (activeForm) {
+                // Remove any existing error messages
+                const existingError = activeForm.querySelector('.error-message');
+                if (existingError) existingError.remove();
+                
+                activeForm.prepend(errorElement);
+                
+                // Remove error after 5 seconds
+                setTimeout(() => {
+                    errorElement.remove();
+                }, 5000);
+            } else {
+                alert(errorMessage);
+            }
+        }
+        
+        function showSuccess(message) {
+            // Show success message
+            const successElement = document.createElement('div');
+            successElement.className = 'success-message';
+            successElement.innerHTML = `
+                <i class="fas fa-check-circle"></i>
+                <span>${message}</span>
+            `;
+            
+            // Find the active form and prepend the success message
+            const activeForm = document.querySelector('.auth-form.active');
+            if (activeForm) {
+                // Remove any existing messages
+                const existingMsg = activeForm.querySelector('.success-message');
+                if (existingMsg) existingMsg.remove();
+                
+                activeForm.prepend(successElement);
+                
+                // Remove message after 5 seconds
+                setTimeout(() => {
+                    successElement.remove();
+                }, 5000);
+            } else {
+                alert(message);
+            }
+        }
+        
+        // Login with email/password
+        function login() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!email || !password) {
+                showError({ message: "Lütfen e-posta ve şifrenizi girin" });
+                return;
+            }
+            
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    if (!userCredential.user.emailVerified) {
+                        auth.signOut();
+                        showVerifyEmailForm();
+                        showError({ message: "Lütfen e-postanızı doğrulayın. Doğrulama bağlantısı e-postanıza gönderildi." });
+                    } else {
+                        showSuccess("Giriş başarılı!");
+                    }
+                })
+                .catch((error) => {
+                    showError(error, "Login");
+                });
+        }
+        
+        // Register with email/password
+        function register() {
+            const name = document.getElementById('registerName').value.trim();
+            const email = document.getElementById('registerEmail').value.trim();
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerConfirmPassword').value;
+            
+            if (!name || !email || !password || !confirmPassword) {
+                showError({ message: "Lütfen tüm alanları doldurun" });
+                return;
+            }
+            
+            if (password.length < 6) {
+                showError({ message: "Şifre en az 6 karakter olmalıdır" });
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showError({ message: "Şifreler eşleşmiyor!" });
+                return;
+            }
+            
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Update user profile with display name
+                    return userCredential.user.updateProfile({
+                        displayName: name
+                    }).then(() => {
+                        // Save additional user data to Firestore
+                        return db.collection('users').doc(userCredential.user.uid).set({
+                            name: name,
+                            email: email,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            status: 'online'
+                        }, { merge: true });
+                    }).then(() => {
+                        // Send email verification
+                        return userCredential.user.sendEmailVerification({
+                            url: window.location.href,
+                            handleCodeInApp: true
+                        });
+                    });
+                })
+                .then(() => {
+                    showVerifyEmailForm();
+                    showSuccess("Kayıt başarılı! Lütfen e-postanızı doğrulayın.");
+                })
+                .catch((error) => {
+                    showError(error, "Register");
+                });
+        }
+        
+        // Login with Google
+        function loginWithGoogle() {
+            auth.signInWithPopup(googleProvider)
+                .then((result) => {
+                    // Check if user exists in Firestore
+                    return db.collection('users').doc(result.user.uid).get()
+                        .then(doc => {
+                            if (!doc.exists) {
+                                // Save user data if new user
+                                return db.collection('users').doc(result.user.uid).set({
+                                    name: result.user.displayName,
+                                    email: result.user.email,
+                                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                                    status: 'online'
+                                }, { merge: true });
+                            }
+                        }).then(() => {
+                            showSuccess("Google ile giriş başarılı!");
+                        });
+                })
+                .catch((error) => {
+                    showError(error, "Google Login");
+                });
+        }
+        
+        // Register with Google
+        function registerWithGoogle() {
+            loginWithGoogle(); // Same as login for simplicity
+        }
+        
+        // Send password reset email
+        function sendPasswordReset() {
+            const email = document.getElementById('forgotEmail').value.trim();
+            
+            if (!email) {
+                showError({ message: "Lütfen e-posta adresinizi girin" });
+                return;
+            }
+            
+            auth.sendPasswordResetEmail(email, {
+                url: window.location.href,
+                handleCodeInApp: true
+            })
+                .then(() => {
+                    showSuccess("Şifre sıfırlama bağlantısı e-postanıza gönderildi. Lütfen e-postanızı kontrol edin.");
+                    switchTab('login');
+                })
+                .catch((error) => {
+                    showError(error, "Password Reset");
+                });
+        }
+        
+        // Check email verification status
+        function checkEmailVerification() {
+            auth.currentUser.reload().then(() => {
+                if (auth.currentUser.emailVerified) {
+                    showApp();
+                    loadUserData(auth.currentUser);
+                    showSuccess("E-posta doğrulama başarılı!");
+                } else {
+                    showError({ message: "E-postanız henüz doğrulanmadı. Lütfen e-postanızı kontrol edin ve doğrulama bağlantısına tıklayın." });
+                }
+            }).catch(error => {
+                showError(error, "Email Verification Check");
+            });
+        }
+        
+        // Resend verification email
+        function resendVerificationEmail() {
+            auth.currentUser.sendEmailVerification({
+                url: window.location.href,
+                handleCodeInApp: true
+            })
+                .then(() => {
+                    showSuccess("Doğrulama bağlantısı tekrar gönderildi. Lütfen e-postanızı kontrol edin.");
+                })
+                .catch((error) => {
+                    showError(error, "Resend Verification");
+                });
+        }
+        
+        function logout() {
+            auth.signOut().then(() => {
+                showSuccess("Başarıyla çıkış yapıldı.");
+                // Hide settings and show chat container
+                document.getElementById('settingsContainer').style.display = 'none';
+                document.getElementById('chatContainer').style.display = 'flex';
+            }).catch(error => {
+                showError(error, "Logout");
+            });
+            toggleDropdown();
+        }
+        
+        // Close dropdown when clicking outside
         window.onclick = function(event) {
             if (!event.target.matches('.user-avatar')) {
-                const dropdowns = document.getElementsByClassName('dropdown-menu');
+                const dropdowns = document.getElementsByClassName("dropdown-menu");
                 for (let i = 0; i < dropdowns.length; i++) {
                     const openDropdown = dropdowns[i];
                     if (openDropdown.classList.contains('show')) {
@@ -700,44 +2100,6 @@
                 }
             }
         }
-
-        // Ayarlar sayfasını göster
-        function showSettings() {
-            alert('Ayarlar sayfasına yönlendirileceksiniz');
-            // window.location.href = 'settings.html';
-        }
-
-        // Çıkış yap
-        async function logout() {
-            try {
-                await auth.signOut();
-                window.location.href = 'login.html';
-            } catch (error) {
-                console.error('Çıkış hatası:', error);
-                showError('Çıkış yapılırken hata oluştu: ' + error.message);
-            }
-        }
-
-        // Hata mesajı göster
-        function showError(message) {
-            const errorDiv = document.getElementById('error');
-            errorDiv.textContent = message;
-            errorDiv.style.display = 'block';
-            
-            setTimeout(() => {
-                errorDiv.style.display = 'none';
-            }, 5000);
-        }
-
-        // Başarı mesajı göster
-        function showSuccess(message) {
-            // Bu örnekte basit bir alert kullanıyoruz
-            // Gerçek uygulamada daha güzel bir bildirim sistemi kullanabilirsiniz
-            alert(message);
-        }
-
-        // Uygulamayı başlat
-        window.onload = initApp;
     </script>
 </body>
 </html>
