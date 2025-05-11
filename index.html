@@ -1874,7 +1874,7 @@
                 <button class="modal-close" onclick="closeAddFriendModal()">&times;</button>
             </div>
             <div class="modal-body">
-                <input type="text" class="search-input" id="friendSearchInput" placeholder="Kullanıcı adı veya e-posta ara...">
+                <input type="text" class="search-input" id="friendSearchInput" placeholder="Kullanıcı adı veya e-posta ara..." oninput="searchUsers(this.value)">
                 <div class="search-filters">
                     <span class="filter-option active" data-filter="all">Tümü</span>
                     <span class="filter-option" data-filter="online">Çevrimiçi</span>
