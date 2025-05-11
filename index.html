@@ -21,6 +21,12 @@
             --info: #560bad;
             --card-bg: #ffffff;
             --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            
+            /* Dark mode variables */
+            --dark-bg: #121212;
+            --dark-card-bg: #1e1e1e;
+            --dark-text: #e0e0e0;
+            --dark-border: #333;
         }
         
         * {
@@ -34,6 +40,12 @@
             background-color: #f5f7ff;
             color: var(--dark);
             min-height: 100vh;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        body.dark-mode {
+            background-color: var(--dark-bg);
+            color: var(--dark-text);
         }
         
         /* Auth Container */
@@ -56,6 +68,10 @@
             animation: fadeIn 0.5s ease;
         }
         
+        .dark-mode .auth-card {
+            background-color: var(--dark-card-bg);
+        }
+        
         .auth-header {
             background: linear-gradient(to right, var(--primary), var(--accent));
             color: white;
@@ -73,6 +89,10 @@
             height: 60px;
             background-color: var(--card-bg);
             border-radius: 30px 30px 0 0;
+        }
+        
+        .dark-mode .auth-header::after {
+            background-color: var(--dark-card-bg);
         }
         
         .auth-logo {
@@ -97,6 +117,10 @@
             border-bottom: 1px solid #eee;
         }
         
+        .dark-mode .auth-tabs {
+            border-bottom-color: var(--dark-border);
+        }
+        
         .auth-tab {
             flex: 1;
             padding: 15px;
@@ -108,9 +132,17 @@
             position: relative;
         }
         
+        .dark-mode .auth-tab {
+            color: #aaa;
+        }
+        
         .auth-tab.active {
             color: var(--primary);
             font-weight: 600;
+        }
+        
+        .dark-mode .auth-tab.active {
+            color: var(--accent);
         }
         
         .auth-tab.active::after {
@@ -122,6 +154,10 @@
             height: 3px;
             background-color: var(--primary);
             border-radius: 3px 3px 0 0;
+        }
+        
+        .dark-mode .auth-tab.active::after {
+            background-color: var(--accent);
         }
         
         .auth-content {
@@ -149,6 +185,10 @@
             color: var(--dark);
         }
         
+        .dark-mode .form-group label {
+            color: var(--dark-text);
+        }
+        
         .form-control {
             width: 100%;
             padding: 12px 15px;
@@ -156,12 +196,25 @@
             border-radius: 8px;
             font-size: 14px;
             transition: border 0.3s;
+            background-color: var(--card-bg);
+            color: var(--dark);
+        }
+        
+        .dark-mode .form-control {
+            background-color: #2a2a2a;
+            border-color: var(--dark-border);
+            color: var(--dark-text);
         }
         
         .form-control:focus {
             border-color: var(--primary);
             outline: none;
             box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+        
+        .dark-mode .form-control:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.3);
         }
         
         .btn {
@@ -219,6 +272,10 @@
             animation: fadeIn 0.3s;
         }
         
+        .dark-mode .error-message {
+            background-color: #3a1e1e;
+        }
+        
         .error-message i {
             margin-right: 10px;
         }
@@ -232,6 +289,10 @@
             display: flex;
             align-items: center;
             animation: fadeIn 0.3s;
+        }
+        
+        .dark-mode .success-message {
+            background-color: #1e3a1e;
         }
         
         .success-message i {
@@ -262,6 +323,10 @@
             font-size: 14px;
         }
         
+        .dark-mode .divider {
+            color: #777;
+        }
+        
         .divider::before, .divider::after {
             content: '';
             flex: 1;
@@ -269,12 +334,21 @@
             background-color: #eee;
             margin: 0 10px;
         }
+        
+        .dark-mode .divider::before,
+        .dark-mode .divider::after {
+            background-color: var(--dark-border);
+        }
 
         /* App Container Styles */
         #appContainer {
             display: none;
             min-height: 100vh;
             background-color: #f0f2f5;
+        }
+        
+        .dark-mode #appContainer {
+            background-color: var(--dark-bg);
         }
 
         .app-header {
@@ -289,6 +363,10 @@
             width: 100%;
             top: 0;
             z-index: 1000;
+        }
+        
+        .dark-mode .app-header {
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         }
 
         .app-logo {
@@ -337,6 +415,11 @@
             display: none;
             z-index: 1001;
         }
+        
+        .dark-mode .dropdown-menu {
+            background-color: var(--dark-card-bg);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
 
         .dropdown-menu.show {
             display: block;
@@ -351,6 +434,10 @@
             cursor: pointer;
             transition: all 0.2s;
         }
+        
+        .dark-mode .dropdown-item {
+            color: var(--dark-text);
+        }
 
         .dropdown-item i {
             margin-right: 10px;
@@ -361,9 +448,18 @@
             background-color: #f5f7ff;
             color: var(--primary);
         }
+        
+        .dark-mode .dropdown-item:hover {
+            background-color: #333;
+            color: var(--accent);
+        }
 
         .dropdown-item:hover i {
             color: var(--primary);
+        }
+        
+        .dark-mode .dropdown-item:hover i {
+            color: var(--accent);
         }
 
         .app-content {
@@ -380,6 +476,11 @@
             overflow-y: auto;
             padding: 20px 0;
         }
+        
+        .dark-mode .sidebar {
+            background-color: var(--dark-card-bg);
+            border-right-color: var(--dark-border);
+        }
 
         .sidebar-section {
             margin-bottom: 25px;
@@ -393,6 +494,10 @@
             justify-content: space-between;
             align-items: center;
         }
+        
+        .dark-mode .sidebar-title {
+            color: #777;
+        }
 
         .sidebar-title i {
             cursor: pointer;
@@ -405,15 +510,29 @@
             cursor: pointer;
             transition: all 0.2s;
         }
+        
+        .dark-mode .sidebar-item {
+            color: var(--dark-text);
+        }
 
         .sidebar-item.active {
             background-color: #f5f7ff;
             border-left: 3px solid var(--primary);
             color: var(--primary);
         }
+        
+        .dark-mode .sidebar-item.active {
+            background-color: #333;
+            border-left-color: var(--accent);
+            color: var(--accent);
+        }
 
         .sidebar-item:hover:not(.active) {
             background-color: #f9f9f9;
+        }
+        
+        .dark-mode .sidebar-item:hover:not(.active) {
+            background-color: #333;
         }
 
         .sidebar-item i {
@@ -428,6 +547,10 @@
             font-size: 12px;
             padding: 2px 8px;
             border-radius: 10px;
+        }
+        
+        .dark-mode .sidebar-item-badge {
+            background-color: var(--accent);
         }
 
         .friend-request-actions {
@@ -471,6 +594,11 @@
             display: flex;
             align-items: center;
         }
+        
+        .dark-mode .chat-header {
+            background-color: var(--dark-card-bg);
+            border-bottom-color: var(--dark-border);
+        }
 
         .chat-user {
             display: flex;
@@ -493,11 +621,19 @@
         .chat-user-name {
             font-weight: 500;
         }
+        
+        .dark-mode .chat-user-name {
+            color: var(--dark-text);
+        }
 
         .chat-user-status {
             font-size: 12px;
             color: var(--gray);
             margin-top: 2px;
+        }
+        
+        .dark-mode .chat-user-status {
+            color: #aaa;
         }
 
         .chat-actions {
@@ -518,10 +654,19 @@
             cursor: pointer;
             transition: all 0.2s;
         }
+        
+        .dark-mode .chat-action-btn {
+            background-color: #333;
+            color: var(--accent);
+        }
 
         .chat-action-btn:hover {
             background-color: var(--primary);
             color: white;
+        }
+        
+        .dark-mode .chat-action-btn:hover {
+            background-color: var(--accent);
         }
 
         .messages-container {
@@ -529,6 +674,10 @@
             padding: 20px;
             overflow-y: auto;
             background-color: #f9f9f9;
+        }
+        
+        .dark-mode .messages-container {
+            background-color: #121212;
         }
 
         .message {
@@ -557,6 +706,11 @@
             margin-right: 10px;
             flex-shrink: 0;
         }
+        
+        .dark-mode .message-avatar {
+            background-color: #444;
+            color: #fff;
+        }
 
         .message-outgoing .message-avatar {
             margin-right: 0;
@@ -579,6 +733,12 @@
         .message-incoming .message-bubble {
             background-color: white;
             border-top-left-radius: 4px;
+            color: var(--dark);
+        }
+        
+        .dark-mode .message-incoming .message-bubble {
+            background-color: #333;
+            color: var(--dark-text);
         }
 
         .message-outgoing .message-bubble {
@@ -593,9 +753,17 @@
             margin-top: 5px;
             text-align: right;
         }
+        
+        .dark-mode .message-time {
+            color: #aaa;
+        }
 
         .message-incoming .message-time {
             color: var(--gray);
+        }
+        
+        .dark-mode .message-incoming .message-time {
+            color: #aaa;
         }
 
         .message-outgoing .message-time {
@@ -609,6 +777,11 @@
             display: flex;
             align-items: center;
         }
+        
+        .dark-mode .message-input-container {
+            background-color: var(--dark-card-bg);
+            border-top-color: var(--dark-border);
+        }
 
         .message-input {
             flex: 1;
@@ -620,11 +793,24 @@
             max-height: 120px;
             outline: none;
             transition: border 0.3s;
+            background-color: var(--card-bg);
+            color: var(--dark);
+        }
+        
+        .dark-mode .message-input {
+            background-color: #2a2a2a;
+            border-color: var(--dark-border);
+            color: var(--dark-text);
         }
 
         .message-input:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+        }
+        
+        .dark-mode .message-input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.3);
         }
 
         .send-btn {
@@ -661,9 +847,18 @@
             border: none;
             transition: all 0.2s;
         }
+        
+        .dark-mode .attachment-btn {
+            background-color: #333;
+            color: var(--accent);
+        }
 
         .attachment-btn:hover {
             background-color: #e6ebff;
+        }
+        
+        .dark-mode .attachment-btn:hover {
+            background-color: #444;
         }
 
         /* Modal Styles */
@@ -694,6 +889,10 @@
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
             animation: slideUp 0.3s ease;
         }
+        
+        .dark-mode .modal-content {
+            background-color: var(--dark-card-bg);
+        }
 
         .modal-header {
             padding: 15px 20px;
@@ -702,10 +901,18 @@
             justify-content: space-between;
             align-items: center;
         }
+        
+        .dark-mode .modal-header {
+            border-bottom-color: var(--dark-border);
+        }
 
         .modal-title {
             font-weight: 600;
             font-size: 18px;
+        }
+        
+        .dark-mode .modal-title {
+            color: var(--dark-text);
         }
 
         .modal-close {
@@ -714,6 +921,10 @@
             font-size: 20px;
             cursor: pointer;
             color: var(--gray);
+        }
+        
+        .dark-mode .modal-close {
+            color: #aaa;
         }
 
         .modal-body {
@@ -725,6 +936,10 @@
             border-top: 1px solid #eee;
             display: flex;
             justify-content: flex-end;
+        }
+        
+        .dark-mode .modal-footer {
+            border-top-color: var(--dark-border);
         }
 
         .modal-btn {
@@ -744,6 +959,14 @@
         .modal-btn-primary:hover {
             background-color: var(--primary-dark);
         }
+        
+        .dark-mode .modal-btn-primary {
+            background-color: var(--accent);
+        }
+        
+        .dark-mode .modal-btn-primary:hover {
+            background-color: var(--primary);
+        }
 
         .modal-btn-secondary {
             background-color: #eee;
@@ -754,6 +977,15 @@
         .modal-btn-secondary:hover {
             background-color: #ddd;
         }
+        
+        .dark-mode .modal-btn-secondary {
+            background-color: #333;
+            color: var(--dark-text);
+        }
+        
+        .dark-mode .modal-btn-secondary:hover {
+            background-color: #444;
+        }
 
         .search-input {
             width: 100%;
@@ -762,6 +994,14 @@
             border-radius: 25px;
             margin-bottom: 15px;
             font-size: 14px;
+            background-color: var(--card-bg);
+            color: var(--dark);
+        }
+        
+        .dark-mode .search-input {
+            background-color: #2a2a2a;
+            border-color: var(--dark-border);
+            color: var(--dark-text);
         }
 
         .user-list {
@@ -776,6 +1016,10 @@
             cursor: pointer;
             transition: all 0.2s;
         }
+        
+        .dark-mode .user-item {
+            border-bottom-color: var(--dark-border);
+        }
 
         .user-item:last-child {
             border-bottom: none;
@@ -783,6 +1027,10 @@
 
         .user-item:hover {
             background-color: #f9f9f9;
+        }
+        
+        .dark-mode .user-item:hover {
+            background-color: #333;
         }
 
         .user-avatar-small {
@@ -806,10 +1054,18 @@
         .user-name {
             font-weight: 500;
         }
+        
+        .dark-mode .user-name {
+            color: var(--dark-text);
+        }
 
         .user-email {
             font-size: 12px;
             color: var(--gray);
+        }
+        
+        .dark-mode .user-email {
+            color: #aaa;
         }
 
         .add-friend-btn {
@@ -841,6 +1097,11 @@
             margin-bottom: 20px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
+        
+        .dark-mode .settings-section {
+            background-color: var(--dark-card-bg);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
 
         .settings-title {
             font-size: 16px;
@@ -849,6 +1110,10 @@
             color: var(--primary);
             display: flex;
             align-items: center;
+        }
+        
+        .dark-mode .settings-title {
+            color: var(--accent);
         }
 
         .settings-title i {
@@ -870,6 +1135,10 @@
             font-size: 14px;
             color: var(--dark);
         }
+        
+        .dark-mode .form-row label {
+            color: var(--dark-text);
+        }
 
         .form-row input {
             flex: 1;
@@ -877,6 +1146,14 @@
             border: 1px solid #ddd;
             border-radius: 5px;
             font-size: 14px;
+            background-color: var(--card-bg);
+            color: var(--dark);
+        }
+        
+        .dark-mode .form-row input {
+            background-color: #2a2a2a;
+            border-color: var(--dark-border);
+            color: var(--dark-text);
         }
 
         .form-row button {
@@ -889,14 +1166,45 @@
             cursor: pointer;
             transition: all 0.2s;
         }
+        
+        .dark-mode .form-row button {
+            background-color: var(--accent);
+        }
 
         .form-row button:hover {
             background-color: var(--primary-dark);
+        }
+        
+        .dark-mode .form-row button:hover {
+            background-color: var(--primary);
         }
 
         .verification-code-container {
             display: none;
             margin-top: 10px;
+        }
+        
+        /* Theme toggle button */
+        .theme-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            border: none;
+        }
+        
+        .dark-mode .theme-toggle {
+            background-color: var(--accent);
         }
 
         /* Responsive */
@@ -910,7 +1218,7 @@
                 z-index: 999;
                 transition: all 0.3s;
             }
-
+            
             .sidebar.show {
                 left: 0;
             }
@@ -1056,6 +1364,10 @@
                         <i class="fas fa-cog"></i>
                         <span>Ayarlar</span>
                     </div>
+                    <div class="dropdown-item" onclick="toggleDarkMode()">
+                        <i class="fas fa-moon"></i>
+                        <span id="darkModeText">Koyu Mod</span>
+                    </div>
                     <div class="dropdown-item" onclick="logout()">
                         <i class="fas fa-sign-out-alt"></i>
                         <span>Çıkış Yap</span>
@@ -1194,6 +1506,11 @@
                 </div>
             </div>
         </div>
+        
+        <!-- Theme Toggle Button -->
+        <button class="theme-toggle" id="themeToggle">
+            <i class="fas fa-moon"></i>
+        </button>
     </div>
     
     <!-- Add Friend Modal -->
@@ -1248,6 +1565,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             initAuth();
             setupEventListeners();
+            checkDarkModePreference();
         });
         
         function initAuth() {
@@ -1261,6 +1579,14 @@
                         // Update email field in settings
                         document.getElementById('settingsEmail').value = user.email;
                         document.getElementById('settingsName').value = user.displayName || '';
+                        
+                        // Save user to Firestore if not exists
+                        db.collection('users').doc(user.uid).set({
+                            name: user.displayName || 'Kullanıcı',
+                            email: user.email,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            status: 'online'
+                        }, { merge: true });
                     } else {
                         showVerifyEmailForm();
                     }
@@ -1303,6 +1629,9 @@
             document.getElementById('friendSearchInput').addEventListener('input', function() {
                 searchUsers(this.value.trim());
             });
+            
+            // Theme toggle button
+            document.getElementById('themeToggle').addEventListener('click', toggleDarkMode);
         }
         
         function loadUserData(user) {
@@ -1380,10 +1709,10 @@
                 </div>
                 <span>${requestData.senderName}</span>
                 <div class="friend-request-actions">
-                    <div class="friend-request-btn accept-btn" onclick="acceptFriendRequest('${requestId}', '${requestData.senderId}', '${requestData.senderName}')">
+                    <div class="friend-request-btn accept-btn" onclick="event.stopPropagation(); acceptFriendRequest('${requestId}', '${requestData.senderId}', '${requestData.senderName}')">
                         <i class="fas fa-check"></i>
                     </div>
-                    <div class="friend-request-btn reject-btn" onclick="rejectFriendRequest('${requestId}')">
+                    <div class="friend-request-btn reject-btn" onclick="event.stopPropagation(); rejectFriendRequest('${requestId}')">
                         <i class="fas fa-times"></i>
                     </div>
                 </div>
@@ -1510,7 +1839,7 @@
                                 <div class="user-name">${userData.name}</div>
                                 <div class="user-email">${userData.email}</div>
                             </div>
-                            <button class="add-friend-btn" onclick="sendFriendRequest('${doc.id}', '${userData.name}')">
+                            <button class="add-friend-btn" onclick="event.stopPropagation(); sendFriendRequest('${doc.id}', '${userData.name}')">
                                 Ekle
                             </button>
                         `;
@@ -1520,6 +1849,7 @@
                 })
                 .catch(error => {
                     console.error("Error searching users:", error);
+                    showError(error, "User Search");
                 });
         }
         
@@ -1537,25 +1867,35 @@
                         return;
                     }
                     
-                    // Create friend request
-                    const requestData = {
-                        senderId: currentUser.uid,
-                        senderName: currentUser.displayName || 'Anonim',
-                        receiverId: receiverId,
-                        receiverName: receiverName,
-                        status: 'pending',
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                    };
-                    
-                    // Add to receiver's requests
-                    db.collection('users').doc(receiverId).collection('friendRequests').add(requestData)
-                        .then(() => {
-                            showSuccess("Arkadaş isteği gönderildi!");
-                            closeAddFriendModal();
-                        })
-                        .catch(error => {
-                            console.error("Error sending friend request:", error);
-                            showError(error, "Send Friend Request");
+                    // Check if already friends
+                    db.collection('users').doc(currentUser.uid).collection('friends')
+                        .doc(receiverId).get()
+                        .then(doc => {
+                            if (doc.exists && doc.data().status === 'accepted') {
+                                showError({ message: "Bu kullanıcı zaten arkadaşınız" });
+                                return;
+                            }
+                            
+                            // Create friend request
+                            const requestData = {
+                                senderId: currentUser.uid,
+                                senderName: currentUser.displayName || 'Anonim',
+                                receiverId: receiverId,
+                                receiverName: receiverName,
+                                status: 'pending',
+                                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                            };
+                            
+                            // Add to receiver's requests
+                            db.collection('users').doc(receiverId).collection('friendRequests').add(requestData)
+                                .then(() => {
+                                    showSuccess("Arkadaş isteği gönderildi!");
+                                    closeAddFriendModal();
+                                })
+                                .catch(error => {
+                                    console.error("Error sending friend request:", error);
+                                    showError(error, "Send Friend Request");
+                                });
                         });
                 });
         }
@@ -1765,6 +2105,32 @@
                 console.error("Error reauthenticating:", error);
                 showError({ message: "Mevcut şifre hatalı!" });
             });
+        }
+        
+        function checkDarkModePreference() {
+            const darkMode = localStorage.getItem('darkMode') === 'true';
+            if (darkMode) {
+                document.body.classList.add('dark-mode');
+                document.getElementById('darkModeText').textContent = 'Açık Mod';
+            } else {
+                document.getElementById('darkModeText').textContent = 'Koyu Mod';
+            }
+        }
+        
+        function toggleDarkMode() {
+            const body = document.body;
+            body.classList.toggle('dark-mode');
+            
+            const isDarkMode = body.classList.contains('dark-mode');
+            localStorage.setItem('darkMode', isDarkMode);
+            
+            if (isDarkMode) {
+                document.getElementById('darkModeText').textContent = 'Açık Mod';
+            } else {
+                document.getElementById('darkModeText').textContent = 'Koyu Mod';
+            }
+            
+            toggleDropdown();
         }
         
         function switchTab(tabName) {
