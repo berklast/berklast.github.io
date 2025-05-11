@@ -1566,6 +1566,13 @@
             initAuth();
             setupEventListeners();
             checkDarkModePreference();
+            
+            // Mesaj giriş alanını otomatik büyütme
+            const messageInput = document.getElementById('messageInput');
+            messageInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
         });
         
         function initAuth() {
@@ -1802,6 +1809,7 @@
             
             // Clear input
             input.value = '';
+            input.style.height = 'auto';
         }
         
         function searchUsers(query) {
