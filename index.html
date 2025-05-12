@@ -711,6 +711,7 @@
             background-color: var(--dark-bg);
             display: flex;
             flex-direction: column;
+            scroll-behavior: smooth;
         }
         
         .dark-mode .messages-container {
@@ -2093,7 +2094,7 @@
                     });
                     
                     // Scroll to bottom
-                    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    scrollToBottom();
                 }, error => {
                     console.error("Error loading messages:", error);
                 });
@@ -2119,8 +2120,17 @@
             
             messagesContainer.appendChild(messageElement);
             
-            // Scroll to bottom
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            // Scroll to bottom if user is near bottom
+            scrollToBottom();
+        }
+        
+        function scrollToBottom() {
+            const messagesContainer = document.getElementById('messagesContainer');
+            const isNearBottom = messagesContainer.scrollHeight - messagesContainer.clientHeight <= messagesContainer.scrollTop + 100;
+            
+            if (isNearBottom) {
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }
         }
         
         function sendMessage() {
