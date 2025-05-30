@@ -1476,6 +1476,164 @@
                 right: 10px;
             }
         }
+
+        /* Yeni eklenen stiller */
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            color: var(--gray);
+            margin-top: 5px;
+            height: 18px;
+        }
+
+        .typing-dots {
+            display: flex;
+            margin-left: 5px;
+        }
+
+        .typing-dot {
+            width: 5px;
+            height: 5px;
+            background-color: var(--gray);
+            border-radius: 50%;
+            margin-right: 3px;
+            animation: typingAnimation 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typingAnimation {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-5px); }
+        }
+
+        .message-seen {
+            font-size: 10px;
+            color: var(--gray);
+            margin-top: 2px;
+            text-align: right;
+        }
+
+        .last-seen {
+            font-size: 12px;
+            color: var(--gray);
+            margin-top: 2px;
+        }
+
+        .message-date-divider {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            color: var(--gray);
+            font-size: 12px;
+        }
+
+        .message-date-divider::before,
+        .message-date-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background-color: var(--dark-border);
+            margin: 0 10px;
+        }
+
+        .message-reaction {
+            display: inline-flex;
+            align-items: center;
+            background-color: var(--dark-card-bg);
+            border-radius: 12px;
+            padding: 2px 6px;
+            margin-right: 5px;
+            margin-top: 5px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .message-reaction-count {
+            margin-left: 3px;
+            font-size: 10px;
+        }
+
+        .message-menu {
+            position: absolute;
+            background-color: var(--dark-card-bg);
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 100;
+            display: none;
+            width: 150px;
+            overflow: hidden;
+            border: 1px solid var(--dark-border);
+        }
+
+        .message-menu-item {
+            padding: 8px 12px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .message-menu-item:hover {
+            background-color: rgba(79, 84, 92, 0.4);
+        }
+
+        .message-menu-item i {
+            margin-right: 8px;
+            width: 16px;
+            text-align: center;
+        }
+
+        .unread-marker {
+            text-align: center;
+            margin: 10px 0;
+            position: relative;
+        }
+
+        .unread-marker::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background-color: var(--primary);
+            z-index: -1;
+        }
+
+        .unread-marker span {
+            background-color: var(--primary);
+            color: white;
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
     </style>
 </head>
 <body class="dark-mode">
@@ -1639,6 +1797,7 @@
                             <div>
                                 <div class="chat-user-name" id="currentChatName">Sohbet Seçin</div>
                                 <div class="chat-user-status online" id="currentChatStatus">çevrimiçi</div>
+                                <div class="last-seen" id="lastSeen"></div>
                             </div>
                         </div>
                         <div class="chat-actions">
@@ -1844,8 +2003,12 @@
         let currentChat = null;
         let currentChatUser = null;
         let unsubscribeMessages = null;
+        let unsubscribeStatus = null;
         let emailVerificationCode = null;
         let profilePictureFile = null;
+        let lastMessageDate = null;
+        let isTyping = false;
+        let typingTimeout = null;
         
         // Emoji list
         const emojis = {
@@ -1864,6 +2027,24 @@
             messageInput.addEventListener('input', function() {
                 this.style.height = 'auto';
                 this.style.height = (this.scrollHeight) + 'px';
+                
+                // Yazı yazma durumunu güncelle
+                if (this.value.trim() !== '') {
+                    if (!isTyping) {
+                        isTyping = true;
+                        updateTypingStatus(true);
+                    }
+                    clearTimeout(typingTimeout);
+                    typingTimeout = setTimeout(() => {
+                        isTyping = false;
+                        updateTypingStatus(false);
+                    }, 2000);
+                } else {
+                    if (isTyping) {
+                        isTyping = false;
+                        updateTypingStatus(false);
+                    }
+                }
             });
         });
         
@@ -1885,6 +2066,7 @@
                             email: user.email,
                             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                             status: 'online',
+                            lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
                             about: ''
                         }, { merge: true }).then(() => {
                             // Load profile picture if exists
@@ -1942,6 +2124,16 @@
                     document.getElementById('emojiPicker').style.display = 'none';
                 }
             });
+            
+            // Kullanıcı çevrimdışı olduğunda durumu güncelle
+            window.addEventListener('beforeunload', () => {
+                if (currentUser) {
+                    db.collection('users').doc(currentUser.uid).update({
+                        status: 'offline',
+                        lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+            });
         }
         
         function initEmojiPicker() {
@@ -1971,6 +2163,12 @@
         
         function loadUserData(user) {
             console.log("User data loaded:", user);
+            
+            // Kullanıcı çevrimiçi durumunu güncelle
+            db.collection('users').doc(user.uid).update({
+                status: 'online',
+                lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+            });
             
             // Load friends
             loadFriends();
@@ -2066,6 +2264,7 @@
         function openChat(friendId, friendData) {
             // Close previous chat listener
             if (unsubscribeMessages) unsubscribeMessages();
+            if (unsubscribeStatus) unsubscribeStatus();
             
             // Update current chat info
             currentChat = `private_${[currentUser.uid, friendId].sort().join('_')}`;
@@ -2075,8 +2274,6 @@
             document.getElementById('currentChatName').textContent = friendData.name;
             document.getElementById('currentChatAvatar').textContent = friendData.name.charAt(0).toUpperCase();
             document.getElementById('currentChatAvatar').style.backgroundColor = getRandomColor();
-            document.getElementById('currentChatStatus').textContent = 'çevrimiçi';
-            document.getElementById('currentChatStatus').className = 'chat-user-status online';
             document.getElementById('messageInputContainer').style.display = 'flex';
             
             // Clear messages container
@@ -2098,11 +2295,94 @@
                 }, error => {
                     console.error("Error loading messages:", error);
                 });
+            
+            // Load friend status
+            unsubscribeStatus = db.collection('users').doc(friendId)
+                .onSnapshot(doc => {
+                    if (doc.exists) {
+                        const userData = doc.data();
+                        updateFriendStatus(userData.status, userData.lastSeen);
+                    }
+                });
+        }
+        
+        function updateFriendStatus(status, lastSeen) {
+            const statusElement = document.getElementById('currentChatStatus');
+            const lastSeenElement = document.getElementById('lastSeen');
+            
+            statusElement.className = 'chat-user-status ' + status;
+            
+            switch(status) {
+                case 'online':
+                    statusElement.textContent = 'çevrimiçi';
+                    lastSeenElement.textContent = '';
+                    break;
+                case 'offline':
+                    statusElement.textContent = 'çevrimdışı';
+                    if (lastSeen) {
+                        const lastSeenDate = lastSeen.toDate();
+                        const now = new Date();
+                        const diffMinutes = Math.floor((now - lastSeenDate) / (1000 * 60));
+                        
+                        if (diffMinutes < 1) {
+                            lastSeenElement.textContent = 'Az önce çevrimdışı oldu';
+                        } else if (diffMinutes < 60) {
+                            lastSeenElement.textContent = `${diffMinutes} dakika önce çevrimdışı oldu`;
+                        } else if (diffMinutes < 1440) {
+                            const hours = Math.floor(diffMinutes / 60);
+                            lastSeenElement.textContent = `${hours} saat önce çevrimdışı oldu`;
+                        } else {
+                            const days = Math.floor(diffMinutes / 1440);
+                            lastSeenElement.textContent = `${days} gün önce çevrimdışı oldu`;
+                        }
+                    }
+                    break;
+                case 'idle':
+                    statusElement.textContent = 'boşta';
+                    lastSeenElement.textContent = '';
+                    break;
+                case 'dnd':
+                    statusElement.textContent = 'rahatsız etmeyin';
+                    lastSeenElement.textContent = '';
+                    break;
+                default:
+                    statusElement.textContent = 'çevrimdışı';
+                    lastSeenElement.textContent = '';
+            }
+        }
+        
+        function updateTypingStatus(isTyping) {
+            if (!currentChat || !currentUser || !currentChatUser) return;
+            
+            const chatId = currentChat;
+            const typingRef = db.collection('chats').doc(chatId);
+            
+            if (isTyping) {
+                typingRef.set({
+                    typing: {
+                        [currentUser.uid]: true
+                    }
+                }, { merge: true });
+            } else {
+                typingRef.update({
+                    [`typing.${currentUser.uid}`]: firebase.firestore.FieldValue.delete()
+                });
+            }
         }
         
         function addMessageToUI(message) {
             const messagesContainer = document.getElementById('messagesContainer');
             const isOutgoing = message.senderId === currentUser.uid;
+            
+            // Check if we need to add a date divider
+            const messageDate = message.timestamp?.toDate().toLocaleDateString();
+            if (lastMessageDate !== messageDate) {
+                lastMessageDate = messageDate;
+                const dateDivider = document.createElement('div');
+                dateDivider.className = 'message-date-divider';
+                dateDivider.textContent = messageDate;
+                messagesContainer.appendChild(dateDivider);
+            }
             
             const messageElement = document.createElement('div');
             messageElement.className = `message ${isOutgoing ? 'message-outgoing' : 'message-incoming'}`;
@@ -2126,11 +2406,7 @@
         
         function scrollToBottom() {
             const messagesContainer = document.getElementById('messagesContainer');
-            const isNearBottom = messagesContainer.scrollHeight - messagesContainer.clientHeight <= messagesContainer.scrollTop + 100;
-            
-            if (isNearBottom) {
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            }
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
         }
         
         function sendMessage() {
@@ -2146,7 +2422,11 @@
                 text: messageText,
                 senderId: currentUser.uid,
                 senderName: currentUser.displayName || 'Anonim',
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                seen: false
+            }).then(() => {
+                // Mark messages as seen
+                markMessagesAsSeen();
             }).catch(error => {
                 console.error("Error sending message: ", error);
                 showError(error, "Send Message");
@@ -2155,6 +2435,31 @@
             // Clear input
             input.value = '';
             input.style.height = 'auto';
+            
+            // Reset typing status
+            if (isTyping) {
+                isTyping = false;
+                updateTypingStatus(false);
+            }
+        }
+        
+        function markMessagesAsSeen() {
+            if (!currentChat || !currentUser) return;
+            
+            db.collection('chats').doc(currentChat).collection('messages')
+                .where('seen', '==', false)
+                .where('senderId', '!=', currentUser.uid)
+                .get()
+                .then(snapshot => {
+                    const batch = db.batch();
+                    snapshot.forEach(doc => {
+                        batch.update(doc.ref, { seen: true });
+                    });
+                    return batch.commit();
+                })
+                .catch(error => {
+                    console.error("Error marking messages as seen:", error);
+                });
         }
         
         function searchUsers(query) {
@@ -2831,6 +3136,7 @@
                             email: email,
                             createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                             status: 'online',
+                            lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
                             about: ''
                         }, { merge: true });
                     }).then(() => {
@@ -2864,6 +3170,7 @@
                                     email: result.user.email,
                                     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                                     status: 'online',
+                                    lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
                                     about: ''
                                 }, { merge: true });
                             }
@@ -2933,14 +3240,24 @@
         }
         
         function logout() {
-            auth.signOut().then(() => {
-                showSuccess("Başarıyla çıkış yapıldı.");
-                // Hide settings and show chat container
-                document.getElementById('settingsContainer').style.display = 'none';
-                document.getElementById('chatContainer').style.display = 'flex';
+            // Update user status to offline
+            db.collection('users').doc(currentUser.uid).update({
+                status: 'offline',
+                lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                auth.signOut().then(() => {
+                    showSuccess("Başarıyla çıkış yapıldı.");
+                    // Hide settings and show chat container
+                    document.getElementById('settingsContainer').style.display = 'none';
+                    document.getElementById('chatContainer').style.display = 'flex';
+                }).catch(error => {
+                    showError(error, "Logout");
+                });
             }).catch(error => {
-                showError(error, "Logout");
+                console.error("Error updating user status:", error);
+                auth.signOut();
             });
+            
             toggleDropdown();
         }
         
