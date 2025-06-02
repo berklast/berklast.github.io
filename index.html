@@ -1634,6 +1634,85 @@
             border-radius: 10px;
             font-size: 12px;
         }
+
+        /* Yeni eklenen grup sohbet stilleri */
+        .group-chat-avatar {
+            display: flex;
+            flex-wrap: wrap;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 10px;
+        }
+
+        .group-chat-avatar-item {
+            width: 50%;
+            height: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .create-group-btn {
+            background-color: var(--success);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-left: 10px;
+        }
+
+        .create-group-btn:hover {
+            background-color: #2d8a4d;
+        }
+
+        .group-member-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 10px;
+            border: 1px solid var(--dark-border);
+            border-radius: 8px;
+            padding: 10px;
+        }
+
+        .group-member-item {
+            display: flex;
+            align-items: center;
+            padding: 5px 0;
+            border-bottom: 1px solid var(--dark-border);
+        }
+
+        .group-member-item:last-child {
+            border-bottom: none;
+        }
+
+        .group-member-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            margin-right: 8px;
+        }
+
+        .remove-member-btn {
+            margin-left: auto;
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 12px;
+        }
     </style>
 </head>
 <body class="dark-mode">
@@ -1770,9 +1849,19 @@
                     <div class="sidebar-title">
                         <span>Arkadaşlar</span>
                         <i class="fas fa-plus" onclick="showAddFriendModal()"></i>
+                        <i class="fas fa-users create-group-btn" onclick="showCreateGroupModal()" title="Grup Oluştur"></i>
                     </div>
                     <div id="friendsList">
                         <!-- Arkadaşlar buraya dinamik olarak eklenecek -->
+                    </div>
+                </div>
+                
+                <div class="sidebar-section">
+                    <div class="sidebar-title">
+                        <span>Grup Sohbetleri</span>
+                    </div>
+                    <div id="groupChatsList">
+                        <!-- Grup sohbetleri buraya eklenecek -->
                     </div>
                 </div>
                 
@@ -1793,18 +1882,28 @@
                 <div class="chat-container" id="chatContainer">
                     <div class="chat-header">
                         <div class="chat-user">
-                            <div class="chat-user-avatar" id="currentChatAvatar">?</div>
+                            <div id="currentChatAvatarContainer">
+                                <div class="chat-user-avatar" id="currentChatAvatar">?</div>
+                            </div>
                             <div>
                                 <div class="chat-user-name" id="currentChatName">Sohbet Seçin</div>
                                 <div class="chat-user-status online" id="currentChatStatus">çevrimiçi</div>
                                 <div class="last-seen" id="lastSeen"></div>
+                                <div class="typing-indicator" id="typingIndicator" style="display: none;">
+                                    <span id="typingText"></span>
+                                    <div class="typing-dots">
+                                        <div class="typing-dot"></div>
+                                        <div class="typing-dot"></div>
+                                        <div class="typing-dot"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="chat-actions">
                             <div class="chat-action-btn">
                                 <i class="fas fa-search"></i>
                             </div>
-                            <div class="chat-action-btn">
+                            <div class="chat-action-btn" id="chatMoreActionsBtn">
                                 <i class="fas fa-ellipsis-v"></i>
                             </div>
                         </div>
@@ -1867,6 +1966,10 @@
                                 <label for="settingsAbout">Hakkında:</label>
                                 <textarea id="settingsAbout" placeholder="Kendiniz hakkında bir şeyler yazın"></textarea>
                                 <button onclick="updateProfileAbout()">Güncelle</button>
+                            </div>
+                            <div class="form-row">
+                                <label>Profil Fotoğrafı:</label>
+                                <button onclick="changeProfilePicture()">Fotoğraf Yükle</button>
                             </div>
                         </div>
                     </div>
@@ -1943,6 +2046,38 @@
         </div>
     </div>
     
+    <!-- Create Group Modal -->
+    <div class="modal" id="createGroupModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Grup Sohbeti Oluştur</div>
+                <button class="modal-close" onclick="closeCreateGroupModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="groupName">Grup Adı</label>
+                    <input type="text" id="groupName" class="form-control" placeholder="Grup adını girin">
+                </div>
+                <div class="form-group">
+                    <label>Grup Üyeleri</label>
+                    <div class="group-member-list" id="groupMemberList">
+                        <!-- Seçilen üyeler buraya eklenecek -->
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Arkadaşlar</label>
+                    <div id="friendsForGroupList">
+                        <!-- Arkadaş listesi buraya eklenecek -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn modal-btn-secondary" onclick="closeCreateGroupModal()">İptal</button>
+                <button class="modal-btn modal-btn-primary" onclick="createGroupChat()">Oluştur</button>
+            </div>
+        </div>
+    </div>
+    
     <!-- Profile Modal -->
     <div class="modal" id="profileModal">
         <div class="modal-content">
@@ -2002,13 +2137,16 @@
         let currentUser = null;
         let currentChat = null;
         let currentChatUser = null;
+        let currentChatType = null; // 'private' or 'group'
         let unsubscribeMessages = null;
         let unsubscribeStatus = null;
+        let unsubscribeTyping = null;
         let emailVerificationCode = null;
         let profilePictureFile = null;
         let lastMessageDate = null;
         let isTyping = false;
         let typingTimeout = null;
+        let selectedGroupMembers = [];
         
         // Emoji list
         const emojis = {
@@ -2176,6 +2314,9 @@
             // Load friend requests
             loadFriendRequests();
             
+            // Load group chats
+            loadGroupChats();
+            
             // Load profile about
             db.collection('users').doc(user.uid).get().then(doc => {
                 if (doc.exists && doc.data().about) {
@@ -2219,6 +2360,22 @@
                 });
         }
         
+        function loadGroupChats() {
+            if (!currentUser) return;
+            
+            db.collection('groupChats')
+                .where('members', 'array-contains', currentUser.uid)
+                .onSnapshot(snapshot => {
+                    const groupChatsList = document.getElementById('groupChatsList');
+                    groupChatsList.innerHTML = '';
+                    
+                    snapshot.forEach(doc => {
+                        const groupData = doc.data();
+                        addGroupChatToSidebar(groupData, doc.id);
+                    });
+                });
+        }
+        
         function addFriendToSidebar(friendData, friendId) {
             const friendsList = document.getElementById('friendsList');
             
@@ -2232,10 +2389,41 @@
             `;
             
             friendItem.addEventListener('click', () => {
-                openChat(friendId, friendData);
+                openPrivateChat(friendId, friendData);
             });
             
             friendsList.appendChild(friendItem);
+        }
+        
+        function addGroupChatToSidebar(groupData, groupId) {
+            const groupChatsList = document.getElementById('groupChatsList');
+            
+            const groupItem = document.createElement('div');
+            groupItem.className = 'sidebar-item';
+            
+            // Grup avatarını oluştur (ilk 4 üyenin baş harfleri)
+            let avatarHTML = '';
+            const membersToShow = groupData.members.slice(0, 4);
+            
+            membersToShow.forEach((memberId, index) => {
+                const member = groupData.memberDetails.find(m => m.id === memberId);
+                if (member) {
+                    avatarHTML += `<div class="group-chat-avatar-item" style="background-color: ${getRandomColor()}">${member.name.charAt(0).toUpperCase()}</div>`;
+                }
+            });
+            
+            groupItem.innerHTML = `
+                <div class="group-chat-avatar">
+                    ${avatarHTML}
+                </div>
+                <span>${groupData.name}</span>
+            `;
+            
+            groupItem.addEventListener('click', () => {
+                openGroupChat(groupId, groupData);
+            });
+            
+            groupChatsList.appendChild(groupItem);
         }
         
         function addFriendRequestToSidebar(requestData, requestId) {
@@ -2261,19 +2449,27 @@
             friendRequestsList.appendChild(requestItem);
         }
         
-        function openChat(friendId, friendData) {
-            // Close previous chat listener
+        function openPrivateChat(friendId, friendData) {
+            // Close previous chat listeners
             if (unsubscribeMessages) unsubscribeMessages();
             if (unsubscribeStatus) unsubscribeStatus();
+            if (unsubscribeTyping) unsubscribeTyping();
             
             // Update current chat info
             currentChat = `private_${[currentUser.uid, friendId].sort().join('_')}`;
             currentChatUser = friendData;
+            currentChatType = 'private';
             
             // Update UI
             document.getElementById('currentChatName').textContent = friendData.name;
-            document.getElementById('currentChatAvatar').textContent = friendData.name.charAt(0).toUpperCase();
-            document.getElementById('currentChatAvatar').style.backgroundColor = getRandomColor();
+            
+            const avatarContainer = document.getElementById('currentChatAvatarContainer');
+            avatarContainer.innerHTML = `
+                <div class="chat-user-avatar" id="currentChatAvatar" style="background-color: ${getRandomColor()}">
+                    ${friendData.name.charAt(0).toUpperCase()}
+                </div>
+            `;
+            
             document.getElementById('messageInputContainer').style.display = 'flex';
             
             // Clear messages container
@@ -2304,6 +2500,102 @@
                         updateFriendStatus(userData.status, userData.lastSeen);
                     }
                 });
+            
+            // Load typing status
+            unsubscribeTyping = db.collection('chats').doc(currentChat)
+                .onSnapshot(doc => {
+                    if (doc.exists) {
+                        const typingData = doc.data().typing || {};
+                        if (typingData[friendId]) {
+                            showTypingIndicator(friendData.name);
+                        } else {
+                            hideTypingIndicator();
+                        }
+                    }
+                });
+        }
+        
+        function openGroupChat(groupId, groupData) {
+            // Close previous chat listeners
+            if (unsubscribeMessages) unsubscribeMessages();
+            if (unsubscribeTyping) unsubscribeTyping();
+            
+            // Update current chat info
+            currentChat = groupId;
+            currentChatUser = groupData;
+            currentChatType = 'group';
+            
+            // Update UI
+            document.getElementById('currentChatName').textContent = groupData.name;
+            
+            const avatarContainer = document.getElementById('currentChatAvatarContainer');
+            avatarContainer.innerHTML = `
+                <div class="group-chat-avatar">
+                    ${groupData.memberDetails.slice(0, 4).map(member => 
+                        `<div class="group-chat-avatar-item" style="background-color: ${getRandomColor()}">
+                            ${member.name.charAt(0).toUpperCase()}
+                        </div>`
+                    ).join('')}
+                </div>
+            `;
+            
+            document.getElementById('messageInputContainer').style.display = 'flex';
+            
+            // Clear messages container
+            const messagesContainer = document.getElementById('messagesContainer');
+            messagesContainer.innerHTML = '';
+            
+            // Load messages
+            unsubscribeMessages = db.collection('groupChats').doc(groupId).collection('messages')
+                .orderBy('timestamp', 'asc')
+                .onSnapshot(snapshot => {
+                    snapshot.docChanges().forEach(change => {
+                        if (change.type === 'added') {
+                            addMessageToUI(change.doc.data());
+                        }
+                    });
+                    
+                    // Scroll to bottom
+                    scrollToBottom();
+                }, error => {
+                    console.error("Error loading group messages:", error);
+                });
+            
+            // Load typing status
+            unsubscribeTyping = db.collection('groupChats').doc(groupId)
+                .onSnapshot(doc => {
+                    if (doc.exists) {
+                        const typingData = doc.data().typing || {};
+                        const typingUsers = [];
+                        
+                        for (const [userId, isTyping] of Object.entries(typingData)) {
+                            if (isTyping && userId !== currentUser.uid) {
+                                const user = groupData.memberDetails.find(m => m.id === userId);
+                                if (user) {
+                                    typingUsers.push(user.name);
+                                }
+                            }
+                        }
+                        
+                        if (typingUsers.length > 0) {
+                            showTypingIndicator(typingUsers.join(', '));
+                        } else {
+                            hideTypingIndicator();
+                        }
+                    }
+                });
+        }
+        
+        function showTypingIndicator(userName) {
+            const typingIndicator = document.getElementById('typingIndicator');
+            const typingText = document.getElementById('typingText');
+            
+            typingText.textContent = `${userName} yazıyor...`;
+            typingIndicator.style.display = 'flex';
+        }
+        
+        function hideTypingIndicator() {
+            document.getElementById('typingIndicator').style.display = 'none';
         }
         
         function updateFriendStatus(status, lastSeen) {
@@ -2352,10 +2644,17 @@
         }
         
         function updateTypingStatus(isTyping) {
-            if (!currentChat || !currentUser || !currentChatUser) return;
+            if (!currentChat || !currentUser) return;
             
-            const chatId = currentChat;
-            const typingRef = db.collection('chats').doc(chatId);
+            let typingRef;
+            
+            if (currentChatType === 'private') {
+                typingRef = db.collection('chats').doc(currentChat);
+            } else if (currentChatType === 'group') {
+                typingRef = db.collection('groupChats').doc(currentChat);
+            } else {
+                return;
+            }
             
             if (isTyping) {
                 typingRef.set({
@@ -2389,13 +2688,31 @@
             
             const time = new Date(message.timestamp?.toDate()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             
+            // Mesaj gönderenin adını bul
+            let senderName = message.senderName || 'Anonim';
+            if (currentChatType === 'group' && !isOutgoing) {
+                const sender = currentChatUser.memberDetails.find(m => m.id === message.senderId);
+                if (sender) {
+                    senderName = sender.name;
+                }
+            }
+            
             messageElement.innerHTML = `
-                ${!isOutgoing ? `<div class="message-avatar" style="background-color: ${getRandomColor()}">${currentChatUser.name.charAt(0).toUpperCase()}</div>` : ''}
+                ${!isOutgoing ? `
+                    <div class="message-avatar" style="background-color: ${getRandomColor()}">
+                        ${senderName.charAt(0).toUpperCase()}
+                    </div>
+                ` : ''}
                 <div class="message-content">
+                    ${currentChatType === 'group' && !isOutgoing ? `<div style="font-size: 12px; font-weight: 600; margin-bottom: 2px;">${senderName}</div>` : ''}
                     <div class="message-bubble">${message.text}</div>
                     <div class="message-time">${time}</div>
                 </div>
-                ${isOutgoing ? `<div class="message-avatar" style="background-color: ${getRandomColor()}">${currentUser.displayName.charAt(0).toUpperCase()}</div>` : ''}
+                ${isOutgoing ? `
+                    <div class="message-avatar" style="background-color: ${getRandomColor()}">
+                        ${currentUser.displayName.charAt(0).toUpperCase()}
+                    </div>
+                ` : ''}
             `;
             
             messagesContainer.appendChild(messageElement);
@@ -2417,20 +2734,41 @@
             
             if (!messageText) return;
             
-            // Add message to Firestore
-            db.collection('chats').doc(currentChat).collection('messages').add({
+            // Mesaj verisi
+            const messageData = {
                 text: messageText,
                 senderId: currentUser.uid,
                 senderName: currentUser.displayName || 'Anonim',
                 timestamp: firebase.firestore.FieldValue.serverTimestamp(),
                 seen: false
-            }).then(() => {
-                // Mark messages as seen
-                markMessagesAsSeen();
-            }).catch(error => {
-                console.error("Error sending message: ", error);
-                showError(error, "Send Message");
-            });
+            };
+            
+            // Mesajı uygun koleksiyona ekle
+            let messageCollection;
+            
+            if (currentChatType === 'private') {
+                messageCollection = db.collection('chats').doc(currentChat).collection('messages');
+            } else if (currentChatType === 'group') {
+                messageCollection = db.collection('groupChats').doc(currentChat).collection('messages');
+            } else {
+                return;
+            }
+            
+            // Add message to Firestore
+            messageCollection.add(messageData)
+                .then(() => {
+                    // Mark messages as seen
+                    markMessagesAsSeen();
+                    
+                    // Gruptaki diğer kullanıcılar için bildirim gönder
+                    if (currentChatType === 'group') {
+                        sendGroupNotification(messageText);
+                    }
+                })
+                .catch(error => {
+                    console.error("Error sending message: ", error);
+                    showError(error, "Send Message");
+                });
             
             // Clear input
             input.value = '';
@@ -2443,10 +2781,42 @@
             }
         }
         
+        function sendGroupNotification(messageText) {
+            if (!currentChat || !currentUser || currentChatType !== 'group') return;
+            
+            // Gruptaki diğer kullanıcılar için bildirim gönder
+            const otherMembers = currentChatUser.members.filter(memberId => memberId !== currentUser.uid);
+            
+            // Bu örnekte sadece Firestore'da bir bildirim alanı güncelleniyor
+            // Gerçek uygulamada FCM (Firebase Cloud Messaging) kullanılabilir
+            otherMembers.forEach(memberId => {
+                db.collection('users').doc(memberId).collection('notifications').add({
+                    type: 'group_message',
+                    groupId: currentChat,
+                    groupName: currentChatUser.name,
+                    senderId: currentUser.uid,
+                    senderName: currentUser.displayName || 'Anonim',
+                    message: messageText.length > 30 ? messageText.substring(0, 30) + '...' : messageText,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    read: false
+                });
+            });
+        }
+        
         function markMessagesAsSeen() {
             if (!currentChat || !currentUser) return;
             
-            db.collection('chats').doc(currentChat).collection('messages')
+            let messageCollection;
+            
+            if (currentChatType === 'private') {
+                messageCollection = db.collection('chats').doc(currentChat).collection('messages');
+            } else if (currentChatType === 'group') {
+                messageCollection = db.collection('groupChats').doc(currentChat).collection('messages');
+            } else {
+                return;
+            }
+            
+            messageCollection
                 .where('seen', '==', false)
                 .where('senderId', '!=', currentUser.uid)
                 .get()
@@ -2625,6 +2995,171 @@
             document.getElementById('userSearchResults').innerHTML = '';
         }
         
+        function showCreateGroupModal() {
+            if (!currentUser) return;
+            
+            // Reset selected members
+            selectedGroupMembers = [currentUser.uid];
+            
+            // Load friends for group selection
+            db.collection('users').doc(currentUser.uid).collection('friends')
+                .where('status', '==', 'accepted')
+                .get()
+                .then(snapshot => {
+                    const friendsList = document.getElementById('friendsForGroupList');
+                    friendsList.innerHTML = '';
+                    
+                    if (snapshot.empty) {
+                        friendsList.innerHTML = '<div style="padding: 15px; text-align: center; color: var(--gray);">Grup oluşturmak için arkadaş eklemeniz gerekiyor</div>';
+                        return;
+                    }
+                    
+                    // Add current user to member list
+                    const memberList = document.getElementById('groupMemberList');
+                    memberList.innerHTML = `
+                        <div class="group-member-item">
+                            <div class="group-member-avatar" style="background-color: ${getRandomColor()}">
+                                ${currentUser.displayName.charAt(0).toUpperCase()}
+                            </div>
+                            <span>${currentUser.displayName} (Siz)</span>
+                        </div>
+                    `;
+                    
+                    snapshot.forEach(doc => {
+                        const friendData = doc.data();
+                        const friendItem = document.createElement('div');
+                        friendItem.className = 'user-item';
+                        friendItem.innerHTML = `
+                            <div class="user-avatar-small" style="background-color: ${getRandomColor()}">
+                                ${friendData.name.charAt(0).toUpperCase()}
+                            </div>
+                            <div class="user-info">
+                                <div class="user-name">${friendData.name}</div>
+                            </div>
+                            <button class="add-friend-btn toggle-member-btn" data-user-id="${doc.id}" data-user-name="${friendData.name}">
+                                Ekle
+                            </button>
+                        `;
+                        
+                        friendItem.querySelector('.toggle-member-btn').addEventListener('click', function(e) {
+                            e.stopPropagation();
+                            toggleGroupMember(this.getAttribute('data-user-id'), this.getAttribute('data-user-name'), this);
+                        });
+                        
+                        friendsList.appendChild(friendItem);
+                    });
+                    
+                    document.getElementById('createGroupModal').classList.add('show');
+                })
+                .catch(error => {
+                    console.error("Error loading friends for group:", error);
+                    showError(error, "Load Friends for Group");
+                });
+        }
+        
+        function toggleGroupMember(userId, userName, buttonElement) {
+            const memberIndex = selectedGroupMembers.indexOf(userId);
+            
+            if (memberIndex === -1) {
+                // Add member
+                selectedGroupMembers.push(userId);
+                buttonElement.textContent = 'Kaldır';
+                buttonElement.style.backgroundColor = 'var(--danger)';
+                
+                // Add to member list
+                const memberList = document.getElementById('groupMemberList');
+                const memberItem = document.createElement('div');
+                memberItem.className = 'group-member-item';
+                memberItem.innerHTML = `
+                    <div class="group-member-avatar" style="background-color: ${getRandomColor()}">
+                        ${userName.charAt(0).toUpperCase()}
+                    </div>
+                    <span>${userName}</span>
+                    <div class="remove-member-btn" onclick="event.stopPropagation(); toggleGroupMember('${userId}', '${userName}', this.parentElement.querySelector('.toggle-member-btn'))">
+                        <i class="fas fa-times"></i>
+                    </div>
+                `;
+                memberList.appendChild(memberItem);
+            } else {
+                // Remove member
+                selectedGroupMembers.splice(memberIndex, 1);
+                buttonElement.textContent = 'Ekle';
+                buttonElement.style.backgroundColor = 'var(--primary)';
+                
+                // Remove from member list
+                const memberList = document.getElementById('groupMemberList');
+                const items = memberList.querySelectorAll('.group-member-item');
+                items.forEach(item => {
+                    if (item.textContent.includes(userName)) {
+                        memberList.removeChild(item);
+                    }
+                });
+            }
+        }
+        
+        function createGroupChat() {
+            const groupName = document.getElementById('groupName').value.trim();
+            
+            if (!groupName) {
+                showError({ message: "Lütfen bir grup adı girin" });
+                return;
+            }
+            
+            if (selectedGroupMembers.length < 2) {
+                showError({ message: "Grup için en az bir arkadaş seçmelisiniz" });
+                return;
+            }
+            
+            // Get member details
+            const memberDetailsPromises = selectedGroupMembers.map(memberId => {
+                return db.collection('users').doc(memberId).get()
+                    .then(doc => {
+                        if (doc.exists) {
+                            return {
+                                id: doc.id,
+                                name: doc.data().name,
+                                email: doc.data().email
+                            };
+                        }
+                        return null;
+                    });
+            });
+            
+            Promise.all(memberDetailsPromises)
+                .then(memberDetails => {
+                    // Filter out any null values
+                    memberDetails = memberDetails.filter(m => m !== null);
+                    
+                    // Create group chat
+                    const groupData = {
+                        name: groupName,
+                        members: selectedGroupMembers,
+                        memberDetails: memberDetails,
+                        createdBy: currentUser.uid,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        typing: {}
+                    };
+                    
+                    return db.collection('groupChats').add(groupData);
+                })
+                .then(() => {
+                    showSuccess("Grup sohbeti başarıyla oluşturuldu!");
+                    closeCreateGroupModal();
+                })
+                .catch(error => {
+                    console.error("Error creating group chat:", error);
+                    showError(error, "Create Group Chat");
+                });
+        }
+        
+        function closeCreateGroupModal() {
+            document.getElementById('createGroupModal').classList.remove('show');
+            document.getElementById('groupName').value = '';
+            document.getElementById('groupMemberList').innerHTML = '';
+            document.getElementById('friendsForGroupList').innerHTML = '';
+            selectedGroupMembers = [];
+        }
+        
         function showProfile() {
             // Hide chat container and show settings
             document.getElementById('chatContainer').style.display = 'none';
@@ -2696,6 +3231,9 @@
                 }).then(() => {
                     showSuccess("İsim başarıyla güncellendi!");
                     updateUserAvatar();
+                    
+                    // Update name in all group chats
+                    updateUserNameInGroups(newName);
                 }).catch(error => {
                     console.error("Error updating name in Firestore:", error);
                     showError(error, "Update Name");
@@ -2704,6 +3242,38 @@
                 console.error("Error updating profile:", error);
                 showError(error, "Update Profile");
             });
+        }
+        
+        function updateUserNameInGroups(newName) {
+            if (!currentUser) return;
+            
+            // Find all groups where this user is a member
+            db.collection('groupChats')
+                .where('members', 'array-contains', currentUser.uid)
+                .get()
+                .then(snapshot => {
+                    const batch = db.batch();
+                    
+                    snapshot.forEach(doc => {
+                        const groupData = doc.data();
+                        const updatedMemberDetails = groupData.memberDetails.map(member => {
+                            if (member.id === currentUser.uid) {
+                                return {
+                                    ...member,
+                                    name: newName
+                                };
+                            }
+                            return member;
+                        });
+                        
+                        batch.update(doc.ref, { memberDetails: updatedMemberDetails });
+                    });
+                    
+                    return batch.commit();
+                })
+                .catch(error => {
+                    console.error("Error updating user name in groups:", error);
+                });
         }
         
         function updateProfileAbout() {
