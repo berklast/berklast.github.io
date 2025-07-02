@@ -3,9 +3,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const userInput = document.getElementById('user-input');
     const sendButton = document.getElementById('send-button');
 
-    // Ücretsiz API endpoint'i (örnek olarak DuckDuckGo Instant Answer API)
-    const FREE_API_ENDPOINT = "https://api.duckduckgo.com/?format=json&q=";
+    // Akıllı yanıtlar veritabanı
+    const knowledgeBase = {
+        greetings: ["Merhaba! Nasıl yardımcı olabilirim?", "Selam! Sana nasıl destek olabilirim?", "Hoş geldin! Ben SKY, sorularını yanıtlamak için buradayım."],
+        farewells: ["Görüşmek üzere!", "İyi günler!", "Sonra tekrar konuşalım!"],
+        compliments: ["Teşekkür ederim! 😊", "Çok naziksin!", "Ben sadece programlandığım şeyi yapıyorum!"],
+        default: ["Bunu daha detaylı açıklayabilir misin?", "Bu konuda araştırma yapabilirim.", "Sanırım tam olarak anlayamadım, başka şekilde sorabilir misin?"],
+        facts: {
+            "sen kimsin": "Ben SKY AI, kullanıcılarına bilgi sağlamak için tasarlanmış bir yapay zeka asistanıyım.",
+            "ne yapabilirsin": "Sorularını yanıtlayabilir, basit konularda araştırma yapabilir ve sohbet edebilirim.",
+            "hava durumu": "Maalesef gerçek zamanlı hava durumu bilgisine erişimim yok, ama genel iklim bilgisi verebilirim."
+        }
+    };
 
+    // Mesaj gönderme fonksiyonu
     async function sendMessage() {
         const message = userInput.value.trim();
         if (!message) return;
@@ -13,31 +24,52 @@ document.addEventListener('DOMContentLoaded', () => {
         // Kullanıcı mesajını ekrana ekle
         addMessage(message, 'user-message');
         userInput.value = '';
-        userInput.focus();
-
-        // "Yazıyor..." mesajını göster
-        const typingIndicator = addMessage("SKY düşünüyor...", 'ai-message');
         
-        try {
-            // Ücretsiz API'den veri çek
-            const response = await fetch(FREE_API_ENDPOINT + encodeURIComponent(message));
-            const data = await response.json();
-            
-            // API yanıtını işle
-            let aiResponse = "Üzgünüm, bu konuda yeterli bilgi bulamadım.";
-            
-            if (data.AbstractText) {
-                aiResponse = data.AbstractText;
-            } else if (data.RelatedTopics && data.RelatedTopics.length > 0) {
-                aiResponse = data.RelatedTopics[0].Text || "İlgili bilgiler buldum ama detaylı açıklama yok.";
-            }
-            
-            // "Yazıyor..." mesajını güncelle
-            typingIndicator.textContent = aiResponse;
-        } catch (error) {
-            typingIndicator.textContent = "Bir hata oluştu, lütfen daha sonra tekrar deneyin.";
-            console.error("API Hatası:", error);
+        // "Yazıyor..." mesajını göster
+        const typingIndicator = addMessage("SKY yazıyor...", 'ai-message');
+        
+        // Yapay zeka yanıtını hazırla (simüle edilmiş gecikme)
+        setTimeout(() => {
+            const response = generateAIResponse(message);
+            typingIndicator.textContent = response;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }, 1000 + Math.random() * 2000); // Rastgele gecikme (1-3 sn)
+    }
+
+    // Akıllı yanıt oluşturma
+    function generateAIResponse(message) {
+        const lowerMsg = message.toLowerCase();
+        
+        // Özel durumları kontrol et
+        if (/(merhaba|selam|hey|hi)/i.test(lowerMsg)) {
+            return randomChoice(knowledgeBase.greetings);
         }
+        if (/(görüşürüz|bye|hoşçakal)/i.test(lowerMsg)) {
+            return randomChoice(knowledgeBase.farewells);
+        }
+        if (/(teşekkür|thanks|sağ ol)/i.test(lowerMsg)) {
+            return randomChoice(knowledgeBase.compliments);
+        }
+        
+        // Bilgi tabanında arama
+        for (const [key, response] of Object.entries(knowledgeBase.facts)) {
+            if (lowerMsg.includes(key)) {
+                return response;
+            }
+        }
+        
+        // Web'den araştırma simülasyonu
+        if (lowerMsg.includes('araştır') || lowerMsg.includes('bilgi')) {
+            return `"${message}" hakkında genel bilgi: Bu konuyla ilgili çeşitli kaynaklar bulunuyor. Detaylı araştırma için özel terimler kullanabilirsiniz.`;
+        }
+        
+        // Varsayılan yanıt
+        return randomChoice(knowledgeBase.default);
+    }
+
+    // Yardımcı fonksiyonlar
+    function randomChoice(arr) {
+        return arr[Math.floor(Math.random() * arr.length)];
     }
 
     function addMessage(text, className) {
