@@ -4,11 +4,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const sendButton = document.getElementById('send-button');
 
     // Ücretsiz API Endpoint'leri
-    // NOT: CORS hatası alıyorsanız, bu API'lerin sunucu tarafında bir proxy üzerinden çağrılması gerekebilir.
-    // Bu, özellikle tarayıcı tabanlı uygulamalarda sıkça karşılaşılan bir durumdur.
+    // Bu URL'ler, kendi kuracağımız Node.js proxy sunucusuna işaret ediyor.
+    // Böylece CORS hatalarını aşmış olacağız.
     const FREE_APIS = {
-        WIKIPEDIA: 'https://tr.wikipedia.org/w/api.php?action=query&format=json&list=search&srsearch=',
-        SPELLCHECK: (word) => `https://api.datamuse.com/words?sp=${word}&max=1&v=ml`
+        WIKIPEDIA: '/api/wikipedia?q=',
+        SPELLCHECK: (word) => `/api/spellcheck?word=${word}`
     };
 
     // --- GENİŞLETİLMİŞ YEREL BİLGİ BANKASI VE AKILLI YANITLAR ---
@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ]
         },
         aboutMe: {
-            patterns: [/sen kimsin/i, /nesin/i, /ne yaparsın/i, /amacın ne/i, /sen bir ai misin/i, /adın ne/i],
+            patterns: [/sen kimsin/i, /nesin/i, /ne yaparsın/i, /amacın ne/i, /sen bir ai misin/i, /adın ne/i, /kimsin/i],
             responses: [
                 "Ben Ultimate SKY AI, sınırsız bilgiye erişim sağlayan bir yapay zekayım. Sorularınızı yanıtlamak ve size yardımcı olmak için buradayım.",
                 "Ben Google tarafından eğitilmiş büyük bir dil modeliyim.",
@@ -100,12 +100,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 "Ben bir metin tabanlı yapay zekayım. Kod yazmak veya uygulamalar geliştirmek yerine, kodlama konseptleri hakkında bilgi sağlamakta iyiyim."
             ]
         },
-        generalQuestions: { // Daha genel soruları kapsayacak şekilde (API'ye gitmeden önce)
-            patterns: [/nedir/i, /nasıl yapılır/i, /kimdir/i, /hangi/i, /neden/i, /açıkla/i, /bilgi ver/i, /anlatır mısın/i],
-            responses: [ // Bu boş bırakılabilir veya genel bir "bilgi arayışına yönlendiriyorum" mesajı olabilir
-                // Bu kategori API'ye düşmeyen ancak yerel olarak da yanıtlanmayan sorular için bir geçiş görevi görebilir
+        simpleSocial: { // "hha", "baba" gibi daha basit, sosyal kelimeler için
+            patterns: [/hha/i, /haha/i, /lol/i, /hehe/i, /baba/i, /anne/i, /abi/i, /abla/i, /kardeş/i, /arkadaş/i],
+            responses: [
+                "Gülmenize sevindim! Başka ne konuşmak istersiniz?",
+                "Haha, neşelenmenize yardımcı olabildiğime sevindim.",
+                "Bu komikti! 😄",
+                "Anlıyorum. Aile bağları ve ilişkiler çok önemlidir.",
+                "Bu konuda size nasıl yardımcı olabilirim?",
+                "Daha fazla bilgi veya sohbet etmek istediğiniz başka bir konu var mı?"
             ]
         }
+        // generalQuestions kategorisini kaldırıldı, çünkü mantık API çağrısı ile daha iyi yönetiliyor
     };
 
     // Hoş geldin mesajını göster (sayfa yüklendiğinde)
@@ -181,7 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // API'den bilgi çek (Wikipedia öncelikli)
     async function fetchInformation(query) {
         try {
-            const wikiResponse = await fetch(`${FREE_APIS.WIKIPEDIA}${encodeURIComponent(query)}&origin=*`);
+            const wikiResponse = await fetch(`${FREE_APIS.WIKIPEDIA}${encodeURIComponent(query)}`); // 'origin=*' proxy'de ayarlandığı için kaldırıldı
             const wikiData = await wikiResponse.json();
 
             if (wikiData.query?.search?.length > 0) {
@@ -207,12 +213,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = LOCAL_KNOWLEDGE[category];
             for (const pattern of data.patterns) {
                 if (pattern.test(lowerText)) {
-                    // Eğer kategori boş yanıt içeriyorsa (genel sorular gibi), null döndürerek API'ye yönlendir.
-                    // Aksi takdirde rastgele bir yanıt döndür.
                     if (data.responses && data.responses.length > 0) {
                         return data.responses[Math.floor(Math.random() * data.responses.length)];
                     } else {
-                        return null; // Bu, API'ye gitmesi gerektiği anlamına gelir.
+                        // Eğer kategori desenleri eşleşti ama yanıtları boşsa, API'ye yönlendir
+                        // (Örn: "Yapay zeka nedir" gibi sorular için)
+                        return null;
                     }
                 }
             }
@@ -242,23 +248,23 @@ document.addEventListener('DOMContentLoaded', () => {
         if (responseContent) {
             return {
                 response: responseContent,
-                corrected: correctionNote // Düzeltme notunu da gönder
+                corrected: correctionNote
             };
         }
 
-        // 3. Eğer yerel bilgi bankasında spesifik bir chatbot yanıtı yoksa, bilgi arayışına git.
-        // Burada, kullanıcının doğrudan bilgi aradığını düşündüğümüz anahtar kelimeleri kontrol edebiliriz.
-        // Örneğin: "nedir", "nasıl yapılır", "kimdir", "bilgi ver" vb.
-        const searchKeywords = ['nedir', 'kimdir', 'nasıl yapılır', 'bilgi ver', 'açıkla', 'hakkında'];
-        const shouldSearchAPI = searchKeywords.some(keyword => corrected.includes(keyword)) ||
-                                (corrected.split(' ').length > 2 && !checkLocalKnowledge(corrected.split(' ')[0])); // Cümle uzunsa ve ilk kelimesi lokalde yoksa ara
+        // 3. Eğer yerel bir chatbot cevabı yoksa, API'den bilgi arayışına uygun mu diye bak.
+        // Bu kısım, direkt bilgi arayan sorgular için API'ye gitmeyi tetiklerken,
+        // kısa, sosyal veya anlamsız girdilerde API'ye gitmesini engeller.
+        const searchKeywords = ['nedir', 'kimdir', 'nasıl yapılır', 'bilgi ver', 'açıkla', 'hakkında', 'ne demek'];
+        const isAQuestion = corrected.endsWith('?') || searchKeywords.some(keyword => corrected.includes(keyword));
+        const isLongEnoughForSearch = corrected.split(' ').length > 2; // Cümle en az 3 kelimeyse
 
-        if (shouldSearchAPI) {
+        if (isAQuestion || isLongEnoughForSearch) {
             const apiInfo = await fetchInformation(corrected);
             if (apiInfo) {
                 return {
                     response: `${apiInfo.source} bilgisine göre: ${apiInfo.content}\n\nDaha fazlası için: ${apiInfo.url || 'Arama yapabilirsiniz'}`,
-                    corrected: correctionNote // Düzeltme notunu da gönder
+                    corrected: correctionNote
                 };
             }
         }
@@ -270,7 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // Mesaj gönderme fonksiyonu (Değişiklik Yok)
+    // Mesaj gönderme fonksiyonu
     async function sendMessage() {
         const userMessage = userInput.value.trim();
         if (!userMessage) return;
@@ -284,7 +290,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const { response, corrected } = await generateResponse(userMessage);
 
             if (corrected) {
-                addMessage(corrected, 'ai', true);
+                addMessage(corrected, 'ai', true); // true, bu mesajın bir not olduğunu belirtir (italik olabilir)
             }
 
             typingIndicator.remove();
@@ -296,7 +302,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Mesaj ekle (Değişiklik Yok)
+    // Mesaj ekle
     function addMessage(content, type, isNote = false) {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${type}-message`;
@@ -305,6 +311,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isNote) {
             formattedContent = `<i>${content}</i>`;
         } else if (type === 'ai') {
+            // AI yanıtlarında linkleri tıklanabilir hale getir (URL tespiti basit)
             formattedContent = formattedContent.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
         }
 
@@ -313,7 +320,7 @@ document.addEventListener('DOMContentLoaded', () => {
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    // Yazıyor göstergesi (Değişiklik Yok)
+    // Yazıyor göstergesi
     function showTypingIndicator() {
         const typingDiv = document.createElement('div');
         typingDiv.className = 'typing-indicator ai-message';
@@ -329,16 +336,16 @@ document.addEventListener('DOMContentLoaded', () => {
         return typingDiv;
     }
 
-    // Event listeners (Değişiklik Yok)
+    // Event listeners
     sendButton.addEventListener('click', sendMessage);
     userInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
+        if (e.key === 'Enter' && !e.shiftKey) { // Shift+Enter yeni satır için kalsın
+            e.preventDefault(); // Varsayılan Enter davranışını engelle (form gönderme vb.)
             sendMessage();
         }
     });
 
-    // Örnek sorulara tıklama özelliği (Değişiklik Yok)
+    // Örnek sorulara tıklama özelliği
     chatMessages.addEventListener('click', (event) => {
         if (event.target.closest('.example-card p')) {
             userInput.value = event.target.closest('.example-card p').textContent.replace(/"/g, '');
