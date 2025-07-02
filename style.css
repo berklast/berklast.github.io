@@ -1,0 +1,197 @@
+/* Mevcut index.html'deki genel stil tanımları */
+:root {
+    --primary: #5D8EF1;
+    --primary-dark: #3F6AD4;
+    --secondary: #90EE90; /* Yeşil tonu */
+    --accent: #FFD700;   /* Altın sarısı */
+    --light: #F0F8FF;
+    --gray: #CDC9C9;
+    --dark-gray: #808080;
+    --success: #8DAB87;
+    --danger: #DE4C4A;
+    --warning: #F0A31A;
+    --info: #8DBBF2;
+    --card-bg: #E0EBF9;
+    --card-shadow: 3px 3px 10px 0px rgba(0, 0, 0, 0.2);
+}
+
+/* Dark mode değişkenleri (varsa) */
+.dark-mode {
+    --dark-bg: #1A1A2E;
+    --dark-card-bg: #2E3A59;
+    --dark-text: #E0E0E0;
+    --dark-border: #2B2B2B;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--light);
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+/* Genel link stilleri (varsa) */
+a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Sohbet Arayüzü Stilleri */
+.chat-container {
+    background-color: #fff;
+    border-radius: 15px;
+    box-shadow: var(--card-shadow);
+    width: 90%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    height: 80vh; /* Ekran yüksekliğinin %80'i */
+    min-height: 400px;
+}
+
+.chat-header {
+    background-color: var(--primary);
+    color: #fff;
+    padding: 20px;
+    text-align: center;
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.chat-header h1 {
+    margin: 0;
+    font-size: 1.8em;
+}
+
+.chat-header p {
+    margin: 5px 0 0;
+    font-size: 0.9em;
+    opacity: 0.9;
+}
+
+.chat-messages {
+    flex-grow: 1; /* Mesajların olduğu alanı doldurur */
+    padding: 20px;
+    overflow-y: auto; /* Mesajlar arttıkça kaydırma çubuğu */
+    background-color: #f9f9f9;
+}
+
+.message {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+    max-width: 80%;
+    position: relative;
+}
+
+.message p {
+    margin: 0;
+    padding: 10px 15px;
+    border-radius: 18px;
+    line-height: 1.4;
+    word-wrap: break-word;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.message-sender {
+    font-size: 0.8em;
+    color: var(--dark-gray);
+    margin-bottom: 5px;
+}
+
+.message-time {
+    font-size: 0.7em;
+    color: var(--gray);
+    margin-top: 5px;
+    align-self: flex-end; /* Zamanı sağa hizala */
+}
+
+/* Kullanıcının mesajları */
+.user-message {
+    align-self: flex-end; /* Sağa hizala */
+    align-items: flex-end; /* İçeriği sağa hizala */
+}
+
+.user-message p {
+    background-color: var(--primary);
+    color: #fff;
+    border-bottom-right-radius: 2px; /* Köşeyi biraz kır */
+}
+
+/* Botun mesajları */
+.bot-message {
+    align-self: flex-start; /* Sola hizala */
+    align-items: flex-start; /* İçeriği sola hizala */
+}
+
+.bot-message p {
+    background-color: var(--card-bg); /* Açık renk arka plan */
+    color: #333;
+    border-bottom-left-radius: 2px; /* Köşeyi biraz kır */
+}
+
+/* Metin giriş alanı */
+.chat-input-area {
+    display: flex;
+    padding: 15px 20px;
+    border-top: 1px solid #eee;
+    background-color: #fff;
+}
+
+.chat-input-area input[type="text"] {
+    flex-grow: 1;
+    border: 1px solid var(--gray);
+    border-radius: 25px;
+    padding: 10px 15px;
+    font-size: 1em;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.chat-input-area input[type="text"]:focus {
+    border-color: var(--primary);
+}
+
+.chat-input-area button {
+    background-color: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 25px;
+    padding: 10px 15px;
+    margin-left: 10px;
+    cursor: pointer;
+    font-size: 1.1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+}
+
+.chat-input-area button:hover {
+    background-color: var(--primary-dark);
+}
+
+/* Responsive Düzenlemeler */
+@media (max-width: 768px) {
+    .chat-container {
+        width: 100%;
+        height: 100vh;
+        border-radius: 0;
+    }
+    .chat-header {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+    }
+}
