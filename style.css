@@ -15,7 +15,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Poppins', 'Segoe UI', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
 body {
@@ -126,6 +126,13 @@ body {
 
 .examples li {
     margin-bottom: 5px;
+    cursor: pointer; /* Örnek sorulara tıklama imleci */
+    color: var(--primary);
+    font-weight: 500;
+}
+
+.examples li:hover {
+    text-decoration: underline;
 }
 
 .message {
@@ -163,10 +170,10 @@ body {
 }
 
 .message-content {
-    white-space: pre-wrap;
+    white-space: pre-wrap; /* Uzun metinlerde satır sonlarını korur */
 }
 
-.corrected-text {
+.corrected-text { /* Bu sınıf şu an kullanılmıyor, yerine <i> etiketi var */
     text-decoration: line-through;
     opacity: 0.7;
     margin-right: 5px;
