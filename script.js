@@ -8,19 +8,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Bu, özellikle tarayıcı tabanlı uygulamalarda sıkça karşılaşılan bir durumdur.
     const FREE_APIS = {
         WIKIPEDIA: 'https://tr.wikipedia.org/w/api.php?action=query&format=json&list=search&srsearch=',
-        // DuckDuckGo API'si için proxy gerekebilir veya direk tarayıcıdan çalışmayabilir.
-        // Daha güvenilir bir alternatif: Sadece Wikipedia veya daha genel bir bilgi API'si kullanmak.
-        // Bu örnek için Wikipedia'yı öncelikli tutalım.
-        // DUCKDUCKGO: 'https://api.duckduckgo.com/?format=json&q=', // Bu API doğrudan tarayıcıdan CORS hatası verebilir.
-        // DICTIONARY: 'https://api.dictionaryapi.dev/api/v2/entries/en/', // İngilizce için, Türkçe için uygun değil.
-        SPELLCHECK: (word) => `https://api.datamuse.com/words?sp=${word}&max=1&v=ml` // Kelime tamamlama/düzeltme için
+        SPELLCHECK: (word) => `https://api.datamuse.com/words?sp=${word}&max=1&v=ml`
     };
 
-    // Yerel bilgi bankası ve daha akıllı yanıtlar
-    // Patternler düzenli ifade (RegExp) ile daha esnek hale getirildi
+    // --- GENİŞLETİLMİŞ YEREL BİLGİ BANKASI VE AKILLI YANITLAR ---
     const LOCAL_KNOWLEDGE = {
         greetings: {
-            patterns: [/merhaba/i, /selam/i, /hey/i, /hi/i, /naber/i, /mrhb/i, /slm/i, /hola/i, /günaydın/i, /iyi günler/i],
+            patterns: [/merhaba/i, /selam/i, /hey/i, /hi/i, /naber/i, /mrhb/i, /slm/i, /hola/i, /günaydın/i, /iyi günler/i, /selamlar/i],
             responses: [
                 "Merhaba! Size nasıl yardımcı olabilirim? 😊",
                 "Selamlar! Ben Ultimate SKY AI, sorularınızı yanıtlamak için buradayım.",
@@ -29,8 +23,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 "Merhaba, sizin için buradayım."
             ]
         },
+        howAreYou: { // "Nasılsın" gibi sorular için yeni kategori
+            patterns: [/nasılsın/i, /nasıl gidiyor/i, /durumun ne/i],
+            responses: [
+                "Ben bir yapay zekayım, bu yüzden duygularım veya bir halim yok. Ama size yardım etmek için her zaman hazırım!",
+                "Ben harikayım, teşekkür ederim! Sizin için ne yapabilirim?",
+                "Ben iyi çalışıyorum! Size nasıl yardımcı olabilirim?",
+                "Her zamanki gibi, veri işlemekle meşgulüm! 😊 Siz nasılsınız?"
+            ]
+        },
         compliments: {
-            patterns: [/teşekkür/i, /thanks/i, /sağ ol/i, /harikasın/i, /mükemmel/i, /süpersin/i, /çok iyi/i, /eline sağlık/i],
+            patterns: [/teşekkür/i, /thanks/i, /sağ ol/i, /harikasın/i, /mükemmel/i, /süpersin/i, /çok iyi/i, /eline sağlık/i, /çok güzel/i],
             responses: [
                 "Rica ederim! 😊 Başka nasıl yardımcı olabilirim?",
                 "Ne demek! Ben sadece görevimi yapıyorum.",
@@ -40,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ]
         },
         farewells: {
-            patterns: [/güle güle/i, /hoşça kal/i, /bay bay/i, /görüşürüz/i, /iyi günler/i, /bye/i],
+            patterns: [/güle güle/i, /hoşça kal/i, /bay bay/i, /görüşürüz/i, /iyi günler/i, /bye/i, /hoşcakal/i],
             responses: [
                 "Güle güle! Tekrar beklerim.",
                 "Hoşça kalın! Kendinize iyi bakın.",
@@ -49,11 +52,11 @@ document.addEventListener('DOMContentLoaded', () => {
             ]
         },
         aboutMe: {
-            patterns: [/sen kimsin/i, /nesin/i, /ne yaparsın/i, /amacın ne/i, /sen bir ai misin/i],
+            patterns: [/sen kimsin/i, /nesin/i, /ne yaparsın/i, /amacın ne/i, /sen bir ai misin/i, /adın ne/i],
             responses: [
                 "Ben Ultimate SKY AI, sınırsız bilgiye erişim sağlayan bir yapay zekayım. Sorularınızı yanıtlamak ve size yardımcı olmak için buradayım.",
                 "Ben Google tarafından eğitilmiş büyük bir dil modeliyim.",
-                "Ben, sorularınıza yanıt vermek ve bilgi sağlamak için tasarlanmış bir yapay zekayım."
+                "Ben, sorularınıza yanıt vermek ve bilgi sağlamak için tasarlanmış bir yapay zekayım. Adım Ultimate SKY AI."
             ]
         },
         jokes: {
@@ -65,15 +68,14 @@ document.addEventListener('DOMContentLoaded', () => {
             ]
         },
         weather: {
-            patterns: [/hava durumu/i, /hava nasıl/i, /yağmur/i, /kar/i, /güneş/i, /sıcak mı/i, /soğuk mu/i],
+            patterns: [/hava durumu/i, /hava nasıl/i, /yağmur/i, /kar/i, /güneş/i, /sıcak mı/i, /soğuk mu/i, /bugün hava/i],
             responses: [
-                "Maalesef gerçek zamanlı hava durumu bilgisi veremiyorum, çünkü internetten anlık veri çekme yeteneğim kısıtlı. Ancak genel iklim bilgisi verebilirim.",
-                "Hava durumu için yerel meteoroloji sitelerini kontrol etmenizi öneririm.",
-                "Üzgünüm, şu anki hava durumu hakkında bilgi sağlayamıyorum."
+                "Maalesef gerçek zamanlı hava durumu bilgisi veremiyorum, çünkü internetten anlık veri çekme yeteneğim kısıtlı. Hava durumu için yerel meteoroloji sitelerini kontrol etmenizi öneririm.",
+                "Üzgünüm, şu anki hava durumu hakkında bilgi sağlayamıyorum. Genel iklim bilgisi isterseniz yardımcı olabilirim."
             ]
         },
         unresponsive: { // Belirli ifadeler için daha iyi yanıtlar
-            patterns: [/salak/i, /aptal/i, /gerizekalı/i, /kötü/i, /işe yaramaz/i, /anlamadın/i],
+            patterns: [/salak/i, /aptal/i, /gerizekalı/i, /kötü/i, /işe yaramaz/i, /anlamadın/i, /yapamıyorsun/i, /mal/i],
             responses: [
                 "Ben bir yapay zekayım ve öğrenmeye devam ediyorum. Bana karşı nazik olursanız, size daha iyi yardımcı olabilirim. 😊",
                 "Sizi anladığımdan emin olmak için sorunuzu farklı bir şekilde ifade edebilir misiniz?",
@@ -82,12 +84,26 @@ document.addEventListener('DOMContentLoaded', () => {
             ]
         },
         understanding: { // "Evet anladım" benzeri geri bildirimler için
-            patterns: [/evet anladım/i, /tamamdır/i, /anlıyorum/i, /harika/i, /evet/i],
+            patterns: [/evet anladım/i, /tamamdır/i, /anlıyorum/i, /harika/i, /evet/i, /doğru/i, /anlaşıldı/i],
             responses: [
                 "Sevindim! Başka ne bilmek istersiniz?",
                 "Güzel! Aklınıza takılan başka bir şey var mı?",
                 "Memnun oldum. Devam edelim mi?",
                 "Harika! Sorularınız için hazırım."
+            ]
+        },
+        codeRelated: { // "Kod yaz" gibi komutlar için
+            patterns: [/kod yaz/i, /kodlama yap/i, /program yaz/i, /yazılım yap/i, /nasıl kodlanır/i],
+            responses: [
+                "Ben doğrudan kod yazamam veya çalıştıramam, ancak size çeşitli programlama dilleri, algoritmalar veya kodlama prensipleri hakkında bilgi verebilirim. Hangi konuda yardıma ihtiyacınız var?",
+                "Kodlama konusunda size bilgi ve örnekler sunabilirim. Örneğin, 'Python nedir?' veya 'JavaScript'te döngüler nasıl kullanılır?' gibi sorular sorabilirsiniz.",
+                "Ben bir metin tabanlı yapay zekayım. Kod yazmak veya uygulamalar geliştirmek yerine, kodlama konseptleri hakkında bilgi sağlamakta iyiyim."
+            ]
+        },
+        generalQuestions: { // Daha genel soruları kapsayacak şekilde (API'ye gitmeden önce)
+            patterns: [/nedir/i, /nasıl yapılır/i, /kimdir/i, /hangi/i, /neden/i, /açıkla/i, /bilgi ver/i, /anlatır mısın/i],
+            responses: [ // Bu boş bırakılabilir veya genel bir "bilgi arayışına yönlendiriyorum" mesajı olabilir
+                // Bu kategori API'ye düşmeyen ancak yerel olarak da yanıtlanmayan sorular için bir geçiş görevi görebilir
             ]
         }
     };
@@ -112,61 +128,52 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
         chatMessages.innerHTML = welcomeMessageHTML;
-        chatMessages.scrollTop = chatMessages.scrollHeight; // Kaydırma
+        chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
     // Yazım düzeltme ve kelime tamamlama fonksiyonu (Datamuse API)
     async function correctAndCompleteSpelling(word) {
-        if (!word) return word;
+        if (!word || word.length < 2) return word; // Çok kısa kelimeleri düzeltmeye çalışma
         try {
-            // Sadece tek kelime için düzeltme/tamamlama yap.
-            // Çok kelimeli cümleler için daha karmaşık NLP gerekir.
             const response = await fetch(FREE_APIS.SPELLCHECK(word));
             const data = await response.json();
-            // Yüksek olasılıklı bir eşleşme varsa düzeltmeyi kullan
             if (data.length > 0 && data[0].word.toLowerCase() !== word.toLowerCase()) {
-                // Eğer kelime çok benziyorsa ve bir öneri varsa kullan
-                if (data[0].score > 8000) { // Score'u deneyerek optimize edebilirsiniz
+                // Skoru 8000'den yüksekse veya çok yakın bir eşleşmeyse düzeltmeyi kullan
+                // Bu skor eşiğini kendi denemelerinizle ayarlayabilirsiniz.
+                if (data[0].score > 8000 || (data[0].word.startsWith(word) && data[0].word.length - word.length < 3)) {
                     return data[0].word;
                 }
             }
-            return word; // Düzeltme yoksa orijinali döndür
+            return word;
         } catch (error) {
             console.warn("Yazım düzeltme API hatası:", error);
-            return word; // Hata durumunda orijinal kelimeyi döndür
+            return word;
         }
     }
 
     // Akıllı metin işleme (kelime düzeltme ve özel durumları yakalama)
     async function processInput(text) {
         const lowerText = text.toLowerCase().trim();
-        let correctedText = text; // Varsayılan olarak orijinal metin
+        let correctedText = text;
 
-        // Kelimeleri tek tek düzeltmeye çalış (Datamuse sınırlı olduğu için)
-        const words = lowerText.split(/\s+/); // Boşluklara göre ayır
+        // Kelimeleri tek tek düzeltmeye çalış
+        const words = lowerText.split(/\s+/);
         const correctedWordsPromises = words.map(word => correctAndCompleteSpelling(word));
         const correctedWords = await Promise.all(correctedWordsPromises);
         correctedText = correctedWords.join(' ');
 
         // Özel olarak yakalanacak kelime hataları (sıkça yapılan typo'lar)
-        // Bu kısım Datamuse API'sinin yakalayamadığı daha spesifik hataları düzeltebilir.
         const customCorrections = {
-            "mrb": "merhaba",
-            "slm": "selam",
-            "tşkkr": "teşekkür",
-            "tesekkur": "teşekkür",
-            "nslsn": "nasılsın",
-            "nbr": "naber",
-            "yzm": "yazım"
+            "mrb": "merhaba", "slm": "selam", "tşkkr": "teşekkür", "tesekkur": "teşekkür",
+            "nslsn": "nasılsın", "nbr": "naber", "yzm": "yazım", "knk": "kanka", "tm": "tamam"
         };
         for (const [typo, correct] of Object.entries(customCorrections)) {
-            const regex = new RegExp(`\\b${typo}\\b`, 'gi'); // Kelimenin tamamını eşleştir
+            const regex = new RegExp(`\\b${typo}\\b`, 'gi');
             correctedText = correctedText.replace(regex, correct);
         }
 
         // Metinde tekrar eden harfleri temizleme (örn: mmerhaba -> merhaba)
-        // Bu daha basit bir Regex ile yapılabilir, daha gelişmiş NLP gerekebilir.
-        correctedText = correctedText.replace(/(.)\1{2,}/g, '$1$1'); // 3 veya daha fazla aynı harfi 2'ye düşürür.
+        correctedText = correctedText.replace(/(.)\1{2,}/g, '$1$1');
 
         return { corrected: correctedText.trim(), original: text.trim() };
     }
@@ -174,28 +181,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // API'den bilgi çek (Wikipedia öncelikli)
     async function fetchInformation(query) {
         try {
-            // Wikipedia'dan bilgi çekme
-            // CORS hatası yaşanıyorsa, bir proxy sunucusu kullanmanız gerekebilir.
-            // Örneğin: https://cors-anywhere.herokuapp.com/https://tr.wikipedia.org/...
             const wikiResponse = await fetch(`${FREE_APIS.WIKIPEDIA}${encodeURIComponent(query)}&origin=*`);
             const wikiData = await wikiResponse.json();
 
             if (wikiData.query?.search?.length > 0) {
-                const snippet = wikiData.query.search[0].snippet.replace(/<[^>]+>/g, ''); // HTML etiketlerini temizle
+                const snippet = wikiData.query.search[0].snippet.replace(/<[^>]+>/g, '');
                 return {
                     source: 'Wikipedia',
                     content: snippet,
                     url: `https://tr.wikipedia.org/wiki/${encodeURIComponent(wikiData.query.search[0].title)}`
                 };
             }
-
-            // DuckDuckGo API'si doğrudan tarayıcıdan CORS hatası verebilir.
-            // Bu yüzden şimdilik devre dışı bırakıyorum veya sadece Wikipedia'ya odaklanıyorum.
-            // Eğer DuckDuckGo kullanmak isterseniz, sunucu tarafında bir proxy kurmanız gerekebilir.
-
-            return null; // Bilgi bulunamazsa null döndür
+            return null;
         } catch (error) {
-            console.error("API'den bilgi çekme hatası:", error);
+            console.error("API'den bilgi çekme hatası (Wikipedia):", error);
             return null;
         }
     }
@@ -207,15 +206,21 @@ document.addEventListener('DOMContentLoaded', () => {
         for (const category in LOCAL_KNOWLEDGE) {
             const data = LOCAL_KNOWLEDGE[category];
             for (const pattern of data.patterns) {
-                if (pattern.test(lowerText)) { // RegExp ile test et
-                    return data.responses[Math.floor(Math.random() * data.responses.length)];
+                if (pattern.test(lowerText)) {
+                    // Eğer kategori boş yanıt içeriyorsa (genel sorular gibi), null döndürerek API'ye yönlendir.
+                    // Aksi takdirde rastgele bir yanıt döndür.
+                    if (data.responses && data.responses.length > 0) {
+                        return data.responses[Math.floor(Math.random() * data.responses.length)];
+                    } else {
+                        return null; // Bu, API'ye gitmesi gerektiği anlamına gelir.
+                    }
                 }
             }
         }
         return null;
     }
 
-    // Akıllı yanıt oluştur
+    // --- AKILLI YANIT OLUŞTURMA FONKSİYONU ---
     async function generateResponse(userInputText) {
         // Hoş geldin mesajını gizle (ilk mesaj gönderildiğinde)
         const welcomeScreen = document.querySelector('.welcome-message');
@@ -224,94 +229,94 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const { corrected, original } = await processInput(userInputText);
+        let responseContent = null;
+        let correctionNote = null;
 
-        // Kullanıcının niyetini analiz et (basit bir yaklaşım)
-        // Eğer giriş sadece "salak" gibi tek kelimeyse ve bu yerel bilgide varsa
-        if (words.length === 1 && checkLocalKnowledge(corrected)) {
-             return {
-                response: checkLocalKnowledge(corrected),
-                corrected: corrected !== original ? `Not: "${original}" yerine "${corrected}" olarak anladım.` : null
-            };
+        // 1. Yazım düzeltmesi yapıldıysa notu hazırla
+        if (corrected !== original) {
+            correctionNote = `Not: "${original}" yerine "${corrected}" olarak anladım.`;
         }
 
-        // Yerel bilgiyi kontrol et (daha öncelikli)
-        const localResponse = checkLocalKnowledge(corrected);
-        if (localResponse) {
+        // 2. Önce yerel bilgi bankasını kontrol et (chatbot gibi yanıtlar için)
+        responseContent = checkLocalKnowledge(corrected);
+        if (responseContent) {
             return {
-                response: localResponse,
-                corrected: corrected !== original ? `Sanırım "${original}" yerine "${corrected}" demek istediniz?` : null
+                response: responseContent,
+                corrected: correctionNote // Düzeltme notunu da gönder
             };
         }
 
-        // API'den bilgi çek
-        const apiInfo = await fetchInformation(corrected);
-        if (apiInfo) {
-            return {
-                response: `${apiInfo.source} bilgisine göre: ${apiInfo.content}\n\nDaha fazlası için: ${apiInfo.url || 'Arama yapabilirsiniz'}`,
-                corrected: corrected !== original ? `Not: "${original}" yerine "${corrected}" olarak arama yaptım.` : null
-            };
+        // 3. Eğer yerel bilgi bankasında spesifik bir chatbot yanıtı yoksa, bilgi arayışına git.
+        // Burada, kullanıcının doğrudan bilgi aradığını düşündüğümüz anahtar kelimeleri kontrol edebiliriz.
+        // Örneğin: "nedir", "nasıl yapılır", "kimdir", "bilgi ver" vb.
+        const searchKeywords = ['nedir', 'kimdir', 'nasıl yapılır', 'bilgi ver', 'açıkla', 'hakkında'];
+        const shouldSearchAPI = searchKeywords.some(keyword => corrected.includes(keyword)) ||
+                                (corrected.split(' ').length > 2 && !checkLocalKnowledge(corrected.split(' ')[0])); // Cümle uzunsa ve ilk kelimesi lokalde yoksa ara
+
+        if (shouldSearchAPI) {
+            const apiInfo = await fetchInformation(corrected);
+            if (apiInfo) {
+                return {
+                    response: `${apiInfo.source} bilgisine göre: ${apiInfo.content}\n\nDaha fazlası için: ${apiInfo.url || 'Arama yapabilirsiniz'}`,
+                    corrected: correctionNote // Düzeltme notunu da gönder
+                };
+            }
         }
 
-        // Varsayılan yanıt (eğer hiçbir yerden bilgi bulunamazsa)
+        // 4. Eğer hiçbir yere düşmezse, varsayılan anlayamadım yanıtı ver
         return {
-            response: `Üzgünüm, "${corrected}" hakkında net bir bilgi bulamadım veya anlayamadım. Sorunuzu daha spesifik hale getirebilir misiniz?`,
-            corrected: corrected !== original ? `Not: "${original}" yerine "${corrected}" olarak anladım.` : null
+            response: `Üzgünüm, "${corrected}" hakkında net bir bilgi bulamadım veya sorunuzu tam olarak anlayamadım. Lütfen daha farklı bir şekilde ifade etmeyi deneyin.`,
+            corrected: correctionNote
         };
     }
 
-    // Mesaj gönderme fonksiyonu
+    // Mesaj gönderme fonksiyonu (Değişiklik Yok)
     async function sendMessage() {
         const userMessage = userInput.value.trim();
         if (!userMessage) return;
 
-        // Kullanıcı mesajını ekle
         addMessage(userMessage, 'user');
         userInput.value = '';
 
-        // "Yazıyor..." göstergesi
         const typingIndicator = showTypingIndicator();
 
         try {
-            // Yanıtı oluştur
             const { response, corrected } = await generateResponse(userMessage);
 
-            // Yazım düzeltme/anlama notu varsa göster
             if (corrected) {
-                addMessage(corrected, 'ai', true); // true, bu mesajın bir not olduğunu belirtir (italik olabilir)
+                addMessage(corrected, 'ai', true);
             }
 
-            // Yanıtı göster
-            typingIndicator.remove(); // Yazıyor göstergesini kaldır
+            typingIndicator.remove();
             addMessage(response, 'ai');
         } catch (error) {
-            typingIndicator.remove(); // Hata durumunda da göstergeyi kaldır
+            typingIndicator.remove();
             addMessage("Üzgünüm, bir hata oluştu veya bağlantı kurulamadı. Lütfen daha sonra tekrar deneyin.", 'ai');
             console.error("Mesaj gönderme hatası:", error);
         }
     }
 
-    // Mesaj ekle
+    // Mesaj ekle (Değişiklik Yok)
     function addMessage(content, type, isNote = false) {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${type}-message`;
 
         let formattedContent = content;
-        if (isNote) { // Eğer bir notsa italik yap
+        if (isNote) {
             formattedContent = `<i>${content}</i>`;
         } else if (type === 'ai') {
-            // AI yanıtlarında linkleri tıklanabilir hale getir (URL tespiti basit)
             formattedContent = formattedContent.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
         }
 
         messageDiv.innerHTML = `<div class="message-content">${formattedContent}</div>`;
         chatMessages.appendChild(messageDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight; // Her zaman en alta kaydır
+        chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    // Yazıyor göstergesi
+    // Yazıyor göstergesi (Değişiklik Yok)
     function showTypingIndicator() {
         const typingDiv = document.createElement('div');
-        typingDiv.className = 'typing-indicator ai-message'; // AI mesajı gibi görünmesi için sınıf eklendi
+        typingDiv.className = 'typing-indicator ai-message';
         typingDiv.innerHTML = `
             <div class="message-content">
                 <div class="typing-dot"></div>
@@ -324,16 +329,16 @@ document.addEventListener('DOMContentLoaded', () => {
         return typingDiv;
     }
 
-    // Event listeners
+    // Event listeners (Değişiklik Yok)
     sendButton.addEventListener('click', sendMessage);
     userInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) { // Shift+Enter yeni satır için kalsın
-            e.preventDefault(); // Varsayılan Enter davranışını engelle (form gönderme vb.)
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
             sendMessage();
         }
     });
 
-    // Örnek sorulara tıklama özelliği ekle (Eğer hoş geldin ekranınız varsa)
+    // Örnek sorulara tıklama özelliği (Değişiklik Yok)
     chatMessages.addEventListener('click', (event) => {
         if (event.target.closest('.example-card p')) {
             userInput.value = event.target.closest('.example-card p').textContent.replace(/"/g, '');
