@@ -3,40 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SKY Yapay Zeka Asistanı - Mükemmel Arayüz</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>SKY AI</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="chat-container">
         <div class="chat-header">
-            <div class="header-icon">
-                <i class="fas fa-robot"></i>
-            </div>
-            <div class="header-info">
-                <h1>SKY Yapay Zeka Asistanı</h1>
-                <p>Çevrimiçi ve hizmetinizde</p>
-            </div>
+            <h1>SKY AI</h1>
         </div>
         <div class="chat-messages" id="chat-messages">
-            <div class="message bot-message fade-in">
-                <span class="message-sender">SKY</span>
-                <p>Merhaba! Ben SKY, dijital asistanınız. Size nasıl yardımcı olabilirim?</p>
-                <span class="message-time">Şimdi</span>
-            </div>
-            </div>
-        <div class="chat-input-area">
-            <input type="text" id="user-input" placeholder="Bir şeyler yazın veya soru sorun..." autofocus>
-            <button id="send-button"><i class="fas fa-paper-plane"></i></button>
+            <div class="message ai-message">Merhaba! Ben SKY. Bana istediğini sorabilirsin.</div>
         </div>
-        <div class="typing-indicator" id="typing-indicator">
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
+        <div class="chat-input">
+            <input type="text" id="user-input" placeholder="Bir şeyler yaz..." autofocus>
+            <button id="send-button">Gönder</button>
         </div>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
