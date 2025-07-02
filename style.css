@@ -1,3 +1,4 @@
+/* ... (Önceki style.css kodunun tamamını buraya yapıştırın. Değişiklik yok) ... */
 :root {
     --primary: #4361ee;
     --secondary: #3a0ca3;
@@ -126,7 +127,7 @@ body {
 
 .examples li {
     margin-bottom: 5px;
-    cursor: pointer; /* Örnek sorulara tıklama imleci */
+    cursor: pointer;
     color: var(--primary);
     font-weight: 500;
 }
@@ -170,10 +171,10 @@ body {
 }
 
 .message-content {
-    white-space: pre-wrap; /* Uzun metinlerde satır sonlarını korur */
+    white-space: pre-wrap;
 }
 
-.corrected-text { /* Bu sınıf şu an kullanılmıyor, yerine <i> etiketi var */
+.corrected-text {
     text-decoration: line-through;
     opacity: 0.7;
     margin-right: 5px;
@@ -285,7 +286,6 @@ body {
     }
 }
 
-/* Kaydırma çubuğu */
 ::-webkit-scrollbar {
     width: 8px;
 }
