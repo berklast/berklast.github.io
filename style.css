@@ -1,197 +1,376 @@
-/* Mevcut index.html'deki genel stil tanımları */
+/* Genel Değişkenler ve Reset */
 :root {
-    --primary: #5D8EF1;
-    --primary-dark: #3F6AD4;
-    --secondary: #90EE90; /* Yeşil tonu */
-    --accent: #FFD700;   /* Altın sarısı */
-    --light: #F0F8FF;
-    --gray: #CDC9C9;
-    --dark-gray: #808080;
-    --success: #8DAB87;
-    --danger: #DE4C4A;
-    --warning: #F0A31A;
-    --info: #8DBBF2;
-    --card-bg: #E0EBF9;
-    --card-shadow: 3px 3px 10px 0px rgba(0, 0, 0, 0.2);
+    --primary-color: #6C63FF; /* Daha canlı bir mor tonu */
+    --primary-dark-color: #5752D6;
+    --secondary-color: #4CAF50; /* Yeşil vurgu */
+    --background-light: #f4f7f6;
+    --card-background-light: #ffffff;
+    --text-color-light: #333;
+    --border-color-light: #e0e0e0;
+    --shadow-light: rgba(0, 0, 0, 0.1);
+
+    /* Dark Mode Değişkenleri */
+    --background-dark: #2c2f33;
+    --card-background-dark: #36393f;
+    --text-color-dark: #f0f0f0;
+    --border-color-dark: #4a4d52;
+    --shadow-dark: rgba(0, 0, 0, 0.3);
+
+    /* Mesaj Balonu Renkleri */
+    --user-bubble-light: var(--primary-color);
+    --user-text-light: #ffffff;
+    --bot-bubble-light: var(--card-background-light);
+    --bot-text-light: var(--text-color-light);
+
+    --user-bubble-dark: var(--primary-color);
+    --user-text-dark: #ffffff;
+    --bot-bubble-dark: #4a4d52;
+    --bot-text-dark: var(--text-color-dark);
+
+    --font-family: 'Poppins', sans-serif;
 }
 
-/* Dark mode değişkenleri (varsa) */
-.dark-mode {
-    --dark-bg: #1A1A2E;
-    --dark-card-bg: #2E3A59;
-    --dark-text: #E0E0E0;
-    --dark-border: #2B2B2B;
-}
-
+/* Temel Stil */
 body {
-    font-family: 'Poppins', sans-serif;
+    font-family: var(--font-family);
     margin: 0;
     padding: 0;
-    background-color: var(--light);
-    color: #333;
+    background-color: var(--background-light);
+    color: var(--text-color-light);
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    box-sizing: border-box;
+    overflow: hidden; /* Taşmayı engelle */
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Genel link stilleri (varsa) */
-a {
-    color: var(--primary);
-    text-decoration: none;
+/* Dark Mode Aktivasyonu */
+body.dark-mode {
+    background-color: var(--background-dark);
+    color: var(--text-color-dark);
 }
 
-a:hover {
-    text-decoration: underline;
-}
-
-/* Sohbet Arayüzü Stilleri */
+/* Chat Container */
 .chat-container {
-    background-color: #fff;
-    border-radius: 15px;
-    box-shadow: var(--card-shadow);
+    background-color: var(--card-background-light);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px var(--shadow-light);
     width: 90%;
-    max-width: 600px;
+    max-width: 650px;
+    height: 85vh; /* Yüksekliği artırıldı */
+    min-height: 550px; /* Minimum yükseklik */
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    height: 80vh; /* Ekran yüksekliğinin %80'i */
-    min-height: 400px;
+    position: relative;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
+body.dark-mode .chat-container {
+    background-color: var(--card-background-dark);
+    box-shadow: 0 10px 30px var(--shadow-dark);
+}
+
+/* Chat Header */
 .chat-header {
-    background-color: var(--primary);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark-color) 100%);
     color: #fff;
-    padding: 20px;
-    text-align: center;
-    border-top-left-radius: 15px;
-    border-top-right-radius: 15px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    padding: 20px 25px;
+    display: flex;
+    align-items: center;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
-.chat-header h1 {
-    margin: 0;
-    font-size: 1.8em;
-}
-
-.chat-header p {
-    margin: 5px 0 0;
-    font-size: 0.9em;
+.chat-header .header-icon {
+    font-size: 2.2em;
+    margin-right: 15px;
     opacity: 0.9;
 }
 
-.chat-messages {
-    flex-grow: 1; /* Mesajların olduğu alanı doldurur */
-    padding: 20px;
-    overflow-y: auto; /* Mesajlar arttıkça kaydırma çubuğu */
-    background-color: #f9f9f9;
+.chat-header .header-info h1 {
+    margin: 0;
+    font-size: 1.6em;
+    font-weight: 600;
 }
 
+.chat-header .header-info p {
+    margin: 2px 0 0;
+    font-size: 0.85em;
+    opacity: 0.8;
+}
+
+/* Chat Messages Area */
+.chat-messages {
+    flex-grow: 1;
+    padding: 20px 25px;
+    overflow-y: auto;
+    background-color: var(--background-light);
+    scroll-behavior: smooth; /* Yumuşak kaydırma */
+}
+
+body.dark-mode .chat-messages {
+    background-color: #313338; /* Biraz daha koyu ton */
+}
+
+/* Mesajlar */
 .message {
     display: flex;
     flex-direction: column;
-    margin-bottom: 15px;
-    max-width: 80%;
-    position: relative;
+    margin-bottom: 18px;
+    max-width: 85%;
+    animation: fadeIn 0.3s ease-out; /* Mesaj girişi animasyonu */
 }
 
 .message p {
     margin: 0;
-    padding: 10px 15px;
-    border-radius: 18px;
-    line-height: 1.4;
+    padding: 12px 18px;
+    border-radius: 22px; /* Daha yuvarlak */
+    line-height: 1.5;
     word-wrap: break-word;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.08);
 }
 
 .message-sender {
-    font-size: 0.8em;
-    color: var(--dark-gray);
-    margin-bottom: 5px;
+    font-size: 0.75em;
+    color: var(--dark-gray); /* Genel değişkenlerden kullanılabilir */
+    margin-bottom: 4px;
+    font-weight: 500;
+    opacity: 0.7;
 }
 
 .message-time {
-    font-size: 0.7em;
-    color: var(--gray);
-    margin-top: 5px;
-    align-self: flex-end; /* Zamanı sağa hizala */
+    font-size: 0.65em;
+    color: var(--gray); /* Genel değişkenlerden kullanılabilir */
+    margin-top: 4px;
+    opacity: 0.6;
 }
 
-/* Kullanıcının mesajları */
+/* Kullanıcı Mesajları */
 .user-message {
-    align-self: flex-end; /* Sağa hizala */
-    align-items: flex-end; /* İçeriği sağa hizala */
+    align-self: flex-end;
+    align-items: flex-end;
 }
 
 .user-message p {
-    background-color: var(--primary);
-    color: #fff;
-    border-bottom-right-radius: 2px; /* Köşeyi biraz kır */
+    background-color: var(--user-bubble-light);
+    color: var(--user-text-light);
+    border-bottom-right-radius: 8px; /* Yumuşak köşe */
 }
 
-/* Botun mesajları */
+body.dark-mode .user-message p {
+    background-color: var(--user-bubble-dark);
+    color: var(--user-text-dark);
+}
+
+/* Bot Mesajları */
 .bot-message {
-    align-self: flex-start; /* Sola hizala */
-    align-items: flex-start; /* İçeriği sola hizala */
+    align-self: flex-start;
+    align-items: flex-start;
 }
 
 .bot-message p {
-    background-color: var(--card-bg); /* Açık renk arka plan */
-    color: #333;
-    border-bottom-left-radius: 2px; /* Köşeyi biraz kır */
+    background-color: var(--bot-bubble-light);
+    color: var(--bot-text-light);
+    border-bottom-left-radius: 8px; /* Yumuşak köşe */
 }
 
-/* Metin giriş alanı */
+body.dark-mode .bot-message p {
+    background-color: var(--bot-bubble-dark);
+    color: var(--bot-text-dark);
+}
+
+
+/* Metin Giriş Alanı */
 .chat-input-area {
     display: flex;
-    padding: 15px 20px;
-    border-top: 1px solid #eee;
-    background-color: #fff;
+    padding: 15px 25px;
+    border-top: 1px solid var(--border-color-light);
+    background-color: var(--card-background-light);
+    align-items: center;
+    gap: 10px; /* Elemanlar arası boşluk */
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+body.dark-mode .chat-input-area {
+    background-color: var(--card-background-dark);
+    border-top-color: var(--border-color-dark);
 }
 
 .chat-input-area input[type="text"] {
     flex-grow: 1;
-    border: 1px solid var(--gray);
-    border-radius: 25px;
-    padding: 10px 15px;
+    border: 1px solid var(--border-color-light);
+    border-radius: 28px; /* Daha yuvarlak */
+    padding: 12px 20px;
     font-size: 1em;
     outline: none;
-    transition: border-color 0.3s ease;
+    transition: border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.2s ease;
+    background-color: var(--background-light);
+    color: var(--text-color-light);
+}
+
+body.dark-mode .chat-input-area input[type="text"] {
+    background-color: #3c3f44; /* Biraz daha koyu input */
+    border-color: var(--border-color-dark);
+    color: var(--text-color-dark);
 }
 
 .chat-input-area input[type="text"]:focus {
-    border-color: var(--primary);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2); /* Odaklandığında hafif parlama */
 }
 
 .chat-input-area button {
-    background-color: var(--primary);
+    background-color: var(--primary-color);
     color: #fff;
     border: none;
-    border-radius: 25px;
-    padding: 10px 15px;
-    margin-left: 10px;
-    cursor: pointer;
-    font-size: 1.1em;
+    border-radius: 50%; /* Tamamen yuvarlak düğme */
+    width: 48px; /* Genişlik */
+    height: 48px; /* Yükseklik */
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background-color 0.3s ease;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    flex-shrink: 0; /* Küçülmesini engelle */
 }
 
 .chat-input-area button:hover {
-    background-color: var(--primary-dark);
+    background-color: var(--primary-dark-color);
+    transform: translateY(-2px); /* Hafif yukarı kayma */
 }
 
-/* Responsive Düzenlemeler */
+.chat-input-area button:active {
+    transform: translateY(0);
+}
+
+.chat-input-area button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    opacity: 0.7;
+}
+
+/* Düşünme Göstergesi */
+.typing-indicator {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 0 25px 15px;
+    height: 30px; /* Düşünme göstergesi için yer ayrıldı */
+    opacity: 0; /* Başlangıçta gizli */
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.typing-indicator.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.typing-indicator .dot {
+    width: 10px;
+    height: 10px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    margin-right: 6px;
+    animation: bounce 1.4s infinite ease-in-out;
+}
+
+.typing-indicator .dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.typing-indicator .dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+/* Anahtar Kare Animasyonları */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bounce {
+    0%, 80%, 100% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Scrollbar Stilleri */
+.chat-messages::-webkit-scrollbar {
+    width: 8px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+    background: var(--background-light);
+    border-radius: 10px;
+}
+
+body.dark-mode .chat-messages::-webkit-scrollbar-track {
+    background: var(--card-background-dark);
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 10px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-dark-color);
+}
+
+/* Responsive Tasarım */
 @media (max-width: 768px) {
+    body {
+        align-items: flex-start; /* Mobil cihazlarda üstte başla */
+    }
+
     .chat-container {
         width: 100%;
         height: 100vh;
         border-radius: 0;
+        box-shadow: none;
     }
+
     .chat-header {
-        border-top-left-radius: 0;
-        border-top-right-radius: 0;
+        border-radius: 0;
+    }
+
+    .chat-messages {
+        padding: 15px;
+    }
+
+    .chat-input-area {
+        padding: 10px 15px;
+    }
+
+    .chat-input-area input[type="text"] {
+        padding: 10px 15px;
+        font-size: 0.95em;
+    }
+
+    .chat-input-area button {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1em;
+    }
+
+    .typing-indicator {
+        padding: 0 15px 10px;
     }
 }
