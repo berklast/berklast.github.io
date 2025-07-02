@@ -3,11 +3,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const userInput = document.getElementById('user-input');
     const sendButton = document.getElementById('send-button');
 
+    // Ücretsiz API Endpoint'leri
+    // Bu URL'ler, kendi kuracağımız Node.js proxy sunucusuna işaret ediyor.
+    // Böylece CORS hatalarını aşmış olacağız.
     const FREE_APIS = {
         WIKIPEDIA: '/api/wikipedia?q=',
         SPELLCHECK: (word) => `/api/spellcheck?word=${word}`
     };
 
+    // --- GENİŞLETİLMİŞ YEREL BİLGİ BANKASI VE AKILLI YANITLAR ---
     const LOCAL_KNOWLEDGE = {
         greetings: {
             patterns: [/merhaba/i, /selam/i, /hey/i, /hi/i, /naber/i, /mrhb/i, /slm/i, /hola/i, /günaydın/i, /iyi günler/i, /selamlar/i],
@@ -19,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 "Merhaba, sizin için buradayım."
             ]
         },
-        howAreYou: {
+        howAreYou: { // "Nasılsın" gibi sorular için yeni kategori
             patterns: [/nasılsın/i, /nasıl gidiyor/i, /durumun ne/i],
             responses: [
                 "Ben bir yapay zekayım, bu yüzden duygularım veya bir halim yok. Ama size yardım etmek için her zaman hazırım!",
@@ -111,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clarification: {
             patterns: [
                 /öyle demedim/i, /yanlış anladın/i, /demek istediğim/i, /ben onu kastetmedim/i,
-                /bak şimdi/i, /tekrar et/i, /daha açık/i, /hayır/i
+                /bak şimdi/i, /tekrar et/i, /daha açık/i, /hayır/i, /anlamadın/i, /yapamıyorsun/i // 'anlamadın', 'yapamıyorsun' buraya taşındı
             ],
             responses: [
                 "Öyle mi? Üzgünüm, bazen tam olarak ne demek istediğinizi anlamakta zorlanabiliyorum. Lütfen daha net ifade edebilir misiniz?",
@@ -124,18 +128,16 @@ document.addEventListener('DOMContentLoaded', () => {
         gameDevelopment: {
             patterns: [
                 /oyun yapıcam ne tarz oyun yapmalıyım/i, /nasıl oyun yapmalıyım/i, /hangi oyun türünü yapmalıyım/i,
-                /oyun fikirleri/i, /oyun önerisi/i, /ne tür oyun/i
+                /oyun fikirleri/i, /oyun önerisi/i, /ne tür oyun/i, /oyun geliştirmek/i
             ],
             responses: [
                 "Harika bir fikir! Oyun yapmak gerçekten keyifli olabilir. Ne tarz oyunlar oynamaktan hoşlanırsınız? Ya da hangi türlerde kendinizi daha yetenekli hissediyorsunuz?",
                 "Oyun yapımı heyecan verici! İlk olarak hangi platformu hedefliyorsunuz (mobil, PC, konsol)? Bu, oyun türünü belirlemenizde yardımcı olabilir.",
-                "Bir oyun fikri arayışında mısınız? İsterseniz size farklı oyun türleri hakkında bilgi verebilirim (RPG, platform, strateji vb.) veya ilgi alanlarınıza göre önerilerde bulunabilirim."
+                "Bir oyun fikri arayışında mısınız? İsterseniz size farklı oyun türleri hakkında bilgi verebilirim (RPG, platform, strateji vb.) veya ilgi alanlarınıza göre önerilerde bulunabilirim.",
+                "Oyun geliştirme çok geniş bir alan. Hangi aşamada yardıma ihtiyacınız var? Fikir aşaması, motor seçimi, programlama, tasarım mı?"
             ]
         }
     };
-
-    // Hoş geldin mesajı, addMessage, showTypingIndicator fonksiyonları aynı kalır.
-    // ... (Önceki koddan kopyala) ...
 
     function addWelcomeMessage() {
         const welcomeMessageHTML = `
@@ -160,16 +162,29 @@ document.addEventListener('DOMContentLoaded', () => {
     async function correctAndCompleteSpelling(word) {
         if (!word || word.length < 2) return word;
         try {
+            // console.log(`Datamuse API için "${word}" sorgusu gönderiliyor...`); // Hata ayıklama için
             const response = await fetch(FREE_APIS.SPELLCHECK(word));
+            // console.log(`Datamuse API yanıtı (RAW):`, response); // Hata ayıklama için
+
+            // Yanıtın OK (200) olup olmadığını kontrol et
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`HTTP Hata! Durum: ${response.status}, Yanıt: ${errorText}`);
+            }
+
             const data = await response.json();
+            // console.log(`Datamuse API yanıtı (JSON):`, data); // Hata ayıklama için
+
             if (data.length > 0 && data[0].word.toLowerCase() !== word.toLowerCase()) {
                 if (data[0].score > 8000 || (data[0].word.startsWith(word) && data[0].word.length - word.length < 3)) {
+                    // console.log(`Düzeltildi: "${word}" -> "${data[0].word}"`); // Hata ayıklama için
                     return data[0].word;
                 }
             }
             return word;
         } catch (error) {
             console.warn("Yazım düzeltme API hatası:", error);
+            // Hata durumunda orijinal kelimeyi döndür
             return word;
         }
     }
@@ -185,7 +200,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const customCorrections = {
             "mrb": "merhaba", "slm": "selam", "tşkkr": "teşekkür", "tesekkur": "teşekkür",
-            "nslsn": "nasılsın", "nbr": "naber", "yzm": "yazım", "knk": "kanka", "tm": "tamam"
+            "nslsn": "nasılsın", "nbr": "naber", "yzm": "yazım", "knk": "kanka", "tm": "tamam",
+            "berhbaa": "merhaba", // 'merhbaa' gibi sık yapılan hatalar için manuel ekleme
+            "yapay zeka nedır": "yapay zeka nedir" // Basit hatalar için
         };
         for (const [typo, correct] of Object.entries(customCorrections)) {
             const regex = new RegExp(`\\b${typo}\\b`, 'gi');
@@ -199,8 +216,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function fetchInformation(query) {
         try {
+            // console.log(`Wikipedia API için "${query}" sorgusu gönderiliyor...`); // Hata ayıklama için
             const wikiResponse = await fetch(`${FREE_APIS.WIKIPEDIA}${encodeURIComponent(query)}`);
+            // console.log(`Wikipedia API yanıtı (RAW):`, wikiResponse); // Hata ayıklama için
+
+            if (!wikiResponse.ok) {
+                 const errorText = await wikiResponse.text();
+                 throw new Error(`HTTP Hata! Durum: ${wikiResponse.status}, Yanıt: ${errorText}`);
+            }
+
             const wikiData = await wikiResponse.json();
+            // console.log(`Wikipedia API yanıtı (JSON):`, wikiData); // Hata ayıklama için
 
             if (wikiData.query?.search?.length > 0) {
                 const snippet = wikiData.query.search[0].snippet.replace(/<[^>]+>/g, '');
@@ -220,21 +246,21 @@ document.addEventListener('DOMContentLoaded', () => {
     function checkLocalKnowledge(text) {
         const lowerText = text.toLowerCase();
 
-        // Önemli: Kategorilerin sırası artık önemli!
+        // Önemli: Kategorilerin sırası çok önemli!
         // İlk olarak en spesifik ve "öncelikli" kategorileri kontrol etmeliyiz.
         // Clarification ve unresponsive gibi meta-sohbet kategorileri, diğerlerinden önce gelmeli.
         const orderedCategories = [
-            'clarification', // Düzeltmeler ve netleştirmeler
-            'unresponsive',  // Olumsuz, saldırgan ifadeler
-            'greetings',
-            'howAreYou',
+            'clarification', // Düzeltmeler ve netleştirmeler (örn: "öyle demedim", "anlamadın")
+            'unresponsive',  // Olumsuz, saldırgan ifadeler (örn: "salak")
+            'greetings',     // Selamlaşmalar (örn: "merhaba")
+            'howAreYou',     // Nasılsın soruları
             'compliments',
             'farewells',
             'aboutMe',
             'jokes',
             'weather',
             'codeRelated',
-            'gameDevelopment', // Oyun yapımı da spesifik bir konu olduğu için erken kontrol edilebilir
+            'gameDevelopment',
             'simpleSocial'
         ];
 
@@ -277,11 +303,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Eğer yerel bir chatbot cevabı yoksa, API'den bilgi arayışına uygun mu diye bak.
-        const searchKeywords = ['nedir', 'kimdir', 'nasıl yapılır', 'bilgi ver', 'açıkla', 'hakkında', 'ne demek', 'hangi']; // 'hangi' eklendi
-        const isAQuestion = corrected.endsWith('?') || searchKeywords.some(keyword => corrected.includes(keyword));
-        const isLongEnoughForSearch = corrected.split(' ').length > 2;
+        const searchKeywords = ['nedir', 'kimdir', 'nasıl yapılır', 'bilgi ver', 'açıkla', 'hakkında', 'ne demek', 'hangi', 'nelerdir']; // 'nelerdir' eklendi
+        const isAQuestion = corrected.endsWith('?') || searchKeywords.some(keyword => corrected.includes(keyword)) || corrected.split(' ').length > 3; // Daha uzun cümleler için de API'ye git
 
-        if (isAQuestion || isLongEnoughForSearch) {
+        if (isAQuestion) {
             const apiInfo = await fetchInformation(corrected);
             if (apiInfo) {
                 return {
@@ -297,9 +322,6 @@ document.addEventListener('DOMContentLoaded', () => {
             corrected: correctionNote
         };
     }
-
-    // sendMessage, addMessage, showTypingIndicator, Event listeners aynı kalır.
-    // ... (Önceki koddan kopyala) ...
 
     async function sendMessage() {
         const userMessage = userInput.value.trim();
