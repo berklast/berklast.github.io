@@ -3,21 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SKY AI - Akıllı Asistan</title>
+    <title>SKY PRO - Akıllı Asistan</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="chat-container">
-        <div class="chat-header">
-            <h1>SKY AI</h1>
-            <p>Akıllı sohbet asistanı</p>
+    <div class="app-container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h2>SKY PRO</h2>
+                <p>Akıllı Araştırma Asistanı</p>
+            </div>
+            <div class="conversation-list" id="conversation-list">
+                <!-- Konuşma geçmişi buraya gelecek -->
+            </div>
         </div>
-        <div class="chat-messages" id="chat-messages">
-            <div class="message ai-message">Merhaba! Ben SKY. Bana her konuda soru sorabilirsin.</div>
-        </div>
-        <div class="chat-input">
-            <input type="text" id="user-input" placeholder="Bir şeyler yaz..." autofocus>
-            <button id="send-button">Gönder</button>
+        <div class="chat-container">
+            <div class="chat-header">
+                <div class="chat-title">Yeni Sohbet</div>
+                <div class="chat-actions">
+                    <button id="new-chat"><i class="fas fa-plus"></i> Yeni</button>
+                </div>
+            </div>
+            <div class="chat-messages" id="chat-messages">
+                <div class="welcome-message">
+                    <h3>SKY PRO'ya Hoş Geldiniz</h3>
+                    <p>Bana her konuda soru sorabilirsiniz. İnternetten araştırıp size en doğru bilgileri sunacağım.</p>
+                </div>
+            </div>
+            <div class="chat-input-container">
+                <div class="input-wrapper">
+                    <input type="text" id="user-input" placeholder="SKY'ya soru sorun..." autofocus>
+                    <button id="send-button"><i class="fas fa-paper-plane"></i></button>
+                </div>
+                <div class="disclaimer">
+                    SKY PRO gerçek zamanlı internet araştırması yapabilir. Yanıtlar doğruluk açısından kontrol edilmelidir.
+                </div>
+            </div>
         </div>
     </div>
     <script src="script.js"></script>
