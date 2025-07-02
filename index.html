@@ -3,41 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SKY PRO - Akıllı Asistan</title>
+    <title>ULTIMATE SKY AI</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="app-container">
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <h2>SKY PRO</h2>
-                <p>Akıllı Araştırma Asistanı</p>
-            </div>
-            <div class="conversation-list" id="conversation-list">
-                <!-- Konuşma geçmişi buraya gelecek -->
-            </div>
-        </div>
         <div class="chat-container">
             <div class="chat-header">
-                <div class="chat-title">Yeni Sohbet</div>
-                <div class="chat-actions">
-                    <button id="new-chat"><i class="fas fa-plus"></i> Yeni</button>
+                <div class="logo">
+                    <i class="fas fa-brain"></i>
+                    <h1>ULTIMATE SKY AI</h1>
                 </div>
+                <div class="subtitle">Sınırsız Bilgi, Ücretsiz Erişim</div>
             </div>
             <div class="chat-messages" id="chat-messages">
                 <div class="welcome-message">
-                    <h3>SKY PRO'ya Hoş Geldiniz</h3>
-                    <p>Bana her konuda soru sorabilirsiniz. İnternetten araştırıp size en doğru bilgileri sunacağım.</p>
+                    <div class="welcome-icon"><i class="fas fa-robot"></i></div>
+                    <h2>Ultimate SKY AI'ya Hoş Geldiniz</h2>
+                    <p>Bana istediğinizi sorun! Yazım hatalarınızı düzeltebilir, eksik harfleri tamamlayabilirim.</p>
+                    <div class="examples">
+                        <p><strong>Örnek Sorular:</strong></p>
+                        <ul>
+                            <li>"Yapay zeka nedir?"</li>
+                            <li>"Bugün hava nasıl?"</li>
+                            <li>"En iyi programlama dili hangisi?"</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
             <div class="chat-input-container">
                 <div class="input-wrapper">
-                    <input type="text" id="user-input" placeholder="SKY'ya soru sorun..." autofocus>
+                    <input type="text" id="user-input" placeholder="ULTIMATE SKY'ya soru sorun..." autofocus>
                     <button id="send-button"><i class="fas fa-paper-plane"></i></button>
                 </div>
-                <div class="disclaimer">
-                    SKY PRO gerçek zamanlı internet araştırması yapabilir. Yanıtlar doğruluk açısından kontrol edilmelidir.
+                <div class="features">
+                    <span><i class="fas fa-check-circle"></i> Yazım Düzeltme</span>
+                    <span><i class="fas fa-check-circle"></i> Ücretsiz API'ler</span>
+                    <span><i class="fas fa-check-circle"></i> Akıllı Tamamlama</span>
                 </div>
             </div>
         </div>
