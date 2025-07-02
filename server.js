@@ -2,11 +2,17 @@ const express = require('express');
 const axios = require('axios');
 const cors = require('cors'); // CORS middleware'i
 const app = express();
-const port = 3000;
+const port = 3000; // Bu port numarasını değiştirebilirsiniz, çakışma olursa
 
-app.use(cors()); // Tüm kaynaklardan gelen isteklere izin ver
-app.use(express.static('.')); // Frontend dosyalarını sunar (index.html, style.css, script.js)
+// Tüm kaynaklardan gelen isteklere izin ver (geliştirme için uygun)
+// Gerçek bir uygulamada belirli domainlere izin vermek daha güvenlidir.
+app.use(cors());
 
+// Frontend dosyalarını sunar (index.html, style.css, script.js)
+// Bu, projenizi doğrudan bir web sunucusu üzerinden çalıştırmanızı sağlar.
+app.use(express.static('.'));
+
+// Wikipedia API için proxy endpoint'i
 app.get('/api/wikipedia', async (req, res) => {
     const query = req.query.q;
     if (!query) {
@@ -21,6 +27,7 @@ app.get('/api/wikipedia', async (req, res) => {
     }
 });
 
+// Datamuse (Yazım Düzeltme) API için proxy endpoint'i
 app.get('/api/spellcheck', async (req, res) => {
     const word = req.query.word;
     if (!word) {
@@ -35,6 +42,8 @@ app.get('/api/spellcheck', async (req, res) => {
     }
 });
 
+// Sunucuyu belirtilen portta dinlemeye başla
 app.listen(port, () => {
     console.log(`Sunucu http://localhost:${port} adresinde çalışıyor`);
+    console.log(`Uygulamanızı açmak için bu adresi tarayıcınızda ziyaret edin.`);
 });
