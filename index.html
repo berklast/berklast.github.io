@@ -3,36 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ULTIMATE SKY AI</title>
+    <title>Sohbet Uygulaması</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 </head>
 <body>
-    <div class="app-container">
-        <div class="chat-container">
-            <div class="chat-header">
-                <div class="logo">
-                    <i class="fas fa-brain"></i>
-                    <h1>ULTIMATE SKY AI</h1>
+    <div class="container">
+        <div id="auth-section" class="auth-section">
+            <h2>Giriş Yap / Kayıt Ol</h2>
+            <input type="email" id="auth-email" placeholder="E-posta">
+            <input type="password" id="auth-password" placeholder="Şifre">
+            <button id="register-btn">Kayıt Ol</button>
+            <button id="login-btn">Giriş Yap</button>
+            <button id="google-login-btn" class="google-btn">Google ile Giriş Yap</button>
+            <p id="auth-error" class="error-message"></p>
+            <button id="forgot-password-btn">Şifremi Unuttum</button>
+            <p><a href="#" id="verify-email-link">E-postamı Doğrula (Link Gönder)</a></p>
+        </div>
+
+        <div id="app-section" class="app-section hidden">
+            <header>
+                <div class="user-info">
+                    <span id="display-name"></span> (<span id="user-email"></span>)
                 </div>
-                <div class="subtitle">Sınırsız Bilgi, Ücretsiz Erişim</div>
+                <div class="header-buttons">
+                    <button id="friends-list-btn" class="icon-btn" title="Arkadaş Listesi">👥</button>
+                    <button id="settings-btn" class="icon-btn" title="Ayarlar">⚙️</button>
+                    <button id="logout-btn" class="icon-btn" title="Çıkış Yap">🚪</button>
+                </div>
+            </header>
+
+            <div id="main-chat-area" class="main-chat-area">
+                <h3>Genel Sohbet</h3>
+                <div id="messages-container" class="messages-container">
+                    </div>
+                <div class="message-input-area">
+                    <input type="text" id="message-input" placeholder="Mesaj yaz...">
+                    <button id="send-message-btn">Gönder</button>
+                </div>
             </div>
-            <div class="chat-messages" id="chat-messages">
+
+            <div id="friends-section" class="friends-section hidden">
+                <h3>Arkadaş Listesi</h3>
+                <div class="add-friend-area">
+                    <input type="email" id="add-friend-email" placeholder="Arkadaş E-postası">
+                    <button id="add-friend-btn">Arkadaş Ekle</button>
+                    <p id="add-friend-status" class="status-message"></p>
                 </div>
-            <div class="chat-input-container">
-                <div class="input-wrapper">
-                    <input type="text" id="user-input" placeholder="ULTIMATE SKY'ya soru sorun..." autofocus>
-                    <button id="send-button"><i class="fas fa-paper-plane"></i></button>
+                <ul id="friends-list">
+                    </ul>
+                <button id="back-to-chat-btn">Geri Dön</button>
+
+                <div id="private-chat-modal" class="modal hidden">
+                    <div class="modal-content">
+                        <span class="close-button" id="close-private-chat">&times;</span>
+                        <h4 id="private-chat-title"></h4>
+                        <div id="private-messages-container" class="messages-container"></div>
+                        <div class="message-input-area">
+                            <input type="text" id="private-message-input" placeholder="Özel mesaj yaz...">
+                            <button id="send-private-message-btn">Gönder</button>
+                        </div>
+                    </div>
                 </div>
-                <div class="features">
-                    <span><i class="fas fa-check-circle"></i> Yazım Düzeltme</span>
-                    <span><i class="fas fa-check-circle"></i> Ücretsiz API'ler</span>
-                    <span><i class="fas fa-check-circle"></i> Akıllı Tamamlama</span>
+            </div>
+
+            <div id="settings-section" class="settings-section hidden">
+                <h3>Ayarlar</h3>
+                <div class="setting-item">
+                    <h4>İsim Değiştir</h4>
+                    <input type="text" id="new-display-name" placeholder="Yeni İsim">
+                    <button id="update-display-name-btn">Güncelle</button>
+                    <p id="display-name-status" class="status-message"></p>
                 </div>
+                <div class="setting-item">
+                    <h4>E-posta Değiştir</h4>
+                    <input type="email" id="new-email" placeholder="Yeni E-posta">
+                    <button id="update-email-btn">Güncelle</button>
+                    <p id="email-status" class="status-message"></p>
+                    <p class="small-text">Değişiklik için mevcut e-postanıza onay kodu gidecektir.</p>
+                </div>
+                <div class="setting-item">
+                    <h4>Şifre Değiştir</h4>
+                    <input type="password" id="current-password" placeholder="Mevcut Şifre">
+                    <input type="password" id="new-password" placeholder="Yeni Şifre">
+                    <button id="update-password-btn">Güncelle</button>
+                    <p id="password-status" class="status-message"></p>
+                    <p class="small-text">Şifre değişikliği sonrası tekrar giriş yapmanız gerekebilir.</p>
+                </div>
+                <button id="back-from-settings-btn">Geri Dön</button>
             </div>
         </div>
     </div>
-    <script src="script.js"></script>
+
+    <script type="module" src="script.js"></script>
 </body>
 </html>
