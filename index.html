@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sohbet Uygulaması</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <!-- Firebase SDK'ları artık script.js içinden modül olarak yüklenecek,
+         bu yüzden buradaki global script etiketlerini kaldırdık. -->
 </head>
 <body>
     <div class="container">
+        <!-- Giriş/Kayıt Alanı -->
         <div id="auth-section" class="auth-section">
             <h2>Giriş Yap / Kayıt Ol</h2>
             <input type="email" id="auth-email" placeholder="E-posta">
@@ -23,6 +23,7 @@
             <p><a href="#" id="verify-email-link">E-postamı Doğrula (Link Gönder)</a></p>
         </div>
 
+        <!-- Ana Uygulama Alanı -->
         <div id="app-section" class="app-section hidden">
             <header>
                 <div class="user-info">
@@ -35,16 +36,19 @@
                 </div>
             </header>
 
+            <!-- Ana Sohbet Alanı -->
             <div id="main-chat-area" class="main-chat-area">
                 <h3>Genel Sohbet</h3>
                 <div id="messages-container" class="messages-container">
-                    </div>
+                    <!-- Mesajlar buraya yüklenecek -->
+                </div>
                 <div class="message-input-area">
                     <input type="text" id="message-input" placeholder="Mesaj yaz...">
                     <button id="send-message-btn">Gönder</button>
                 </div>
             </div>
 
+            <!-- Arkadaş Listesi / Özel Sohbet Alanı -->
             <div id="friends-section" class="friends-section hidden">
                 <h3>Arkadaş Listesi</h3>
                 <div class="add-friend-area">
@@ -53,9 +57,11 @@
                     <p id="add-friend-status" class="status-message"></p>
                 </div>
                 <ul id="friends-list">
-                    </ul>
+                    <!-- Arkadaşlar buraya yüklenecek -->
+                </ul>
                 <button id="back-to-chat-btn">Geri Dön</button>
 
+                <!-- Özel Sohbet Penceresi -->
                 <div id="private-chat-modal" class="modal hidden">
                     <div class="modal-content">
                         <span class="close-button" id="close-private-chat">&times;</span>
@@ -69,6 +75,7 @@
                 </div>
             </div>
 
+            <!-- Ayarlar Alanı -->
             <div id="settings-section" class="settings-section hidden">
                 <h3>Ayarlar</h3>
                 <div class="setting-item">
@@ -97,6 +104,7 @@
         </div>
     </div>
 
+    <!-- Kendi JavaScript dosyamız -->
     <script type="module" src="script.js"></script>
 </body>
 </html>
