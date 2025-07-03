@@ -3,123 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BerkChat | Mükemmel Sohbet Deneyimi</title>
+    <title>SKYChat | Premium Sohbet Deneyimi</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
     <style>
         :root {
-            --primary: #4361ee;
-            --secondary: #3f37c9;
-            --success: #4cc9f0;
-            --dark: #212529;
+            --primary: #3a86ff;
+            --primary-dark: #2667cc;
+            --secondary: #8338ec;
+            --accent: #ff006e;
+            --success: #06d6a0;
+            --warning: #ffbe0b;
+            --danger: #ef476f;
+            --dark: #1a1a2e;
+            --dark-light: #16213e;
             --light: #f8f9fa;
             --gray: #6c757d;
-            --danger: #e63946;
+            --gray-light: #e9ecef;
         }
         
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
         }
         
         body {
-            background-color: #f0f2f5;
+            background-color: var(--light);
             color: var(--dark);
             height: 100vh;
-            display: flex;
-            flex-direction: column;
+            overflow: hidden;
         }
         
         /* Auth Container */
         .auth-container {
             display: flex;
             min-height: 100vh;
+            background: linear-gradient(135deg, var(--dark), var(--dark-light));
         }
         
-        .left-panel {
+        .brand-section {
             flex: 1;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 2rem;
+            padding: 3rem;
+            color: white;
+            background: url('https://images.unsplash.com/photo-1519681393784-d120267933ba?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80') no-repeat center center;
+            background-size: cover;
+            position: relative;
+        }
+        
+        .brand-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(26, 26, 46, 0.8);
+        }
+        
+        .brand-content {
+            position: relative;
+            z-index: 1;
+            max-width: 600px;
             text-align: center;
         }
         
-        .left-panel h1 {
-            font-size: 3rem;
+        .logo {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .logo i {
+            margin-right: 1rem;
+            color: var(--primary);
+        }
+        
+        .brand-section h1 {
+            font-size: 2.5rem;
             margin-bottom: 1rem;
+            line-height: 1.2;
         }
         
-        .left-panel p {
-            font-size: 1.2rem;
-            max-width: 600px;
+        .brand-section p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
         }
         
-        .right-panel {
+        .auth-section {
             flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 2rem;
-            background-color: var(--light);
+            background-color: white;
+        }
+        
+        .auth-card {
+            width: 100%;
+            max-width: 450px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .auth-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--gray-light);
+        }
+        
+        .auth-tab {
+            flex: 1;
+            padding: 1.2rem;
+            text-align: center;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--gray);
+        }
+        
+        .auth-tab.active {
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+        }
+        
+        .auth-content {
+            padding: 2rem;
         }
         
         .auth-form {
-            width: 100%;
-            max-width: 400px;
-            background: white;
-            padding: 2rem;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            display: none;
         }
         
-        .auth-form h2 {
-            margin-bottom: 1.5rem;
-            text-align: center;
-            color: var(--dark);
+        .auth-form.active {
+            display: block;
         }
         
         .form-group {
             margin-bottom: 1.5rem;
         }
         
-        .form-group label {
+        .form-label {
             display: block;
             margin-bottom: 0.5rem;
             font-weight: 500;
+            color: var(--dark);
         }
         
         .form-control {
             width: 100%;
-            padding: 0.8rem;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            padding: 0.9rem 1.2rem;
+            border: 1px solid var(--gray-light);
+            border-radius: 8px;
             font-size: 1rem;
-            transition: border-color 0.3s;
+            transition: all 0.3s ease;
         }
         
         .form-control:focus {
             outline: none;
             border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.2);
         }
         
         .btn {
             display: block;
             width: 100%;
-            padding: 0.8rem;
+            padding: 0.9rem;
             border: none;
-            border-radius: 5px;
+            border-radius: 8px;
             font-size: 1rem;
             font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
+            text-align: center;
         }
         
         .btn-primary {
@@ -128,53 +196,74 @@
         }
         
         .btn-primary:hover {
-            background-color: var(--secondary);
+            background-color: var(--primary-dark);
         }
         
-        .btn-secondary {
-            background-color: var(--gray);
-            color: white;
+        .btn-google {
+            background-color: white;
+            color: var(--dark);
+            border: 1px solid var(--gray-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
-        .auth-switch {
+        .btn-google i {
+            margin-right: 0.8rem;
+            color: var(--danger);
+        }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+            color: var(--gray);
+        }
+        
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background-color: var(--gray-light);
+        }
+        
+        .divider span {
+            padding: 0 1rem;
+        }
+        
+        .auth-footer {
             text-align: center;
-            margin-top: 1rem;
+            margin-top: 1.5rem;
             font-size: 0.9rem;
+            color: var(--gray);
         }
         
-        .auth-switch a {
+        .auth-footer a {
             color: var(--primary);
             text-decoration: none;
             font-weight: 600;
         }
         
-        .error-message {
-            color: var(--danger);
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-            display: none;
-        }
-        
         /* Main App */
         .app-container {
             display: none;
-            flex: 1;
             height: 100vh;
             overflow: hidden;
         }
         
         /* Header */
         .app-header {
+            height: 70px;
             background-color: white;
-            padding: 1rem;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 0 2rem;
             z-index: 100;
         }
         
-        .logo {
+        .app-logo {
             display: flex;
             align-items: center;
             font-size: 1.5rem;
@@ -182,49 +271,93 @@
             color: var(--primary);
         }
         
-        .logo i {
-            margin-right: 0.5rem;
+        .app-logo i {
+            margin-right: 0.8rem;
+        }
+        
+        .app-nav {
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-item {
+            margin-left: 1.5rem;
+            position: relative;
+            cursor: pointer;
+        }
+        
+        .nav-item i {
+            font-size: 1.2rem;
+            color: var(--gray);
+            transition: color 0.3s ease;
+        }
+        
+        .nav-item:hover i {
+            color: var(--primary);
+        }
+        
+        .badge {
+            position: absolute;
+            top: -5px;
+            right: -8px;
+            background-color: var(--accent);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 600;
         }
         
         .user-menu {
             display: flex;
             align-items: center;
+            margin-left: 2rem;
+            cursor: pointer;
         }
         
         .user-avatar {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background-color: var(--success);
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            overflow: hidden;
+            margin-right: 0.8rem;
+            border: 2px solid var(--gray-light);
+        }
+        
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .user-name {
             font-weight: 600;
-            margin-right: 1rem;
-            cursor: pointer;
+            color: var(--dark);
         }
         
         /* Main Content */
         .main-content {
             display: flex;
-            flex: 1;
-            overflow: hidden;
+            height: calc(100vh - 70px);
         }
         
         /* Sidebar */
         .sidebar {
-            width: 300px;
+            width: 350px;
             background-color: white;
-            border-right: 1px solid #eee;
+            border-right: 1px solid var(--gray-light);
             display: flex;
             flex-direction: column;
             overflow: hidden;
         }
         
         .sidebar-header {
-            padding: 1rem;
-            border-bottom: 1px solid #eee;
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-light);
         }
         
         .search-container {
@@ -233,7 +366,7 @@
         
         .search-container i {
             position: absolute;
-            left: 10px;
+            left: 15px;
             top: 50%;
             transform: translateY(-50%);
             color: var(--gray);
@@ -241,28 +374,47 @@
         
         .search-container input {
             width: 100%;
-            padding: 0.6rem 0.6rem 0.6rem 2rem;
-            border: 1px solid #ddd;
-            border-radius: 20px;
+            padding: 0.8rem 0.8rem 0.8rem 2.5rem;
+            border: 1px solid var(--gray-light);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+        
+        .search-container input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.2);
         }
         
         .sidebar-tabs {
             display: flex;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--gray-light);
         }
         
-        .tab {
+        .sidebar-tab {
             flex: 1;
-            padding: 1rem;
+            padding: 1.2rem;
             text-align: center;
+            font-weight: 600;
             cursor: pointer;
-            font-weight: 500;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
+            color: var(--gray);
+            position: relative;
         }
         
-        .tab.active {
-            border-bottom: 2px solid var(--primary);
+        .sidebar-tab.active {
             color: var(--primary);
+        }
+        
+        .sidebar-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background-color: var(--primary);
         }
         
         .sidebar-content {
@@ -277,27 +429,51 @@
         .friend-item {
             display: flex;
             align-items: center;
-            padding: 1rem;
-            border-bottom: 1px solid #eee;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--gray-light);
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s ease;
         }
         
         .friend-item:hover {
-            background-color: #f5f5f5;
+            background-color: rgba(58, 134, 255, 0.05);
+        }
+        
+        .friend-item.active {
+            background-color: rgba(58, 134, 255, 0.1);
         }
         
         .friend-avatar {
             width: 50px;
             height: 50px;
             border-radius: 50%;
-            background-color: var(--success);
-            color: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: 600;
+            overflow: hidden;
             margin-right: 1rem;
+            position: relative;
+        }
+        
+        .friend-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .status-indicator {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+        
+        .status-online {
+            background-color: var(--success);
+        }
+        
+        .status-offline {
+            background-color: var(--gray);
         }
         
         .friend-info {
@@ -314,9 +490,10 @@
             color: var(--gray);
         }
         
-        .online {
-            color: #4ade80;
-            font-weight: 600;
+        .friend-time {
+            font-size: 0.8rem;
+            color: var(--gray);
+            text-align: right;
         }
         
         /* Chat Area */
@@ -324,19 +501,70 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            background-color: #f0f2f5;
+            background-color: #f5f7fb;
         }
         
         .chat-header {
+            height: 80px;
             background-color: white;
-            padding: 1rem;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--gray-light);
             display: flex;
             align-items: center;
+            padding: 0 1.5rem;
+        }
+        
+        .chat-header-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 1rem;
+            position: relative;
+        }
+        
+        .chat-header-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         
         .chat-header-info {
-            margin-left: 1rem;
+            flex: 1;
+        }
+        
+        .chat-header-name {
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+        
+        .chat-header-status {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+        
+        .chat-header-actions {
+            display: flex;
+        }
+        
+        .chat-header-action {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .chat-header-action:hover {
+            background-color: var(--gray-light);
+        }
+        
+        .chat-header-action i {
+            color: var(--gray);
+            font-size: 1.1rem;
         }
         
         .chat-messages {
@@ -345,14 +573,23 @@
             overflow-y: auto;
             display: flex;
             flex-direction: column;
+            background-image: url('https://web.whatsapp.com/img/bg-chat-tile-light_a4be512e7195b6b733d9110b408f075d.png');
+            background-repeat: repeat;
+            background-size: 250px;
         }
         
         .message {
-            max-width: 70%;
+            max-width: 65%;
             padding: 0.8rem 1.2rem;
             margin-bottom: 1rem;
-            border-radius: 18px;
+            border-radius: 12px;
             position: relative;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         
         .message-sent {
@@ -365,7 +602,7 @@
         .message-received {
             align-self: flex-start;
             background-color: white;
-            border: 1px solid #eee;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             border-bottom-left-radius: 5px;
         }
         
@@ -376,24 +613,41 @@
             opacity: 0.8;
         }
         
-        .message-input {
-            padding: 1rem;
-            background-color: white;
-            border-top: 1px solid #eee;
-            display: flex;
+        .message-received .message-time {
+            color: var(--gray);
         }
         
-        .message-input input {
+        .message-sent .message-time {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .message-input-container {
+            padding: 1rem;
+            background-color: white;
+            border-top: 1px solid var(--gray-light);
+            display: flex;
+            align-items: center;
+        }
+        
+        .message-input {
             flex: 1;
-            padding: 0.8rem 1rem;
-            border: 1px solid #ddd;
-            border-radius: 20px;
+            padding: 0.9rem 1.2rem;
+            border: 1px solid var(--gray-light);
+            border-radius: 25px;
             margin-right: 1rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .message-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(58, 134, 255, 0.2);
         }
         
         .send-btn {
-            width: 45px;
-            height: 45px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             background-color: var(--primary);
             color: white;
@@ -403,48 +657,245 @@
             align-items: center;
             cursor: pointer;
             font-size: 1.2rem;
+            transition: background-color 0.3s ease;
         }
         
-        /* Settings */
-        .settings-container {
-            display: none;
-            padding: 2rem;
-            max-width: 600px;
-            margin: 0 auto;
+        .send-btn:hover {
+            background-color: var(--primary-dark);
         }
         
-        .settings-card {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            padding: 2rem;
+        .send-btn:disabled {
+            background-color: var(--gray-light);
+            cursor: not-allowed;
         }
         
-        .settings-card h2 {
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid #eee;
+        /* Settings Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
         }
         
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal {
+            background-color: white;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+        
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .modal-close:hover {
+            background-color: var(--gray-light);
+        }
+        
+        .modal-body {
+            padding: 1.5rem;
+            overflow-y: auto;
+            max-height: calc(90vh - 120px);
+        }
+        
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--gray-light);
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .btn-cancel {
+            background-color: var(--gray-light);
+            color: var(--dark);
+            margin-right: 1rem;
+        }
+        
+        .btn-save {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        /* Settings Form */
         .settings-section {
             margin-bottom: 2rem;
         }
         
         .settings-section h3 {
             margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--gray-light);
             color: var(--dark);
         }
         
-        .settings-actions {
+        .avatar-selector {
             display: flex;
-            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
             margin-top: 1rem;
         }
         
+        .avatar-option {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .avatar-option:hover {
+            transform: scale(1.05);
+        }
+        
+        .avatar-option.selected {
+            border-color: var(--primary);
+        }
+        
+        .avatar-option img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        /* Friend Requests */
+        .request-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid var(--gray-light);
+        }
+        
+        .request-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin-right: 1rem;
+        }
+        
+        .request-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .request-info {
+            flex: 1;
+        }
+        
+        .request-name {
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+        
+        .request-actions {
+            display: flex;
+            margin-left: 1rem;
+        }
+        
+        .request-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .request-btn.accept {
+            background-color: rgba(6, 214, 160, 0.1);
+            color: var(--success);
+        }
+        
+        .request-btn.reject {
+            background-color: rgba(239, 71, 111, 0.1);
+            color: var(--danger);
+        }
+        
+        .request-btn:hover {
+            background-color: rgba(58, 134, 255, 0.1);
+        }
+        
+        /* Add Friend */
+        .add-friend-container {
+            padding: 1.5rem;
+        }
+        
+        .search-results {
+            margin-top: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
         /* Responsive */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 300px;
+            }
+        }
+        
         @media (max-width: 768px) {
             .auth-container {
                 flex-direction: column;
+                height: auto;
+                min-height: 100vh;
+            }
+            
+            .brand-section {
+                padding: 2rem 1.5rem;
+            }
+            
+            .auth-section {
+                padding: 2rem 1.5rem;
             }
             
             .main-content {
@@ -453,7 +904,13 @@
             
             .sidebar {
                 width: 100%;
-                max-height: 300px;
+                height: 300px;
+                border-right: none;
+                border-bottom: 1px solid var(--gray-light);
+            }
+            
+            .chat-area {
+                height: calc(100vh - 370px);
             }
         }
     </style>
@@ -461,49 +918,70 @@
 <body>
     <!-- Authentication Container -->
     <div class="auth-container" id="authContainer">
-        <div class="left-panel">
-            <h1><i class="fas fa-comments"></i> BerkChat</h1>
-            <p>Mükemmel sohbet deneyimi için doğru adres. Arkadaşlarınla anında bağlantı kur, mesajlaş ve eğlen!</p>
-        </div>
-        <div class="right-panel">
-            <div class="auth-form" id="loginForm">
-                <h2>Giriş Yap</h2>
-                <div class="form-group">
-                    <label for="loginEmail">E-posta</label>
-                    <input type="email" id="loginEmail" class="form-control" placeholder="E-postanızı girin">
-                    <div class="error-message" id="loginEmailError"></div>
+        <div class="brand-section">
+            <div class="brand-content">
+                <div class="logo">
+                    <i class="fas fa-comment-dots"></i> SKYChat
                 </div>
-                <div class="form-group">
-                    <label for="loginPassword">Şifre</label>
-                    <input type="password" id="loginPassword" class="form-control" placeholder="Şifrenizi girin">
-                    <div class="error-message" id="loginPasswordError"></div>
-                </div>
-                <button class="btn btn-primary" id="loginBtn">Giriş Yap</button>
-                <div class="auth-switch">
-                    Hesabınız yok mu? <a href="#" id="showSignup">Kayıt Ol</a>
-                </div>
+                <h1>Premium Sohbet Deneyimi</h1>
+                <p>Gerçek kullanıcılarla anında bağlantı kurun, mesajlaşın ve dünyanın her yerindeki insanlarla iletişimde kalın.</p>
             </div>
-            
-            <div class="auth-form" id="signupForm" style="display: none;">
-                <h2>Hesap Oluştur</h2>
-                <div class="form-group">
-                    <label for="signupName">Adınız</label>
-                    <input type="text" id="signupName" class="form-control" placeholder="Adınızı girin">
-                    <div class="error-message" id="signupNameError"></div>
+        </div>
+        <div class="auth-section">
+            <div class="auth-card">
+                <div class="auth-tabs">
+                    <div class="auth-tab active" data-tab="login">Giriş Yap</div>
+                    <div class="auth-tab" data-tab="signup">Kayıt Ol</div>
                 </div>
-                <div class="form-group">
-                    <label for="signupEmail">E-posta</label>
-                    <input type="email" id="signupEmail" class="form-control" placeholder="E-postanızı girin">
-                    <div class="error-message" id="signupEmailError"></div>
-                </div>
-                <div class="form-group">
-                    <label for="signupPassword">Şifre</label>
-                    <input type="password" id="signupPassword" class="form-control" placeholder="Şifrenizi oluşturun (en az 6 karakter)">
-                    <div class="error-message" id="signupPasswordError"></div>
-                </div>
-                <button class="btn btn-primary" id="signupBtn">Kayıt Ol</button>
-                <div class="auth-switch">
-                    Zaten hesabınız var mı? <a href="#" id="showLogin">Giriş Yap</a>
+                
+                <div class="auth-content">
+                    <!-- Login Form -->
+                    <div class="auth-form active" id="loginForm">
+                        <div class="form-group">
+                            <label for="loginEmail" class="form-label">E-posta</label>
+                            <input type="email" id="loginEmail" class="form-control" placeholder="E-postanızı girin">
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword" class="form-label">Şifre</label>
+                            <input type="password" id="loginPassword" class="form-control" placeholder="Şifrenizi girin">
+                        </div>
+                        <button class="btn btn-primary" id="loginBtn">Giriş Yap</button>
+                        <div class="divider">
+                            <span>veya</span>
+                        </div>
+                        <button class="btn btn-google" id="googleLoginBtn">
+                            <i class="fab fa-google"></i> Google ile Giriş Yap
+                        </button>
+                        <div class="auth-footer">
+                            Hesabınız yok mu? <a href="#" id="showSignup">Kayıt Ol</a>
+                        </div>
+                    </div>
+                    
+                    <!-- Signup Form -->
+                    <div class="auth-form" id="signupForm">
+                        <div class="form-group">
+                            <label for="signupName" class="form-label">Adınız</label>
+                            <input type="text" id="signupName" class="form-control" placeholder="Adınızı girin">
+                        </div>
+                        <div class="form-group">
+                            <label for="signupEmail" class="form-label">E-posta</label>
+                            <input type="email" id="signupEmail" class="form-control" placeholder="E-postanızı girin">
+                        </div>
+                        <div class="form-group">
+                            <label for="signupPassword" class="form-label">Şifre</label>
+                            <input type="password" id="signupPassword" class="form-control" placeholder="Şifrenizi oluşturun (en az 6 karakter)">
+                        </div>
+                        <button class="btn btn-primary" id="signupBtn">Kayıt Ol</button>
+                        <div class="divider">
+                            <span>veya</span>
+                        </div>
+                        <button class="btn btn-google" id="googleSignupBtn">
+                            <i class="fab fa-google"></i> Google ile Kayıt Ol
+                        </button>
+                        <div class="auth-footer">
+                            Zaten hesabınız var mı? <a href="#" id="showLogin">Giriş Yap</a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -513,12 +991,26 @@
     <div class="app-container" id="appContainer">
         <!-- Header -->
         <div class="app-header">
-            <div class="logo">
-                <i class="fas fa-comments"></i> BerkChat
+            <div class="app-logo">
+                <i class="fas fa-comment-dots"></i> SKYChat
             </div>
-            <div class="user-menu">
-                <div class="user-avatar" id="userAvatar">B</div>
-                <button class="btn btn-secondary" id="logoutBtn">Çıkış Yap</button>
+            <div class="app-nav">
+                <div class="nav-item" id="notificationsBtn">
+                    <i class="fas fa-bell"></i>
+                    <div class="badge">3</div>
+                </div>
+                <div class="nav-item" id="friendsBtn">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <div class="nav-item" id="settingsBtn">
+                    <i class="fas fa-cog"></i>
+                </div>
+                <div class="user-menu" id="userMenu">
+                    <div class="user-avatar">
+                        <img src="https://i.pravatar.cc/150?img=3" alt="User" id="currentUserAvatar">
+                    </div>
+                    <div class="user-name" id="currentUserName">Kullanıcı</div>
+                </div>
             </div>
         </div>
         
@@ -529,45 +1021,167 @@
                 <div class="sidebar-header">
                     <div class="search-container">
                         <i class="fas fa-search"></i>
-                        <input type="text" placeholder="Arkadaş ara...">
+                        <input type="text" placeholder="Arkadaş ara..." id="friendSearch">
                     </div>
                 </div>
                 
                 <div class="sidebar-tabs">
-                    <div class="tab active" data-tab="friends">Arkadaşlar</div>
-                    <div class="tab" data-tab="requests">İstekler</div>
+                    <div class="sidebar-tab active" data-tab="friends">Arkadaşlar</div>
+                    <div class="sidebar-tab" data-tab="requests">İstekler</div>
                 </div>
                 
                 <div class="sidebar-content">
+                    <!-- Friends Tab Content -->
                     <ul class="friend-list" id="friendList">
                         <!-- Friends will be populated here -->
                     </ul>
+                    
+                    <!-- Requests Tab Content -->
+                    <div id="requestsTab" style="display: none;">
+                        <div class="friend-item">
+                            <div class="friend-avatar">
+                                <img src="https://i.pravatar.cc/150?img=5" alt="Friend">
+                                <div class="status-indicator status-online"></div>
+                            </div>
+                            <div class="friend-info">
+                                <div class="friend-name">Ahmet Yılmaz</div>
+                                <div class="friend-status">Arkadaşlık isteği gönderdi</div>
+                            </div>
+                            <div class="friend-time">2 gün önce</div>
+                        </div>
+                    </div>
                 </div>
             </div>
             
             <!-- Chat Area -->
             <div class="chat-area">
                 <div class="chat-header">
-                    <div class="friend-avatar" id="chatFriendAvatar">A</div>
+                    <div class="chat-header-avatar" id="chatFriendAvatar">
+                        <img src="https://i.pravatar.cc/150?img=1" alt="Friend">
+                        <div class="status-indicator status-online"></div>
+                    </div>
                     <div class="chat-header-info">
-                        <div class="friend-name" id="chatFriendName">Arkadaş Seçin</div>
-                        <div class="friend-status" id="chatFriendStatus">Çevrimiçi durumu</div>
+                        <div class="chat-header-name" id="chatFriendName">Arkadaş Seçin</div>
+                        <div class="chat-header-status" id="chatFriendStatus">Çevrimiçi durumu</div>
+                    </div>
+                    <div class="chat-header-actions">
+                        <div class="chat-header-action">
+                            <i class="fas fa-phone-alt"></i>
+                        </div>
+                        <div class="chat-header-action">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <div class="chat-header-action">
+                            <i class="fas fa-info-circle"></i>
+                        </div>
                     </div>
                 </div>
                 
                 <div class="chat-messages" id="chatMessages">
-                    <!-- Messages will appear here -->
                     <div class="welcome-message">
-                        <p>BerkChat'e hoş geldiniz! Sol taraftan bir arkadaş seçerek sohbete başlayabilirsiniz.</p>
+                        <p>SKYChat'e hoş geldiniz! Sol taraftan bir arkadaş seçerek sohbete başlayabilirsiniz.</p>
                     </div>
                 </div>
                 
-                <div class="message-input">
-                    <input type="text" id="messageInput" placeholder="Bir mesaj yazın..." disabled>
+                <div class="message-input-container">
+                    <input type="text" class="message-input" id="messageInput" placeholder="Bir mesaj yazın..." disabled>
                     <button class="send-btn" id="sendBtn" disabled>
                         <i class="fas fa-paper-plane"></i>
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">Hesap Ayarları</div>
+                <div class="modal-close" id="closeSettingsModal">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="settings-section">
+                    <h3>Profil Bilgileri</h3>
+                    <div class="form-group">
+                        <label for="settingsName" class="form-label">Adınız</label>
+                        <input type="text" id="settingsName" class="form-control" value="Berkcan Yıldız">
+                    </div>
+                    <div class="form-group">
+                        <label for="settingsEmail" class="form-label">E-posta</label>
+                        <input type="email" id="settingsEmail" class="form-control" value="berkcan@example.com">
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h3>Profil Resmi</h3>
+                    <div class="avatar-selector">
+                        <div class="avatar-option selected">
+                            <img src="https://i.pravatar.cc/150?img=3" alt="Avatar 1">
+                        </div>
+                        <div class="avatar-option">
+                            <img src="https://i.pravatar.cc/150?img=5" alt="Avatar 2">
+                        </div>
+                        <div class="avatar-option">
+                            <img src="https://i.pravatar.cc/150?img=7" alt="Avatar 3">
+                        </div>
+                        <div class="avatar-option">
+                            <img src="https://i.pravatar.cc/150?img=9" alt="Avatar 4">
+                        </div>
+                        <div class="avatar-option">
+                            <img src="https://i.pravatar.cc/150?img=11" alt="Avatar 5">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-section">
+                    <h3>Şifre Değiştir</h3>
+                    <div class="form-group">
+                        <label for="currentPassword" class="form-label">Mevcut Şifre</label>
+                        <input type="password" id="currentPassword" class="form-control" placeholder="Mevcut şifrenizi girin">
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword" class="form-label">Yeni Şifre</label>
+                        <input type="password" id="newPassword" class="form-control" placeholder="Yeni şifrenizi girin">
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword" class="form-label">Yeni Şifre Tekrar</label>
+                        <input type="password" id="confirmPassword" class="form-control" placeholder="Yeni şifrenizi tekrar girin">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-cancel" id="cancelSettingsBtn">İptal</button>
+                <button class="btn btn-save" id="saveSettingsBtn">Kaydet</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Friend Modal -->
+    <div class="modal-overlay" id="addFriendModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">Arkadaş Ekle</div>
+                <div class="modal-close" id="closeAddFriendModal">
+                    <i class="fas fa-times"></i>
+                </div>
+            </div>
+            <div class="modal-body">
+                <div class="add-friend-container">
+                    <div class="form-group">
+                        <label for="searchFriend" class="form-label">Kullanıcı Adı veya E-posta</label>
+                        <input type="text" id="searchFriend" class="form-control" placeholder="Arkadaşınızı arayın">
+                    </div>
+                    
+                    <div class="search-results" id="searchResults">
+                        <!-- Search results will appear here -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-cancel" id="cancelAddFriendBtn">İptal</button>
             </div>
         </div>
     </div>
@@ -590,6 +1204,15 @@
         const auth = firebase.auth();
         const db = firebase.firestore();
         
+        // Avatar options (using free placeholder images)
+        const avatarOptions = [
+            "https://i.pravatar.cc/150?img=3",
+            "https://i.pravatar.cc/150?img=5",
+            "https://i.pravatar.cc/150?img=7",
+            "https://i.pravatar.cc/150?img=9",
+            "https://i.pravatar.cc/150?img=11"
+        ];
+        
         // DOM Elements
         const authContainer = document.getElementById('authContainer');
         const appContainer = document.getElementById('appContainer');
@@ -597,29 +1220,76 @@
         const signupForm = document.getElementById('signupForm');
         const loginBtn = document.getElementById('loginBtn');
         const signupBtn = document.getElementById('signupBtn');
+        const googleLoginBtn = document.getElementById('googleLoginBtn');
+        const googleSignupBtn = document.getElementById('googleSignupBtn');
         const showSignup = document.getElementById('showSignup');
         const showLogin = document.getElementById('showLogin');
+        const authTabs = document.querySelectorAll('.auth-tab');
         const logoutBtn = document.getElementById('logoutBtn');
-        const userAvatar = document.getElementById('userAvatar');
+        const userAvatar = document.getElementById('currentUserAvatar');
+        const userName = document.getElementById('currentUserName');
         const friendList = document.getElementById('friendList');
         const chatMessages = document.getElementById('chatMessages');
         const messageInput = document.getElementById('messageInput');
         const sendBtn = document.getElementById('sendBtn');
         const chatFriendName = document.getElementById('chatFriendName');
-        const chatFriendAvatar = document.getElementById('chatFriendAvatar');
+        const chatFriendAvatar = document.getElementById('chatFriendAvatar').querySelector('img');
         const chatFriendStatus = document.getElementById('chatFriendStatus');
+        const friendSearch = document.getElementById('friendSearch');
+        const sidebarTabs = document.querySelectorAll('.sidebar-tab');
+        const requestsTab = document.getElementById('requestsTab');
+        const notificationsBtn = document.getElementById('notificationsBtn');
+        const friendsBtn = document.getElementById('friendsBtn');
+        const settingsBtn = document.getElementById('settingsBtn');
+        const userMenu = document.getElementById('userMenu');
+        const settingsModal = document.getElementById('settingsModal');
+        const closeSettingsModal = document.getElementById('closeSettingsModal');
+        const cancelSettingsBtn = document.getElementById('cancelSettingsBtn');
+        const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+        const settingsName = document.getElementById('settingsName');
+        const settingsEmail = document.getElementById('settingsEmail');
+        const currentPassword = document.getElementById('currentPassword');
+        const newPassword = document.getElementById('newPassword');
+        const confirmPassword = document.getElementById('confirmPassword');
+        const avatarOptionsElements = document.querySelectorAll('.avatar-option');
+        const addFriendModal = document.getElementById('addFriendModal');
+        const closeAddFriendModal = document.getElementById('closeAddFriendModal');
+        const cancelAddFriendBtn = document.getElementById('cancelAddFriendBtn');
+        const searchFriend = document.getElementById('searchFriend');
+        const searchResults = document.getElementById('searchResults');
         
         // Toggle auth forms
-        showSignup.addEventListener('click', (e) => {
-            e.preventDefault();
-            loginForm.style.display = 'none';
-            signupForm.style.display = 'block';
+        authTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.dataset.tab;
+                
+                authTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                document.querySelectorAll('.auth-form').forEach(form => {
+                    form.classList.remove('active');
+                });
+                
+                document.getElementById(`${tabId}Form`).classList.add('active');
+            });
         });
         
-        showLogin.addEventListener('click', (e) => {
-            e.preventDefault();
-            signupForm.style.display = 'none';
-            loginForm.style.display = 'block';
+        // Toggle sidebar tabs
+        sidebarTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.dataset.tab;
+                
+                sidebarTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                if (tabId === 'friends') {
+                    friendList.style.display = 'block';
+                    requestsTab.style.display = 'none';
+                } else if (tabId === 'requests') {
+                    friendList.style.display = 'none';
+                    requestsTab.style.display = 'block';
+                }
+            });
         });
         
         // Login function
@@ -629,12 +1299,9 @@
             
             auth.signInWithEmailAndPassword(email, password)
                 .then((userCredential) => {
-                    // Check if email is verified
                     if (userCredential.user.emailVerified) {
-                        // User is logged in and email is verified
-                        showApp();
+                        showApp(userCredential.user);
                     } else {
-                        // Email not verified
                         alert('Lütfen e-postanıza gönderilen doğrulama linkine tıklayın. E-postanızı kontrol edin.');
                         auth.signOut();
                     }
@@ -652,116 +1319,191 @@
             
             auth.createUserWithEmailAndPassword(email, password)
                 .then((userCredential) => {
+                    // Save user data to Firestore
+                    return db.collection('users').doc(userCredential.user.uid).set({
+                        name: name,
+                        email: email,
+                        avatar: avatarOptions[Math.floor(Math.random() * avatarOptions.length)],
+                        friends: [],
+                        friendRequests: [],
+                        status: 'offline',
+                        lastSeen: new Date()
+                    });
+                })
+                .then(() => {
                     // Send verification email
-                    return userCredential.user.sendEmailVerification();
+                    return auth.currentUser.sendEmailVerification();
                 })
                 .then(() => {
                     alert('Doğrulama e-postası gönderildi. Lütfen e-postanızı kontrol edin ve hesabınızı doğrulayın.');
                     // Switch to login form
-                    signupForm.style.display = 'none';
-                    loginForm.style.display = 'block';
+                    document.querySelector('.auth-tab[data-tab="login"]').click();
                 })
                 .catch((error) => {
                     alert('Kayıt başarısız: ' + error.message);
                 });
         });
         
-        // Logout function
-        logoutBtn.addEventListener('click', () => {
-            auth.signOut()
-                .then(() => {
-                    appContainer.style.display = 'none';
-                    authContainer.style.display = 'flex';
-                });
+        // Google login
+        googleLoginBtn.addEventListener('click', () => {
+            alert('Google ile giriş işlevi bu demo için devre dışıdır.');
+        });
+        
+        // Google signup
+        googleSignupBtn.addEventListener('click', () => {
+            alert('Google ile kayıt işlevi bu demo için devre dışıdır.');
         });
         
         // Show main app
-        function showApp() {
+        function showApp(user) {
             authContainer.style.display = 'none';
             appContainer.style.display = 'flex';
             
-            // Set user avatar
-            const user = auth.currentUser;
-            if (user) {
-                userAvatar.textContent = user.displayName ? user.displayName.charAt(0) : user.email.charAt(0);
-            }
-            
-            // Load friends
-            loadFriends();
+            // Load user data
+            db.collection('users').doc(user.uid).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        const userData = doc.data();
+                        userName.textContent = userData.name;
+                        userAvatar.src = userData.avatar;
+                        
+                        // Set user as online
+                        db.collection('users').doc(user.uid).update({
+                            status: 'online',
+                            lastSeen: null
+                        });
+                        
+                        // Load friends
+                        loadFriends(user.uid);
+                    }
+                });
         }
         
         // Load friends
-        function loadFriends() {
-            // In a real app, this would fetch from Firestore
-            const friends = [
-                { id: '1', name: 'Berkcan Yıldız', status: 'online', lastSeen: '' },
-                { id: '2', name: 'Ahmet Kaya', status: 'online', lastSeen: '' },
-                { id: '3', name: 'Ayşe Demir', status: 'offline', lastSeen: '2 saat önce' },
-                { id: '4', name: 'Mehmet Öztürk', status: 'offline', lastSeen: '5 dakika önce' },
-                { id: '5', name: 'Zeynep Şahin', status: 'online', lastSeen: '' }
-            ];
-            
-            friendList.innerHTML = '';
-            
-            friends.forEach(friend => {
-                const li = document.createElement('li');
-                li.className = 'friend-item';
-                li.dataset.id = friend.id;
-                li.innerHTML = `
-                    <div class="friend-avatar">${friend.name.charAt(0)}</div>
-                    <div class="friend-info">
-                        <div class="friend-name">${friend.name}</div>
-                        <div class="friend-status ${friend.status === 'online' ? 'online' : ''}">
-                            ${friend.status === 'online' ? 'Çevrimiçi' : `Çevrimdışı - ${friend.lastSeen}`}
-                        </div>
-                    </div>
-                `;
-                
-                li.addEventListener('click', () => {
-                    // Set chat header
-                    chatFriendName.textContent = friend.name;
-                    chatFriendAvatar.textContent = friend.name.charAt(0);
-                    chatFriendStatus.textContent = friend.status === 'online' ? 'Çevrimiçi' : 'Çevrimdışı';
-                    chatFriendStatus.className = `friend-status ${friend.status === 'online' ? 'online' : ''}`;
-                    
-                    // Enable message input
-                    messageInput.disabled = false;
-                    sendBtn.disabled = false;
-                    
-                    // Load chat messages
-                    loadChatMessages(friend.id);
+        function loadFriends(userId) {
+            db.collection('users').doc(userId).get()
+                .then(doc => {
+                    if (doc.exists) {
+                        const userData = doc.data();
+                        const friends = userData.friends || [];
+                        
+                        friendList.innerHTML = '';
+                        
+                        if (friends.length === 0) {
+                            friendList.innerHTML = '<div class="no-friends">Henüz arkadaşınız yok. Arkadaş eklemek için "+" butonuna tıklayın.</div>';
+                            return;
+                        }
+                        
+                        // Get friends data
+                        friends.forEach(friendId => {
+                            db.collection('users').doc(friendId).get()
+                                .then(friendDoc => {
+                                    if (friendDoc.exists) {
+                                        const friendData = friendDoc.data();
+                                        addFriendToUI(friendId, friendData);
+                                    }
+                                });
+                        });
+                    }
                 });
+        }
+        
+        // Add friend to UI
+        function addFriendToUI(friendId, friendData) {
+            const li = document.createElement('li');
+            li.className = 'friend-item';
+            li.dataset.id = friendId;
+            
+            const lastSeenText = friendData.status === 'online' ? 'Çevrimiçi' : 
+                                friendData.lastSeen ? `Son görülme: ${formatLastSeen(friendData.lastSeen.toDate())}` : 'Çevrimdışı';
+            
+            li.innerHTML = `
+                <div class="friend-avatar">
+                    <img src="${friendData.avatar}" alt="${friendData.name}">
+                    <div class="status-indicator ${friendData.status === 'online' ? 'status-online' : 'status-offline'}"></div>
+                </div>
+                <div class="friend-info">
+                    <div class="friend-name">${friendData.name}</div>
+                    <div class="friend-status">
+                        ${lastSeenText}
+                    </div>
+                </div>
+            `;
+            
+            li.addEventListener('click', () => {
+                // Set active friend
+                document.querySelectorAll('.friend-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                li.classList.add('active');
                 
-                friendList.appendChild(li);
+                // Set chat header
+                chatFriendName.textContent = friendData.name;
+                chatFriendAvatar.src = friendData.avatar;
+                chatFriendStatus.textContent = friendData.status === 'online' ? 'Çevrimiçi' : lastSeenText;
+                
+                // Enable message input
+                messageInput.disabled = false;
+                sendBtn.disabled = false;
+                
+                // Load chat messages
+                loadChatMessages(user.uid, friendId);
             });
+            
+            friendList.appendChild(li);
+        }
+        
+        // Format last seen time
+        function formatLastSeen(date) {
+            const now = new Date();
+            const diff = now - date;
+            const minutes = Math.floor(diff / (1000 * 60));
+            const hours = Math.floor(diff / (1000 * 60 * 60));
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            
+            if (minutes < 1) return 'az önce';
+            if (minutes < 60) return `${minutes} dakika önce`;
+            if (hours < 24) return `${hours} saat önce`;
+            return `${days} gün önce`;
         }
         
         // Load chat messages
-        function loadChatMessages(friendId) {
-            // In a real app, this would fetch from Firestore
+        function loadChatMessages(userId, friendId) {
+            // Clear previous messages
             chatMessages.innerHTML = '';
             
-            // Sample messages
-            const messages = [
-                { id: '1', text: 'Merhaba! Nasılsın?', sender: friendId, time: '10:30' },
-                { id: '2', text: 'İyiyim, sen nasılsın?', sender: 'me', time: '10:32' },
-                { id: '3', text: 'Ben de iyiyim, teşekkür ederim. Bugün ne yapıyorsun?', sender: friendId, time: '10:33' },
-                { id: '4', text: 'Biraz kod yazıyorum. Yeni bir sohbet uygulaması geliştiriyorum.', sender: 'me', time: '10:35' },
-                { id: '5', text: 'Harika görünüyor! Başarılar dilerim.', sender: friendId, time: '10:36' }
-            ];
+            // Create a unique chat ID by combining user IDs in alphabetical order
+            const chatId = [userId, friendId].sort().join('_');
             
-            messages.forEach(msg => {
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `message ${msg.sender === 'me' ? 'message-sent' : 'message-received'}`;
-                messageDiv.innerHTML = `
-                    <div class="message-text">${msg.text}</div>
-                    <div class="message-time">${msg.time}</div>
-                `;
-                chatMessages.appendChild(messageDiv);
-            });
+            // Listen for messages in this chat
+            db.collection('chats').doc(chatId).collection('messages')
+                .orderBy('timestamp', 'asc')
+                .onSnapshot(snapshot => {
+                    chatMessages.innerHTML = '';
+                    
+                    snapshot.forEach(doc => {
+                        const message = doc.data();
+                        addMessageToUI(message, message.senderId === userId);
+                    });
+                    
+                    // Scroll to bottom
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                });
+        }
+        
+        // Add message to UI
+        function addMessageToUI(message, isSent) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isSent ? 'message-sent' : 'message-received'}`;
             
-            // Scroll to bottom
-            chatMessages.scrollTop = chatMessages.scrollHeight;
+            const time = message.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            messageDiv.innerHTML = `
+                <div class="message-text">${message.text}</div>
+                <div class="message-time">${time}</div>
+            `;
+            
+            chatMessages.appendChild(messageDiv);
         }
         
         // Send message
@@ -773,57 +1515,190 @@
         });
         
         function sendMessage() {
-            const message = messageInput.value.trim();
-            if (message) {
-                // In a real app, this would save to Firestore
-                const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const messageText = messageInput.value.trim();
+            if (messageText && currentUser && currentFriend) {
+                const chatId = [currentUser.uid, currentFriend].sort().join('_');
+                const timestamp = new Date();
                 
-                const messageDiv = document.createElement('div');
-                messageDiv.className = 'message message-sent';
-                messageDiv.innerHTML = `
-                    <div class="message-text">${message}</div>
-                    <div class="message-time">${time}</div>
-                `;
-                chatMessages.appendChild(messageDiv);
-                
-                // Clear input
-                messageInput.value = '';
-                
-                // Scroll to bottom
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-                
-                // Add a fake response after 1-3 seconds
-                setTimeout(() => {
-                    const responses = [
-                        'Anladım, teşekkürler!',
-                        'Bu çok ilginç!',
-                        'Bana biraz daha anlatır mısın?',
-                        'Harika bir fikir!',
-                        'Bunu daha önce hiç düşünmemiştim.'
-                    ];
+                db.collection('chats').doc(chatId).collection('messages').add({
+                    text: messageText,
+                    senderId: currentUser.uid,
+                    timestamp: timestamp
+                })
+                .then(() => {
+                    // Clear input
+                    messageInput.value = '';
                     
-                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-                    const responseTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    // Update last message in friends list
+                    db.collection('users').doc(currentUser.uid).update({
+                        [`lastMessages.${currentFriend}`]: {
+                            text: messageText,
+                            timestamp: timestamp
+                        }
+                    });
                     
-                    const responseDiv = document.createElement('div');
-                    responseDiv.className = 'message message-received';
-                    responseDiv.innerHTML = `
-                        <div class="message-text">${randomResponse}</div>
-                        <div class="message-time">${responseTime}</div>
-                    `;
-                    chatMessages.appendChild(responseDiv);
-                    
-                    // Scroll to bottom
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                }, 1000 + Math.random() * 2000);
+                    db.collection('users').doc(currentFriend).update({
+                        [`lastMessages.${currentUser.uid}`]: {
+                            text: messageText,
+                            timestamp: timestamp
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Mesaj gönderilemedi:', error);
+                });
             }
         }
+        
+        // Open settings modal
+        settingsBtn.addEventListener('click', () => {
+            settingsModal.classList.add('active');
+        });
+        
+        // Close settings modal
+        closeSettingsModal.addEventListener('click', () => {
+            settingsModal.classList.remove('active');
+        });
+        
+        cancelSettingsBtn.addEventListener('click', () => {
+            settingsModal.classList.remove('active');
+        });
+        
+        // Save settings
+        saveSettingsBtn.addEventListener('click', () => {
+            const newName = settingsName.value.trim();
+            const newEmail = settingsEmail.value.trim();
+            const newAvatar = document.querySelector('.avatar-option.selected img').src;
+            
+            // Update user data
+            db.collection('users').doc(currentUser.uid).update({
+                name: newName,
+                email: newEmail,
+                avatar: newAvatar
+            })
+            .then(() => {
+                // Update UI
+                userName.textContent = newName;
+                userAvatar.src = newAvatar;
+                
+                // Close modal
+                settingsModal.classList.remove('active');
+                
+                alert('Ayarlar başarıyla kaydedildi!');
+            })
+            .catch(error => {
+                console.error('Ayarlar kaydedilemedi:', error);
+                alert('Ayarlar kaydedilirken bir hata oluştu.');
+            });
+        });
+        
+        // Avatar selection
+        avatarOptionsElements.forEach(option => {
+            option.addEventListener('click', () => {
+                document.querySelectorAll('.avatar-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                option.classList.add('selected');
+            });
+        });
+        
+        // Open add friend modal
+        friendsBtn.addEventListener('click', () => {
+            addFriendModal.classList.add('active');
+        });
+        
+        // Close add friend modal
+        closeAddFriendModal.addEventListener('click', () => {
+            addFriendModal.classList.remove('active');
+        });
+        
+        cancelAddFriendBtn.addEventListener('click', () => {
+            addFriendModal.classList.remove('active');
+        });
+        
+        // Search for friends
+        searchFriend.addEventListener('input', (e) => {
+            const query = e.target.value.trim();
+            
+            if (query.length < 3) {
+                searchResults.innerHTML = '';
+                return;
+            }
+            
+            // Search users by name or email
+            db.collection('users')
+                .where('name', '>=', query)
+                .where('name', '<=', query + '\uf8ff')
+                .limit(5)
+                .get()
+                .then(snapshot => {
+                    searchResults.innerHTML = '';
+                    
+                    if (snapshot.empty) {
+                        searchResults.innerHTML = '<div class="no-results">Sonuç bulunamadı</div>';
+                        return;
+                    }
+                    
+                    snapshot.forEach(doc => {
+                        const user = doc.data();
+                        
+                        // Don't show current user or existing friends
+                        if (doc.id !== currentUser.uid && !currentUser.friends.includes(doc.id)) {
+                            const div = document.createElement('div');
+                            div.className = 'request-item';
+                            div.innerHTML = `
+                                <div class="request-avatar">
+                                    <img src="${user.avatar}" alt="${user.name}">
+                                </div>
+                                <div class="request-info">
+                                    <div class="request-name">${user.name}</div>
+                                </div>
+                                <div class="request-actions">
+                                    <div class="request-btn accept" data-id="${doc.id}">
+                                        <i class="fas fa-user-plus"></i>
+                                    </div>
+                                </div>
+                            `;
+                            
+                            searchResults.appendChild(div);
+                        }
+                    });
+                    
+                    // Add event listeners to add friend buttons
+                    document.querySelectorAll('.request-btn.accept').forEach(btn => {
+                        btn.addEventListener('click', (e) => {
+                            const friendId = btn.dataset.id;
+                            sendFriendRequest(currentUser.uid, friendId);
+                        });
+                    });
+                });
+        });
+        
+        // Send friend request
+        function sendFriendRequest(senderId, receiverId) {
+            db.collection('users').doc(receiverId).update({
+                friendRequests: firebase.firestore.FieldValue.arrayUnion(senderId)
+            })
+            .then(() => {
+                alert('Arkadaşlık isteği gönderildi!');
+                addFriendModal.classList.remove('active');
+            })
+            .catch(error => {
+                console.error('Arkadaşlık isteği gönderilemedi:', error);
+                alert('Arkadaşlık isteği gönderilirken bir hata oluştu.');
+            });
+        }
+        
+        // Global variables
+        let currentUser = null;
+        let currentFriend = null;
         
         // Auth state observer
         auth.onAuthStateChanged((user) => {
             if (user) {
                 if (user.emailVerified) {
-                    showApp();
+                    currentUser = user;
+                    showApp(user);
                 } else {
                     alert('Lütfen e-postanızı doğrulayın. E-postanızı kontrol edin.');
                     auth.signOut();
