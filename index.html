@@ -5,15 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sohbet Uygulaması</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js';
-        import { getAuth, GoogleAuthProvider, EmailAuthProvider } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-auth.js';
-        import { getFirestore, FieldValue } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore.js';
+        import { getAuth, GoogleAuthProvider, EmailAuthProvider, updateProfile, sendEmailVerification, sendPasswordResetEmail, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, reauthenticateWithCredential, updateEmail, updatePassword } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-auth.js';
+        import { getFirestore, collection, doc, getDoc, setDoc, updateDoc, arrayUnion, query, orderBy, limit, onSnapshot, addDoc, FieldValue as FirestoreFieldValue, where } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore.js';
         import { getAnalytics } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-analytics.js';
 
-        // Firebase yapılandırmanız (Kendi bilgilerinizle değiştirin!)
+        // Firebase yapılandırmanız (Kendi Firebase projenizin bilgileriyle DEĞİŞTİRİN!)
         const firebaseConfig = {
             apiKey: "AIzaSyDH5GBWQNoZv7LZZ2MbFjh-twI1jZuYqK0",
             authDomain: "newdc-d6404.firebaseapp.com",
@@ -25,128 +26,177 @@
         };
 
         const app = initializeApp(firebaseConfig);
-        // Servisleri ve sağlayıcıları global window nesnesine atıyoruz
-        window.auth = getAuth(app);
+
+        // Firebase servislerini ve ilgili fonksiyonları global window nesnesine atıyoruz.
+        // Bu sayede script.js dosyası "type=module" olmadan da bunlara erişebilir.
+        window.        auth = getAuth(app);
         window.db = getFirestore(app);
         window.analytics = getAnalytics(app); // İsteğe bağlı
-        window.GoogleAuthProvider = GoogleAuthProvider; // Script.js içinde kullanmak için
-        window.EmailAuthProvider = EmailAuthProvider; // Script.js içinde kullanmak için
-        window.FieldValue = FieldValue; // Script.js içinde kullanmak için
+        window.GoogleAuthProvider = GoogleAuthProvider;
+        window.EmailAuthProvider = EmailAuthProvider;
+        window.FieldValue = FirestoreFieldValue; // Firestore FieldValue için benzersiz isim
+
+        // Auth fonksiyonlarını global olarak erişilebilir yap
+        window.updateProfile = updateProfile;
+        window.sendEmailVerification = sendEmailVerification;
+        window.sendPasswordResetEmail = sendPasswordResetEmail;
+        window.signInWithPopup = signInWithPopup;
+        window.signInWithEmailAndPassword = signInWithEmailAndPassword;
+        window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
+        window.signOut = signOut;
+        window.reauthenticateWithCredential = reauthenticateWithCredential;
+        window.updateEmail = updateEmail;
+        window.updatePassword = updatePassword;
+
+        // Firestore fonksiyonlarını global olarak erişilebilir yap
+        window.collection = collection;
+        window.doc = doc;
+        window.getDoc = getDoc;
+        window.setDoc = setDoc;
+        window.updateDoc = updateDoc;
+        window.arrayUnion = arrayUnion;
+        window.query = query;
+        window.orderBy = orderBy;
+        window.limit = limit;
+        window.onSnapshot = onSnapshot;
+        window.addDoc = addDoc;
+        window.where = where;
     </script>
 </head>
 <body>
-    <div class="main-wrapper">
-        <div id="auth-section" class="auth-container">
-            <div class="auth-tabs">
-                <button id="show-login-tab" class="tab-button active">Giriş Yap</button>
-                <button id="show-register-tab" class="tab-button">Kayıt Ol</button>
-            </div>
+    <div class="app-container">
+        <section id="auth-section" class="auth-section">
+            <div class="auth-box">
+                <div class="auth-header">
+                    <button id="show-login-tab" class="tab-button active">Giriş Yap</button>
+                    <button id="show-register-tab" class="tab-button">Kayıt Ol</button>
+                </div>
 
-            <div id="login-tab-content" class="tab-content active">
-                <h2>Giriş Yap</h2>
-                <div class="input-group">
-                    <label for="login-email">E-posta</label>
-                    <input type="email" id="login-email" placeholder="E-posta adresiniz">
+                <div id="login-tab-content" class="tab-content active">
+                    <h2>Giriş Yap</h2>
+                    <form id="login-form">
+                        <div class="input-group">
+                            <i class="fas fa-envelope icon"></i>
+                            <input type="email" id="login-email" placeholder="E-posta adresiniz" required>
+                        </div>
+                        <div class="input-group">
+                            <i class="fas fa-lock icon"></i>
+                            <input type="password" id="login-password" placeholder="Şifreniz" required>
+                        </div>
+                        <button type="submit" class="auth-button primary">Giriş Yap</button>
+                        <button type="button" id="google-login-btn" class="auth-button google"><i class="fab fa-google"></i> Google ile Giriş Yap</button>
+                        <button type="button" id="forgot-password-btn" class="text-link">Şifremi Unuttum?</button>
+                        <p id="login-error" class="message error-message"></p>
+                    </form>
                 </div>
-                <div class="input-group">
-                    <label for="login-password">Şifre</label>
-                    <input type="password" id="login-password" placeholder="Şifreniz">
-                </div>
-                <button id="login-btn" class="primary-btn">Giriş Yap</button>
-                <button id="google-login-btn" class="google-btn">Google ile Giriş Yap</button>
-                <button id="forgot-password-btn" class="text-btn">Şifremi Unuttum?</button>
-                <p id="login-error" class="message error-message"></p>
-            </div>
 
-            <div id="register-tab-content" class="tab-content">
-                <h2>Kayıt Ol</h2>
-                <div class="input-group">
-                    <label for="register-email">E-posta</label>
-                    <input type="email" id="register-email" placeholder="E-posta adresiniz">
+                <div id="register-tab-content" class="tab-content">
+                    <h2>Kayıt Ol</h2>
+                    <form id="register-form">
+                        <div class="input-group">
+                            <i class="fas fa-envelope icon"></i>
+                            <input type="email" id="register-email" placeholder="E-posta adresiniz" required>
+                        </div>
+                        <div class="input-group">
+                            <i class="fas fa-lock icon"></i>
+                            <input type="password" id="register-password" placeholder="Min. 6 karakter" required>
+                        </div>
+                        <button type="submit" class="auth-button primary">Kayıt Ol</button>
+                        <p class="info-text"><i class="fas fa-info-circle"></i> Kayıt olduktan sonra e-posta adresinize bir doğrulama linki gönderilecektir.</p>
+                        <p id="register-message" class="message success-message"></p>
+                    </form>
                 </div>
-                <div class="input-group">
-                    <label for="register-password">Şifre</label>
-                    <input type="password" id="register-password" placeholder="Min. 6 karakter">
-                </div>
-                <button id="register-btn" class="primary-btn">Kayıt Ol</button>
-                <p class="small-text">Kayıt olduktan sonra e-posta adresinize bir doğrulama linki gönderilecektir. Sohbet edebilmek için e-postanızı doğrulamanız gerekmektedir.</p>
-                <p id="register-message" class="message"></p>
             </div>
-        </div>
+        </section>
 
-        <div id="app-section" class="app-container hidden">
+        <section id="app-section" class="main-app hidden">
             <aside class="sidebar">
                 <div class="user-profile">
-                    <span id="display-name" class="user-name"></span>
-                    <span id="user-email" class="user-email"></span>
-                    <button id="logout-btn" class="icon-btn logout-btn" title="Çıkış Yap">🚪</button>
+                    <div class="user-avatar">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                    <div class="user-details">
+                        <span id="display-name" class="username"></span>
+                        <span id="user-email" class="email"></span>
+                    </div>
                 </div>
-                <nav class="nav-menu">
-                    <button id="main-chat-btn" class="nav-item active">Genel Sohbet</button>
-                    <button id="friends-list-btn" class="nav-item">Arkadaşlar</button>
-                    <button id="settings-btn" class="nav-item">Ayarlar</button>
+                <nav class="main-nav">
+                    <ul>
+                        <li><button id="main-chat-btn" class="nav-item active"><i class="fas fa-globe"></i> Genel Sohbet</button></li>
+                        <li><button id="friends-list-btn" class="nav-item"><i class="fas fa-user-friends"></i> Arkadaşlar</button></li>
+                        <li><button id="settings-btn" class="nav-item"><i class="fas fa-cog"></i> Ayarlar</button></li>
+                    </ul>
                 </nav>
+                <button id="logout-btn" class="logout-button"><i class="fas fa-sign-out-alt"></i> Çıkış Yap</button>
             </aside>
 
-            <main class="content-area">
-                <div id="main-chat-area" class="chat-area active-content">
-                    <h3>Genel Sohbet</h3>
+            <main class="chat-area">
+                <div id="main-chat-area" class="chat-main active-content">
+                    <div class="chat-header">
+                        <h3>Genel Sohbet</h3>
+                    </div>
                     <div id="messages-container" class="messages-container">
                         </div>
                     <div class="message-input-area">
-                        <input type="text" id="message-input" placeholder="Mesaj yaz...">
-                        <button id="send-message-btn" class="send-btn">Gönder</button>
+                        <input type="text" id="message-input" placeholder="Bir mesaj yazın..." />
+                        <button id="send-message-btn" class="send-message-button"><i class="fas fa-paper-plane"></i></button>
                     </div>
                 </div>
 
-                <div id="friends-section" class="friends-area content-item">
-                    <h3>Arkadaş Listesi</h3>
+                <div id="friends-section" class="content-view">
+                    <div class="content-header">
+                        <h3>Arkadaşlar</h3>
+                    </div>
                     <div class="add-friend-area">
-                        <input type="email" id="add-friend-email" placeholder="Arkadaş e-postası">
-                        <button id="add-friend-btn" class="primary-btn small-btn">Ekle</button>
+                        <input type="email" id="add-friend-email" placeholder="Arkadaşın e-posta adresi">
+                        <button id="add-friend-btn" class="button small-button"><i class="fas fa-user-plus"></i> Ekle</button>
                         <p id="add-friend-status" class="message"></p>
                     </div>
                     <ul id="friends-list" class="friends-list">
                         </ul>
                 </div>
 
-                <div id="settings-section" class="settings-area content-item">
-                    <h3>Ayarlar</h3>
-                    <div class="setting-block">
-                        <h4>Kullanıcı Adı Değiştir</h4>
+                <div id="settings-section" class="content-view">
+                    <div class="content-header">
+                        <h3>Ayarlar</h3>
+                    </div>
+                    <div class="settings-group">
+                        <h4><i class="fas fa-user-edit"></i> Kullanıcı Adı Değiştir</h4>
                         <input type="text" id="new-display-name" placeholder="Yeni kullanıcı adınız">
-                        <button id="update-display-name-btn" class="primary-btn small-btn">Güncelle</button>
+                        <button id="update-display-name-btn" class="button small-button">Güncelle</button>
                         <p id="display-name-status" class="message"></p>
                     </div>
-                    <div class="setting-block">
-                        <h4>E-posta Değiştir</h4>
-                        <input type="password" id="email-current-password" placeholder="Mevcut Şifre (onay için)">
+                    <div class="settings-group">
+                        <h4><i class="fas fa-envelope-open-text"></i> E-posta Değiştir</h4>
+                        <input type="password" id="email-current-password" placeholder="Mevcut Şifreniz (onay için)">
                         <input type="email" id="new-email" placeholder="Yeni e-posta adresiniz">
-                        <button id="update-email-btn" class="primary-btn small-btn">Güncelle</button>
+                        <button id="update-email-btn" class="button small-button">Güncelle</button>
                         <p id="email-status" class="message"></p>
-                        <p class="small-text">E-posta değişikliği sonrası güvenlik için tekrar giriş yapmanız ve yeni e-postanızı doğrulamanız gerekebilir.</p>
+                        <p class="info-text"><i class="fas fa-info-circle"></i> E-posta değişikliği sonrası güvenlik için tekrar giriş yapmanız ve yeni e-postanızı doğrulamanız gerekebilir.</p>
                     </div>
-                    <div class="setting-block">
-                        <h4>Şifre Değiştir</h4>
+                    <div class="settings-group">
+                        <h4><i class="fas fa-key"></i> Şifre Değiştir</h4>
                         <input type="password" id="current-password" placeholder="Mevcut şifreniz">
                         <input type="password" id="new-password" placeholder="Yeni şifreniz (min. 6 karakter)">
-                        <button id="update-password-btn" class="primary-btn small-btn">Güncelle</button>
+                        <button id="update-password-btn" class="button small-button">Güncelle</button>
                         <p id="password-status" class="message"></p>
-                        <p class="small-text">Şifre değişikliği sonrası güvenlik için tekrar giriş yapmanız gerekmektedir.</p>
+                        <p class="info-text"><i class="fas fa-info-circle"></i> Şifre değişikliği sonrası güvenlik için tekrar giriş yapmanız gerekmektedir.</p>
                     </div>
                 </div>
             </main>
-        </div>
-    </div>
+        </section>
 
-    <div id="private-chat-modal" class="modal hidden">
-        <div class="modal-content">
-            <span class="close-button" id="close-private-chat">&times;</span>
-            <h4 id="private-chat-title" class="modal-title"></h4>
-            <div id="private-messages-container" class="messages-container"></div>
-            <div class="message-input-area">
-                <input type="text" id="private-message-input" placeholder="Özel mesaj yaz...">
-                <button id="send-private-message-btn" class="send-btn">Gönder</button>
+        <div id="private-chat-modal" class="modal-overlay hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="private-chat-title"></h3>
+                    <button class="close-button" id="close-private-chat">&times;</button>
+                </div>
+                <div id="private-messages-container" class="messages-container"></div>
+                <div class="message-input-area">
+                    <input type="text" id="private-message-input" placeholder="Bir mesaj yazın..." />
+                    <button id="send-private-message-btn" class="send-message-button"><i class="fas fa-paper-plane"></i></button>
+                </div>
             </div>
         </div>
     </div>
