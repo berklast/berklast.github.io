@@ -1,6 +1,22 @@
-/* style.css */
+/* Genel Ayarlar ve Sıfırlamalar */
+:root {
+    --primary-color: #5865F2; /* Discord'un ana rengi */
+    --secondary-color: #2C2F33; /* Koyu gri */
+    --dark-grey: #23272A; /* Daha koyu gri */
+    --light-grey: #99AAB5; /* Açık gri */
+    --white: #FFFFFF;
+    --success-color: #43B581; /* Yeşil */
+    --error-color: #F04747; /* Kırmızı */
+    --info-color: #7289DA; /* Mor */
+    --background-light: #F2F3F5; /* Açık arka plan */
+    --text-color: #36393F; /* Koyu metin */
+    --border-color: #e0e0e0;
 
-/* Genel Sıfırlamalar ve Temel Ayarlar */
+    --font-family: 'Inter', sans-serif;
+    --border-radius: 8px;
+    --transition-speed: 0.2s ease-in-out;
+}
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -8,27 +24,28 @@
 }
 
 body {
-    font-family: 'Poppins', sans-serif;
-    background-color: #eef2f7; /* Hafif mavi arka plan */
-    color: #333;
+    font-family: var(--font-family);
+    background-color: var(--background-light);
+    color: var(--text-color);
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     line-height: 1.6;
+    font-size: 16px;
 }
 
-/* Ana Sarmalayıcı */
-.main-wrapper {
-    background-color: #ffffff;
-    border-radius: 12px;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-    width: 95%;
-    max-width: 1200px; /* Geniş ekranlar için maksimum genişlik */
-    overflow: hidden;
+/* Kapsayıcılar */
+.app-container {
     display: flex;
-    flex-direction: column; /* Mobil için dikey, desktop için yatay */
-    min-height: 700px; /* Minimum yükseklik */
+    width: 100%;
+    max-width: 1300px; /* Geniş ekranlar için */
+    height: 90vh; /* Yüksekliğin %90'ı */
+    min-height: 600px;
+    background-color: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
 }
 
 /* Gizleme Sınıfı */
@@ -36,161 +53,178 @@ body {
     display: none !important;
 }
 
-/* Mesajlar ve Hata/Başarı Mesajları */
+/* Mesaj ve Bildirim Stilleri */
 .message {
+    padding: 10px 15px;
+    border-radius: var(--border-radius);
+    margin-top: 15px;
     font-size: 0.9em;
-    margin-top: 5px;
-    margin-bottom: 10px;
-    padding: 8px 12px;
-    border-radius: 5px;
-}
-.error-message {
-    color: #d9534f; /* Kırmızı hata */
-    background-color: #fcebeb;
-    border: 1px solid #d9534f;
-}
-.success-message {
-    color: #5cb85c; /* Yeşil başarı */
-    background-color: #eff9ef;
-    border: 1px solid #5cb85c;
-}
-.small-text {
-    font-size: 0.8em;
-    color: #666;
-    margin-top: -10px;
-    margin-bottom: 15px;
+    font-weight: 500;
+    text-align: center;
 }
 
-/* --- Form Elemanları ve Buton Stilleri --- */
+.error-message {
+    background-color: rgba(240, 71, 71, 0.1);
+    color: var(--error-color);
+    border: 1px solid var(--error-color);
+}
+
+.success-message {
+    background-color: rgba(67, 181, 129, 0.1);
+    color: var(--success-color);
+    border: 1px solid var(--success-color);
+}
+
+.info-text {
+    font-size: 0.85em;
+    color: var(--light-grey);
+    margin-top: 10px;
+    text-align: center;
+}
+.info-text .fas {
+    margin-right: 5px;
+    color: var(--info-color);
+}
+
+/* Başlıklar */
+h2, h3, h4 {
+    color: var(--secondary-color);
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+h2 { font-size: 1.8em; }
+h3 { font-size: 1.5em; }
+h4 { font-size: 1.2em; }
+
+/* Form Elemanları */
+.input-group {
+    position: relative;
+    margin-bottom: 20px;
+}
+.input-group .icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--light-grey);
+    font-size: 1.1em;
+}
+
 input[type="email"],
 input[type="password"],
 input[type="text"] {
     width: 100%;
-    padding: 12px 15px;
-    margin-bottom: 15px;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
+    padding: 12px 15px 12px 45px; /* İkon için boşluk */
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
     font-size: 1em;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+    color: var(--text-color);
+    background-color: var(--background-light);
+    transition: border-color var(--transition-speed), box-shadow var(--transition-speed);
 }
 
 input[type="email"]:focus,
 input[type="password"]:focus,
 input[type="text"]:focus {
-    border-color: #007bff;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.2);
     outline: none;
-    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
 }
 
-.input-group {
-    margin-bottom: 20px;
-}
-.input-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 600;
-    color: #555;
-}
-
-/* Temel Buton Stilleri */
+/* Buton Stilleri (Genel) */
 button {
-    padding: 12px 25px;
-    border: none;
-    border-radius: 8px;
     cursor: pointer;
-    font-size: 1em;
+    border: none;
+    font-family: var(--font-family);
     font-weight: 600;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    text-align: center;
-    display: inline-block;
-    vertical-align: middle;
+    transition: background-color var(--transition-speed), transform 0.1s ease;
+    border-radius: var(--border-radius);
+    padding: 12px 20px;
+}
+button .fas, button .fab {
+    margin-right: 8px;
 }
 
-.primary-btn {
-    background-color: #007bff;
-    color: white;
+/* Ana Butonlar */
+.auth-button {
     width: 100%;
-    margin-top: 10px;
-}
-.primary-btn:hover {
-    background-color: #0056b3;
-    transform: translateY(-2px);
-}
-
-.google-btn {
-    background-color: #dd4b39;
-    color: white;
     margin-top: 15px;
-    width: 100%;
+    font-size: 1em;
 }
-.google-btn:hover {
-    background-color: #c23321;
+.auth-button.primary {
+    background-color: var(--primary-color);
+    color: var(--white);
+}
+.auth-button.primary:hover {
+    background-color: #4752C4;
     transform: translateY(-2px);
 }
 
-.text-btn {
-    background: none;
-    color: #007bff;
-    padding: 5px 10px;
-    font-size: 0.9em;
-    font-weight: 400;
+.auth-button.google {
+    background-color: #DB4437; /* Google kırmızısı */
+    color: var(--white);
     margin-top: 10px;
+}
+.auth-button.google:hover {
+    background-color: #C1352A;
+    transform: translateY(-2px);
+}
+
+.text-link {
+    background: none;
+    color: var(--primary-color);
+    font-size: 0.9em;
+    margin-top: 10px;
+    padding: 5px 10px;
+    display: block;
     width: auto;
-    display: block; /* Yeni satıra al */
     text-align: center;
     margin-left: auto;
     margin-right: auto;
 }
-.text-btn:hover {
-    color: #0056b3;
+.text-link:hover {
     text-decoration: underline;
-    background: none; /* Hover'da arka planı olmasın */
-    transform: none; /* Animasyon olmasın */
+    color: #4752C4;
 }
 
-.icon-btn {
-    background: none;
-    border: none;
-    font-size: 1.8em;
-    cursor: pointer;
-    color: #6c757d;
-    padding: 5px;
-    transition: color 0.3s ease;
-}
-.icon-btn:hover {
-    color: #333;
-}
-.small-btn { /* Küçük butonlar için */
-    width: auto;
+/* Küçük Butonlar */
+.button.small-button {
     padding: 8px 15px;
     font-size: 0.9em;
-    margin-left: 10px; /* Diğer input/elementlerden ayrım */
+    margin-left: 10px;
+    background-color: var(--primary-color);
+    color: var(--white);
 }
-.send-btn { /* Sohbet mesaj gönderme butonu */
-    flex-shrink: 0;
-    width: auto;
-    padding: 10px 20px;
-    margin-top: 0;
+.button.small-button:hover {
+    background-color: #4752C4;
+    transform: translateY(-1px);
 }
 
 
 /* --- Auth Section (Giriş/Kayıt) --- */
-.auth-container {
-    padding: 40px;
-    text-align: center;
-    max-width: 500px;
-    margin: 40px auto;
-    background-color: #fefefe;
-    border-radius: 12px;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+.auth-section {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--background-light); /* Tüm ekranı kaplasın */
 }
 
-.auth-tabs {
+.auth-box {
+    background-color: var(--white);
+    padding: 40px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 450px;
+    text-align: center;
+}
+
+.auth-header {
     display: flex;
     justify-content: center;
     margin-bottom: 30px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .tab-button {
@@ -199,456 +233,557 @@ button {
     padding: 15px 30px;
     font-size: 1.1em;
     font-weight: 600;
-    cursor: pointer;
-    color: #777;
+    color: var(--light-grey);
     border-bottom: 3px solid transparent;
-    transition: color 0.3s ease, border-bottom-color 0.3s ease;
+    transition: all var(--transition-speed);
 }
 .tab-button.active {
-    color: #007bff;
-    border-bottom-color: #007bff;
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
 }
 .tab-button:hover:not(.active) {
-    color: #555;
+    color: var(--secondary-color);
 }
 
 .tab-content {
-    padding: 20px 0;
+    padding-top: 10px;
 }
 .tab-content h2 {
-    color: #333;
     margin-bottom: 25px;
-    font-size: 1.8em;
-    font-weight: 600;
+    color: var(--secondary-color);
+}
+.tab-content h2 .fas {
+    margin-right: 10px;
+    color: var(--primary-color);
 }
 
 
-/* --- App Section (Ana Uygulama) --- */
-.app-container {
+/* --- Ana Uygulama Bölümü --- */
+.main-app {
     display: flex;
-    flex-grow: 1;
+    width: 100%;
 }
 
 /* Sol Kenar Çubuğu (Sidebar) */
 .sidebar {
-    width: 280px; /* Sabit genişlik */
-    background-color: #f8f9fa; /* Açık gri */
-    border-right: 1px solid #e0e0e0;
-    padding: 20px;
+    width: 280px;
+    background-color: var(--secondary-color);
+    padding: 20px 0;
     display: flex;
     flex-direction: column;
     box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+    border-right: 1px solid rgba(0,0,0,0.2);
 }
 
 .user-profile {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    padding-bottom: 20px;
+    padding: 15px 20px;
     margin-bottom: 20px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
-.user-profile .user-name {
-    font-size: 1.3em;
-    font-weight: 600;
-    color: #007bff;
-    margin-bottom: 5px;
+.user-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 15px;
+    color: var(--white);
+    font-size: 1.8em;
 }
-.user-profile .user-email {
-    font-size: 0.9em;
-    color: #666;
-    margin-bottom: 15px;
-}
-.user-profile .logout-btn {
-    font-size: 1.5em;
-    color: #dc3545;
-}
-.user-profile .logout-btn:hover {
-    color: #c82333;
-}
-
-.nav-menu {
+.user-details {
     display: flex;
     flex-direction: column;
+}
+.username {
+    font-weight: 600;
+    color: var(--white);
+    font-size: 1.1em;
+}
+.email {
+    font-size: 0.85em;
+    color: var(--light-grey);
+}
+
+.main-nav ul {
+    list-style: none;
+    padding: 0 15px;
     flex-grow: 1; /* Menünün kalan alanı kaplamasını sağlar */
 }
 .nav-item {
+    width: 100%;
     background: none;
     border: none;
-    padding: 15px 20px;
+    padding: 12px 15px;
     text-align: left;
-    font-size: 1.1em;
+    color: var(--light-grey);
+    font-size: 1em;
     font-weight: 500;
-    color: #555;
-    cursor: pointer;
-    border-radius: 8px;
-    margin-bottom: 10px;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    border-radius: 5px;
+    margin-bottom: 8px;
+    transition: all var(--transition-speed);
+}
+.nav-item .fas {
+    margin-right: 10px;
+    width: 20px; /* İkonların hizalanması için */
+    text-align: center;
 }
 .nav-item:hover {
-    background-color: #e9ecef;
-    color: #333;
+    background-color: rgba(255, 255, 255, 0.08);
+    color: var(--white);
 }
 .nav-item.active {
-    background-color: #007bff;
-    color: white;
-    font-weight: 600;
-    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+    background-color: var(--primary-color);
+    color: var(--white);
+    box-shadow: 0 4px 10px rgba(88, 101, 242, 0.3);
 }
 .nav-item.active:hover {
-    background-color: #0056b3;
-    color: white;
+    background-color: #4752C4;
 }
 
-/* Ana İçerik Alanı */
-.content-area {
-    flex-grow: 1; /* Kalan alanı kapla */
+.logout-button {
+    width: calc(100% - 40px); /* padding dahil */
+    background-color: var(--error-color);
+    color: var(--white);
+    margin: 20px auto;
+    display: block;
+    padding: 12px 20px;
+}
+.logout-button:hover {
+    background-color: #D33D3D;
+    transform: translateY(-2px);
+}
+
+/* Ana Sohbet Alanı */
+.chat-area {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--white);
+    position: relative; /* Mesaj konteynerının aşağıda kalması için */
+}
+
+.chat-main, .content-view {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+
+.chat-header, .content-header {
     padding: 20px 30px;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--white);
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+}
+.chat-header h3, .content-header h3 {
+    margin: 0;
+    font-size: 1.4em;
+    color: var(--text-color);
+}
+.chat-header h3 .fas, .content-header h3 .fas {
+    margin-right: 10px;
+    color: var(--primary-color);
 }
 
-.chat-area, .friends-area, .settings-area {
-    background-color: #fdfdfd;
-    border-radius: 10px;
-    box-shadow: inset 0 2px 5px rgba(0,0,0,0.03);
-    padding: 20px;
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-}
-.content-item { /* Diğer bölümler için ortak */
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-}
-.chat-area h3, .friends-area h3, .settings-area h3 {
-    color: #007bff;
-    margin-bottom: 20px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 15px;
-}
-
-/* Mesaj Kutusu */
 .messages-container {
     flex-grow: 1;
     overflow-y: auto;
-    padding: 15px;
-    background-color: #eef2f7; /* Mesaj geçmişi arka planı */
-    border-radius: 8px;
-    margin-bottom: 20px;
+    padding: 20px 30px;
+    background-color: var(--background-light);
     display: flex;
     flex-direction: column;
-    gap: 10px; /* Mesajlar arasında boşluk */
+    gap: 12px;
 }
 
-.message {
-    padding: 10px 15px;
+.message-item {
+    background-color: var(--white);
+    padding: 12px 18px;
     border-radius: 20px;
-    max-width: 75%;
+    max-width: 70%;
     word-wrap: break-word;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     position: relative;
-}
-.message-sender {
-    font-weight: 600;
-    font-size: 0.85em;
-    margin-bottom: 3px;
-    color: #0056b3; /* Gönderen adı rengi */
-}
-.message-content {
     font-size: 0.95em;
-    color: #333;
+    line-height: 1.4;
 }
-.message.sent {
-    background-color: #dcf8c6; /* Kendi mesajınız - WhatsApp yeşili gibi */
-    margin-left: auto;
-    border-bottom-right-radius: 5px; /* Köşeyi biraz kır */
+.message-item.sent {
+    align-self: flex-end; /* Kendi mesajlarımız sağda */
+    background-color: var(--primary-color);
+    color: var(--white);
+    border-bottom-right-radius: 5px; /* Köşe düzeltmesi */
 }
-.message.received {
-    background-color: #e9e9eb; /* Başkasının mesajı - Gri tonu */
-    margin-right: auto;
-    border-bottom-left-radius: 5px; /* Köşeyi biraz kır */
+.message-item.received {
+    align-self: flex-start; /* Başkalarının mesajları solda */
+    background-color: #F8F8F8;
+    color: var(--text-color);
+    border-bottom-left-radius: 5px; /* Köşe düzeltmesi */
 }
-/* Gönderen ismi kendi mesajında olmasın (opsiyonel) */
-.message.sent .message-sender {
-    display: none;
+
+.message-sender-name {
+    font-weight: 600;
+    font-size: 0.8em;
+    margin-bottom: 4px;
+    color: var(--light-grey); /* Received için */
+}
+.message-item.sent .message-sender-name {
+    color: rgba(255, 255, 255, 0.8); /* Sent için */
+}
+
+.message-timestamp {
+    font-size: 0.75em;
+    color: var(--light-grey);
+    text-align: right;
+    margin-top: 5px;
+    display: block; /* Yeni satıra al */
+}
+.message-item.sent .message-timestamp {
+    color: rgba(255, 255, 255, 0.6);
 }
 
 .message-input-area {
     display: flex;
-    gap: 10px;
+    padding: 20px 30px;
+    background-color: var(--white);
+    border-top: 1px solid var(--border-color);
+    align-items: center;
 }
 .message-input-area input {
     flex-grow: 1;
-    margin-bottom: 0;
+    margin-right: 15px;
+    padding: 10px 15px;
+    border-radius: 25px; /* Daha yuvarlak */
+    background-color: var(--background-light);
+    border: 1px solid var(--border-color);
+}
+.message-input-area input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(88, 101, 242, 0.2);
 }
 
-/* Arkadaş Listesi Alanı */
+.send-message-button {
+    background-color: var(--primary-color);
+    color: var(--white);
+    padding: 10px 18px;
+    border-radius: 25px;
+    font-size: 1.1em;
+}
+.send-message-button:hover {
+    background-color: #4752C4;
+    transform: translateY(-2px);
+}
+
+
+/* Arkadaş Listesi ve Ayarlar Ortak Stilleri */
+.content-view {
+    flex-grow: 1;
+    padding: 20px 30px;
+    background-color: var(--background-light);
+    overflow-y: auto;
+}
+
+.content-header {
+    background-color: var(--white);
+    margin: -20px -30px 20px -30px; /* Padding'i sıfırlayıp kendi padding'ini versin */
+    padding: 20px 30px;
+    border-bottom: 1px solid var(--border-color);
+    position: sticky; /* Yukarıda sabit kalsın */
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+}
+
 .add-friend-area {
     display: flex;
-    gap: 10px;
-    margin-bottom: 20px;
+    gap: 15px;
+    margin-bottom: 25px;
     align-items: center;
-    flex-wrap: wrap;
-    padding-bottom: 15px;
-    border-bottom: 1px solid #eee;
+    background-color: var(--white);
+    padding: 20px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
 }
 .add-friend-area input {
     flex-grow: 1;
     margin-bottom: 0;
+    padding: 10px 15px;
+    border-radius: 25px;
+}
+.add-friend-area .message {
+    margin-top: 0;
 }
 
 .friends-list {
     list-style: none;
     padding: 0;
-    margin: 0;
-    flex-grow: 1;
-    overflow-y: auto;
 }
-.friends-list li {
-    padding: 12px 15px;
-    border-bottom: 1px solid #eee;
+.friend-item {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-    border-radius: 8px;
-    margin-bottom: 5px;
+    justify-content: space-between;
+    padding: 12px 15px;
+    background-color: var(--white);
+    border-radius: var(--border-radius);
+    margin-bottom: 10px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.04);
+    transition: all var(--transition-speed);
 }
-.friends-list li:last-child {
-    border-bottom: none;
+.friend-item:hover {
+    background-color: #F8F8F8;
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
 }
-.friends-list li:hover {
-    background-color: #f0f2f5;
+.friend-info {
+    display: flex;
+    align-items: center;
 }
-.friends-list .friend-name {
+.friend-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--light-grey);
+    color: var(--white);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2em;
+    margin-right: 10px;
+}
+.friend-name {
     font-weight: 600;
-    color: #333;
+    color: var(--text-color);
 }
-.friends-list .start-chat-btn {
-    background-color: #28a745; /* Yeşil */
-    color: white;
+.start-chat-button {
+    background-color: var(--success-color);
+    color: var(--white);
     padding: 8px 15px;
-    font-size: 0.85em;
+    font-size: 0.9em;
     border-radius: 5px;
-    margin-left: 10px;
-    width: auto;
-    box-shadow: 0 2px 5px rgba(40, 167, 69, 0.2);
 }
-.friends-list .start-chat-btn:hover {
-    background-color: #218838;
+.start-chat-button:hover {
+    background-color: #3AA577;
     transform: translateY(-1px);
 }
 
-
-/* Ayarlar Alanı */
-.settings-area .setting-block {
-    background-color: #f8f9fa;
-    border: 1px solid #e0e0e0;
-    border-radius: 10px;
-    padding: 20px;
+/* Ayarlar Bölümü */
+.settings-group {
+    background-color: var(--white);
+    padding: 25px;
+    border-radius: var(--border-radius);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     margin-bottom: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
-.settings-area .setting-block h4 {
+.settings-group h4 {
     margin-top: 0;
+    margin-bottom: 20px;
+    color: var(--primary-color);
+}
+.settings-group h4 .fas {
+    margin-right: 10px;
+}
+.settings-group input {
     margin-bottom: 15px;
-    color: #007bff;
-    font-size: 1.2em;
-    font-weight: 600;
+    padding: 10px 15px; /* İkon boşluğu yok */
+    padding-left: 15px;
 }
-.settings-area .setting-block input {
-    margin-bottom: 10px; /* Inputlar arasında boşluk */
-}
-.settings-area .setting-block button {
-    margin-top: 5px;
+.settings-group .button {
     margin-left: 0; /* Inputların altında sola yaslı */
-}
-.settings-area .setting-block .message {
     margin-top: 10px;
+}
+.settings-group .message {
+    margin-top: 15px;
 }
 
 
 /* Modals (Özel Sohbet Penceresi) */
-.modal {
+.modal-overlay {
     position: fixed;
-    z-index: 1000;
-    left: 0;
     top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.5); /* Yarı şeffaf arka plan */
+    background-color: rgba(0, 0, 0, 0.6);
     display: flex;
     justify-content: center;
     align-items: center;
-    backdrop-filter: blur(5px); /* Arka planı hafif bulanıklaştır */
+    z-index: 1000;
+    backdrop-filter: blur(5px);
 }
+
 .modal-content {
-    background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    background-color: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
     width: 90%;
-    max-width: 700px;
+    max-width: 800px;
+    height: 80%; /* Daha büyük modal */
     display: flex;
     flex-direction: column;
-    min-height: 500px;
-    padding: 30px;
-    position: relative;
+    overflow: hidden;
 }
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 30px;
+    border-bottom: 1px solid var(--border-color);
+    background-color: var(--white);
+}
+.modal-header h3 {
+    margin: 0;
+    color: var(--primary-color);
+    font-size: 1.6em;
+}
+
 .modal-content .close-button {
-    position: absolute;
-    top: 15px;
-    right: 20px;
-    color: #aaa;
-    font-size: 35px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: color 0.2s ease;
+    background: none;
+    border: none;
+    font-size: 2em;
+    color: var(--light-grey);
+    padding: 5px;
+    transition: color var(--transition-speed);
 }
-.modal-content .close-button:hover,
-.modal-content .close-button:focus {
-    color: #333;
+.modal-content .close-button:hover {
+    color: var(--text-color);
 }
-.modal-content .modal-title {
-    color: #007bff;
-    text-align: center;
-    margin-bottom: 25px;
-    font-size: 1.8em;
-    font-weight: 600;
+
+.modal-content .messages-container {
+    background-color: var(--background-light);
+    border-radius: 0; /* Modal içinde tam ekran */
+    padding: 20px 30px;
 }
-/* Modal içindeki mesaj konteynerı */
-#private-messages-container {
-    max-height: 350px;
-    min-height: 200px; /* Minimum yükseklik */
+.modal-content .message-input-area {
+    border-top: 1px solid var(--border-color);
+    padding: 20px 30px;
 }
 
 
-/* Duyarlı Tasarım (Responsive Design) */
-@media (max-width: 768px) {
-    .main-wrapper {
-        margin: 20px 0;
-        min-height: 95vh;
-        border-radius: 0;
-        box-shadow: none; /* Mobil tam ekranda gölgeye gerek yok */
-    }
-
+/* Responsive Tasarım */
+@media (max-width: 992px) {
     .app-container {
-        flex-direction: column; /* Mobil için dikey düzen */
+        flex-direction: column;
+        height: auto;
+        min-height: 100vh;
+        border-radius: 0;
+        box-shadow: none;
     }
 
     .sidebar {
-        width: 100%; /* Mobil tam genişlik */
-        border-right: none;
-        border-bottom: 1px solid #e0e0e0;
-        padding: 15px;
-        flex-direction: row; /* Menü ve profil yatayda */
+        width: 100%;
+        height: auto;
+        flex-direction: row; /* Mobil için yan yana */
         justify-content: space-between;
         align-items: center;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        padding: 15px 20px;
+        border-bottom: 1px solid rgba(0,0,0,0.2);
     }
     .user-profile {
         flex-direction: row;
         border-bottom: none;
-        padding-bottom: 0;
         margin-bottom: 0;
-        align-items: center;
-        gap: 10px;
+        padding: 0;
     }
-    .user-profile .user-name {
-        margin-bottom: 0;
-        font-size: 1.1em;
+    .user-details .email {
+        display: none; /* Küçük ekranlarda e-postayı gizle */
     }
-    .user-profile .user-email {
-        display: none; /* Mobil küçük ekranda e-postayı gizle */
+    .main-nav {
+        display: none; /* Navigasyon butonlarını küçülteceğiz veya gizleyeceğiz */
     }
-    .user-profile .logout-btn {
-        margin-left: 15px;
-        font-size: 1.3em;
-    }
-
-    .nav-menu {
-        flex-direction: row; /* Menü butonları yan yana */
-        width: 100%;
-        justify-content: space-around;
-        padding-top: 15px;
-        border-top: 1px solid #eee;
-        margin-top: 15px;
-    }
-    .nav-item {
-        padding: 10px 15px;
+    .sidebar .logout-button {
+        width: auto;
+        margin: 0;
+        padding: 8px 15px;
         font-size: 0.9em;
-        margin-bottom: 0;
-        text-align: center;
     }
 
-    .content-area {
+    .chat-area {
+        height: calc(100vh - 70px); /* Sidebar yüksekliğini düş */
+    }
+    .content-view {
+        padding: 20px;
+    }
+    .chat-header, .content-header {
+        padding: 15px 20px;
+        margin: -20px -20px 20px -20px;
+    }
+    .message-input-area {
+        padding: 15px 20px;
+    }
+    .messages-container {
+        padding: 15px 20px;
+    }
+    .message-item {
+        max-width: 85%;
+    }
+    .add-friend-area {
+        flex-direction: column;
+        align-items: stretch;
         padding: 15px;
     }
+    .add-friend-area input, .add-friend-area .button {
+        width: 100%;
+        margin-left: 0;
+    }
+}
 
+@media (max-width: 768px) {
+    .auth-box {
+        padding: 30px;
+        margin: 20px;
+    }
     .tab-button {
         padding: 12px 20px;
         font-size: 1em;
     }
+    h2 { font-size: 1.5em; }
+    h3 { font-size: 1.3em; }
 
-    .auth-container {
-        padding: 20px;
-        margin: 20px auto;
-        box-shadow: none; /* Mobil uyum için */
+    .message-input-area input {
+        margin-right: 10px;
+    }
+    .send-message-button {
+        padding: 8px 15px;
+        font-size: 1em;
     }
 
-    .modal-content {
-        width: 95%;
-        margin: 10px;
-        padding: 20px;
+    /* Mobil menü için buton */
+    .sidebar .main-nav {
+        display: none; /* Normal menüyü gizle */
     }
-    .modal-content .close-button {
-        font-size: 30px;
-    }
+    /* Mobil menü için hamburger ikonu veya benzeri bir buton ekleyebilirsiniz */
 }
 
+/* Küçük mobil cihazlar için ince ayar */
 @media (max-width: 480px) {
-    .auth-container {
-        padding: 15px;
+    body {
+        font-size: 14px;
     }
-    .auth-tabs {
-        flex-direction: column; /* Mobil çok küçük ekranlarda tab butonları alt alta */
+    .auth-box {
+        padding: 20px;
+        margin: 10px;
+    }
+    .input-group input {
+        padding-left: 35px;
+    }
+    .input-group .icon {
+        left: 10px;
+        font-size: 1em;
+    }
+    .auth-button {
+        padding: 10px 15px;
+        font-size: 0.9em;
     }
     .tab-button {
-        width: 100%;
-        margin-bottom: 5px;
+        flex-grow: 1; /* Butonlar eşit genişlikte olsun */
     }
-    .auth-tabs .tab-button:last-child {
-        margin-bottom: 0;
-    }
-    .tab-content h2 {
-        font-size: 1.5em;
-    }
-    .primary-btn, .google-btn {
+    .message-item {
         padding: 10px 15px;
-        font-size: 0.95em;
-    }
-
-    .add-friend-area {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    .add-friend-area input, .add-friend-area button {
-        width: 100%;
-        margin-left: 0;
-        margin-top: 5px;
-    }
-    .small-btn {
-        width: 100%;
-        margin-left: 0;
-    }
-    .message-input-area {
-        flex-direction: column;
-    }
-    .message-input-area input, .message-input-area button {
-        width: 100%;
-        margin-left: 0;
-        margin-top: 5px;
+        font-size: 0.85em;
     }
 }
