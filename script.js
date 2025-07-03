@@ -1,11 +1,38 @@
 // script.js
-// Firebase servislerini ve yardımcı sınıfları global window nesnesinden alıyoruz.
-// Bunlar index.html içindeki <script type="module"> bloğunda tanımlandı.
+// Firebase servisleri ve ilgili fonksiyonlar index.html içinde global olarak tanımlanmıştır.
+// Artık burada import statement'ına gerek yok.
 const auth = window.auth;
 const db = window.db;
 const GoogleAuthProvider = window.GoogleAuthProvider;
 const EmailAuthProvider = window.EmailAuthProvider;
 const FieldValue = window.FieldValue;
+
+// Firestore'dan alınan spesifik fonksiyonlar
+const collection = window.collection;
+const doc = window.doc;
+const getDoc = window.getDoc;
+const setDoc = window.setDoc;
+const updateDoc = window.updateDoc;
+const arrayUnion = window.arrayUnion;
+const query = window.query;
+const orderBy = window.orderBy;
+const limit = window.limit;
+const onSnapshot = window.onSnapshot;
+const addDoc = window.addDoc;
+const where = window.where;
+
+// Auth'tan alınan spesifik fonksiyonlar
+const updateProfile = window.updateProfile;
+const sendEmailVerification = window.sendEmailVerification;
+const sendPasswordResetEmail = window.sendPasswordResetEmail;
+const signInWithPopup = window.signInWithPopup;
+const signInWithEmailAndPassword = window.signInWithEmailAndPassword;
+const createUserWithEmailAndPassword = window.createUserWithEmailAndPassword;
+const signOut = window.signOut;
+const reauthenticateWithCredential = window.reauthenticateWithCredential;
+const updateEmail = window.updateEmail;
+const updatePassword = window.updatePassword;
+
 
 // ----- HTML Elementlerini Seçme -----
 
@@ -15,18 +42,18 @@ const showLoginTabBtn = document.getElementById('show-login-tab');
 const showRegisterTabBtn = document.getElementById('show-register-tab');
 const loginTabContent = document.getElementById('login-tab-content');
 const registerTabContent = document.getElementById('register-tab-content');
+const loginForm = document.getElementById('login-form');
+const registerForm = document.getElementById('register-form');
 
 const loginEmailInput = document.getElementById('login-email');
 const loginPasswordInput = document.getElementById('login-password');
-const loginBtn = document.getElementById('login-btn');
-const googleLoginBtn = document.getElementById('google-login-btn');
 const loginError = document.getElementById('login-error');
+const googleLoginBtn = document.getElementById('google-login-btn');
 const forgotPasswordBtn = document.getElementById('forgot-password-btn');
 
 const registerEmailInput = document.getElementById('register-email');
 const registerPasswordInput = document.getElementById('register-password');
-const registerBtn = document.getElementById('register-btn'); // ID çakışmaması için burada tekrar tanımlandı
-const registerMessage = document.getElementById('register-message'); // Yeni eklendi
+const registerMessage = document.getElementById('register-message');
 
 // Uygulama Bölümü
 const appSection = document.getElementById('app-section');
@@ -64,7 +91,7 @@ const newDisplayNameInput = document.getElementById('new-display-name');
 const updateDisplayNameBtn = document.getElementById('update-display-name-btn');
 const displayNameStatus = document.getElementById('display-name-status');
 
-const emailCurrentPasswordInput = document.getElementById('email-current-password'); // E-posta değişimi için mevcut şifre
+const emailCurrentPasswordInput = document.getElementById('email-current-password');
 const newEmailInput = document.getElementById('new-email');
 const updateEmailBtn = document.getElementById('update-email-btn');
 const emailStatus = document.getElementById('email-status');
@@ -74,40 +101,35 @@ const newPasswordInput = document.getElementById('new-password');
 const updatePasswordBtn = document.getElementById('update-password-btn');
 const passwordStatus = document.getElementById('password-status');
 
-let currentUser = null; // Giriş yapan kullanıcı
-let currentPrivateChatRecipientId = null; // Özel sohbet yapılan kişinin ID'si
-let unsubscribePrivateChat = null; // Özel sohbet dinleyicisini iptal etmek için
-let unsubscribePublicMessages = null; // Genel sohbet dinleyicisini iptal etmek için
-let unsubscribeFriends = null; // Arkadaş listesi dinleyicisini iptal etmek için
+let currentUser = null;
+let currentPrivateChatRecipientId = null;
+let unsubscribePrivateChat = null;
+let unsubscribePublicMessages = null;
+let unsubscribeFriends = null;
 
 
 // ----- Yardımcı Fonksiyonlar -----
 
 function showSection(sectionId) {
-    // Tüm ana bölümleri gizle
     authSection.classList.add('hidden');
     appSection.classList.add('hidden');
-    privateChatModal.classList.add('hidden');
+    privateChatModal.classList.add('hidden'); // Modal her zaman gizli başlasın
 
-    // İstenen bölümü göster
     document.getElementById(sectionId).classList.remove('hidden');
 
-    // Eğer ana uygulama alanı gösteriliyorsa, varsayılan olarak genel sohbeti göster
     if (sectionId === 'app-section') {
-        showAppContent('main-chat-area');
-        // Navigasyon butonlarının aktif durumunu güncelle
+        showAppContent('main-chat-area'); // Varsayılan olarak genel sohbeti göster
         document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
         mainChatBtn.classList.add('active');
     }
 }
 
 function showAppContent(contentId) {
-    // Tüm uygulama içeriğini gizle
-    mainChatArea.classList.add('hidden');
-    friendsSection.classList.add('hidden');
-    settingsSection.classList.add('hidden');
-
-    // İstenen uygulama içeriğini göster
+    // Tüm içerik alanlarını gizle
+    document.querySelectorAll('.chat-main, .content-view').forEach(content => {
+        content.classList.add('hidden');
+    });
+    // İstenen içeriği göster
     document.getElementById(contentId).classList.remove('hidden');
 
     // Navigasyon butonlarının aktif durumunu güncelle
@@ -123,27 +145,36 @@ function showAppContent(contentId) {
 
 function displayMessage(message, container, isPrivate = false) {
     const messageElement = document.createElement('div');
-    messageElement.classList.add('message');
+    messageElement.classList.add('message-item');
 
     const senderDisplayName = message.senderName || 'Bilinmeyen';
     const currentUserId = auth.currentUser ? auth.currentUser.uid : null;
 
+    // Mesajın göndereni bizim kullanıcımızsa 'sent', değilse 'received' sınıfını ekle
     if (message.senderId === currentUserId) {
         messageElement.classList.add('sent');
     } else {
         messageElement.classList.add('received');
     }
 
-    // Kendi mesajımızda gönderen ismini göstermeyelim
-    if (message.senderId !== currentUserId) {
-        messageElement.innerHTML = `<div class="message-sender">${senderDisplayName}</div>`;
+    // Mesaj içeriğini ekle
+    let messageHtml = '';
+    if (message.senderId !== currentUserId) { // Kendi mesajımızda gönderen adını gösterme
+        messageHtml += `<div class="message-sender-name">${senderDisplayName}</div>`;
     }
-    messageElement.innerHTML += `<div class="message-content">${message.content}</div>`;
+    messageHtml += `<div class="message-content">${message.content}</div>`;
+    
+    // Zaman damgasını biçimlendir ve ekle
+    const date = message.timestamp && message.timestamp.toDate ? message.timestamp.toDate() : new Date();
+    const timeString = date.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+    messageHtml += `<span class="message-timestamp">${timeString}</span>`;
+
+    messageElement.innerHTML = messageHtml;
     container.appendChild(messageElement);
     container.scrollTop = container.scrollHeight; // Otomatik aşağı kaydır
 }
 
-function showMessage(element, text, isError = true) {
+function showStatusMessage(element, text, isError = true) {
     element.textContent = text;
     element.classList.remove('error-message', 'success-message');
     if (isError) {
@@ -155,12 +186,11 @@ function showMessage(element, text, isError = true) {
     setTimeout(() => {
         element.textContent = '';
         element.classList.add('hidden');
-    }, 5000);
+    }, 5000); // 5 saniye sonra mesajı kaldır
 }
 
 // ----- Firebase Authentication İşlemleri -----
 
-// Kullanıcı durumu değiştiğinde
 auth.onAuthStateChanged(user => {
     if (user) {
         currentUser = user;
@@ -168,18 +198,17 @@ auth.onAuthStateChanged(user => {
         userEmailSpan.textContent = user.email;
         showSection('app-section');
 
-        // E-posta doğrulaması kontrolü
         if (!user.emailVerified) {
             alert('E-posta adresiniz doğrulanmamış. Sohbet etmeye başlamadan önce lütfen e-postanıza gönderilen doğrulama linkine tıklayın.');
-            // Burada kullanıcıya uyarı gösteren bir UI elemanı da ekleyebilirsiniz.
+            // Ayrıca UI'da daha kalıcı bir uyarı gösterebilirsiniz.
         }
 
-        // Ana sohbet mesajlarını dinlemeye başla
-        listenForPublicMessages();
-        // Arkadaş listesini ve durumunu dinlemeye başla
-        listenForFriends();
         // Firestore'da kullanıcının public profilini oluştur/güncelle
         createUserProfile(user);
+
+        // Dinleyicileri başlat
+        listenForPublicMessages();
+        listenForFriends();
 
     } else {
         currentUser = null;
@@ -196,112 +225,106 @@ auth.onAuthStateChanged(user => {
 });
 
 // Kayıt Ol
-registerBtn.addEventListener('click', async () => {
+registerForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
     const email = registerEmailInput.value.trim();
     const password = registerPasswordInput.value.trim();
     registerMessage.textContent = '';
 
-    if (!email || !password) {
-        showMessage(registerMessage, 'E-posta ve şifre boş bırakılamaz.', true);
-        return;
-    }
     if (password.length < 6) {
-        showMessage(registerMessage, 'Şifre en az 6 karakter olmalıdır.', true);
+        showStatusMessage(registerMessage, 'Şifre en az 6 karakter olmalıdır.', true);
         return;
     }
 
     try {
-        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-        // Kayıt sonrası kullanıcıya varsayılan bir isim ata (e-postanın ilk kısmı)
-        await userCredential.user.updateProfile({ displayName: email.split('@')[0] });
-        await userCredential.user.sendEmailVerification(); // E-posta doğrulama linki gönder
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        await updateProfile(userCredential.user, { displayName: email.split('@')[0] }); // Display name atama
+        await sendEmailVerification(userCredential.user); // E-posta doğrulama linki gönder
 
-        showMessage(registerMessage, 'Kayıt başarılı! E-postanıza doğrulama linki gönderildi. Lütfen e-postanızı kontrol edin.', false);
-        registerEmailInput.value = '';
-        registerPasswordInput.value = '';
-        // Başarılı kayıttan sonra giriş sekmesine geç
-        showTab('login');
+        showStatusMessage(registerMessage, 'Kayıt başarılı! E-postanıza doğrulama linki gönderildi. Lütfen e-postanızı kontrol edin.', false);
+        registerForm.reset();
+        showTab('login'); // Başarılı kayıttan sonra giriş sekmesine geç
     } catch (error) {
-        showMessage(registerMessage, error.message, true);
+        showStatusMessage(registerMessage, error.message, true);
     }
 });
 
 // Giriş Yap
-loginBtn.addEventListener('click', async () => {
+loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
     const email = loginEmailInput.value.trim();
     const password = loginPasswordInput.value.trim();
     loginError.textContent = '';
 
     try {
-        await auth.signInWithEmailAndPassword(email, password);
+        await signInWithEmailAndPassword(auth, email, password);
+        loginForm.reset();
         loginError.textContent = ''; // Başarılı giriş
-        loginEmailInput.value = '';
-        loginPasswordInput.value = '';
     } catch (error) {
-        showMessage(loginError, error.message, true);
+        showStatusMessage(loginError, error.message, true);
     }
 });
 
 // Google ile Giriş Yap
 googleLoginBtn.addEventListener('click', async () => {
-    const provider = new GoogleAuthProvider(); // Global olarak tanımlanan GoogleAuthProvider kullanıldı
+    const provider = new GoogleAuthProvider();
     loginError.textContent = '';
     try {
-        await auth.signInWithPopup(provider);
+        await signInWithPopup(auth, provider);
         loginError.textContent = '';
     } catch (error) {
-        showMessage(loginError, error.message, true);
+        showStatusMessage(loginError, error.message, true);
     }
 });
 
 // Şifremi Unuttum
 forgotPasswordBtn.addEventListener('click', async () => {
-    const email = loginEmailInput.value.trim(); // Giriş e-posta alanındaki değeri kullan
+    const email = loginEmailInput.value.trim();
     loginError.textContent = '';
 
     if (!email) {
-        showMessage(loginError, 'Şifresini sıfırlamak istediğiniz e-postayı girin.', true);
+        showStatusMessage(loginError, 'Şifresini sıfırlamak istediğiniz e-postayı girin.', true);
         return;
     }
 
     try {
-        await auth.sendPasswordResetEmail(email);
-        showMessage(loginError, 'Şifre sıfırlama linki e-postanıza gönderildi.', false);
+        await sendPasswordResetEmail(auth, email);
+        showStatusMessage(loginError, 'Şifre sıfırlama linki e-postanıza gönderildi.', false);
     } catch (error) {
-        showMessage(loginError, error.message, true);
+        showStatusMessage(loginError, error.message, true);
     }
 });
 
 // Çıkış Yap
 logoutBtn.addEventListener('click', async () => {
     try {
-        await auth.signOut();
+        await signOut(auth);
     } catch (error) {
         console.error('Çıkış yaparken hata:', error);
     }
 });
 
-// Firestore'da Kullanıcı Profilini Oluştur/Güncelle
+// Firestore'da Kullanıcı Profili Oluşturma/Güncelleme
 async function createUserProfile(user) {
-    const userRef = db.collection('users').doc(user.uid);
-    const doc = await userRef.get();
-    if (!doc.exists) {
-        await userRef.set({
+    const userRef = doc(db, 'users', user.uid);
+    const userDoc = await getDoc(userRef);
+
+    if (!userDoc.exists()) {
+        await setDoc(userRef, {
             uid: user.uid,
             email: user.email,
             displayName: user.displayName || user.email.split('@')[0],
-            friends: [], // Başlangıçta arkadaş listesi boş
-            createdAt: FieldValue.serverTimestamp() // Global olarak tanımlanan FieldValue kullanıldı
+            friends: [],
+            createdAt: FieldValue.serverTimestamp()
         });
     } else {
-        // Kullanıcı bilgileri güncellenmiş olabilir
-        await userRef.update({
+        await updateDoc(userRef, {
             email: user.email,
             displayName: user.displayName || user.email.split('@')[0],
-            lastLoginAt: FieldValue.serverTimestamp() // Global olarak tanımlanan FieldValue kullanıldı
+            lastLoginAt: FieldValue.serverTimestamp()
         });
     }
-    // Ekran adını güncelle
+    // UI'da görünen display name'i güncelle
     displayNameSpan.textContent = user.displayName || user.email.split('@')[0];
 }
 
@@ -312,34 +335,33 @@ function listenForPublicMessages() {
         unsubscribePublicMessages(); // Önceki dinleyiciyi iptal et
     }
 
-    unsubscribePublicMessages = db.collection('messages')
-        .orderBy('timestamp', 'asc') // Zamana göre sırala
-        .limit(100) // Son 100 mesajı göster
-        .onSnapshot(snapshot => {
-            messagesContainer.innerHTML = ''; // Temizle
-            snapshot.forEach(doc => {
-                displayMessage(doc.data(), messagesContainer);
-            });
-        }, error => {
-            console.error('Genel mesajları dinlerken hata:', error);
+    const messagesCollection = collection(db, 'messages');
+    const q = query(messagesCollection, orderBy('timestamp', 'asc'), limit(100));
+
+    unsubscribePublicMessages = onSnapshot(q, (snapshot) => {
+        messagesContainer.innerHTML = '';
+        snapshot.forEach(doc => {
+            displayMessage(doc.data(), messagesContainer);
         });
+    }, (error) => {
+        console.error('Genel mesajları dinlerken hata:', error);
+    });
 }
 
 sendMessageBtn.addEventListener('click', async () => {
     const content = messageInput.value.trim();
     if (content && currentUser) {
-        // E-posta doğrulanmış mı kontrol et
         if (!currentUser.emailVerified) {
-            alert('Mesaj gönderebilmek için lütfen e-posta adresinizi doğrulayın. Doğrulama linki e-postanıza gönderildi.');
+            alert('Mesaj gönderebilmek için lütfen e-posta adresinizi doğrulayın.');
             return;
         }
 
         try {
-            await db.collection('messages').add({
+            await addDoc(collection(db, 'messages'), {
                 senderId: currentUser.uid,
                 senderName: currentUser.displayName || currentUser.email.split('@')[0],
                 content: content,
-                timestamp: FieldValue.serverTimestamp() // Global olarak tanımlanan FieldValue kullanıldı
+                timestamp: FieldValue.serverTimestamp()
             });
             messageInput.value = '';
         } catch (error) {
@@ -354,110 +376,120 @@ messageInput.addEventListener('keypress', (e) => {
     }
 });
 
+
 // ----- Arkadaşlık İşlemleri -----
 
 friendsListBtn.addEventListener('click', () => {
     showAppContent('friends-section');
-    loadFriendsList(); // Arkadaş listesini her açtığında yeniden yükle
+    loadFriendsList();
 });
 
 async function loadFriendsList() {
     if (!currentUser) return;
 
     if (unsubscribeFriends) {
-        unsubscribeFriends(); // Önceki dinleyiciyi iptal et
+        unsubscribeFriends();
     }
 
-    unsubscribeFriends = db.collection('users').doc(currentUser.uid)
-        .onSnapshot(async doc => {
-            friendsListUL.innerHTML = ''; // Listeyi temizle
-            if (doc.exists) {
-                const userData = doc.data();
-                const friendIds = userData.friends || [];
+    const userRef = doc(db, 'users', currentUser.uid);
 
-                if (friendIds.length === 0) {
-                    friendsListUL.innerHTML = '<li style="text-align: center; color: #666; padding: 20px;">Henüz arkadaşınız yok. Arkadaş ekle kısmından ekleyebilirsiniz.</li>';
-                    return;
-                }
+    unsubscribeFriends = onSnapshot(userRef, async (userDocSnapshot) => {
+        friendsListUL.innerHTML = '';
+        if (userDocSnapshot.exists()) {
+            const userData = userDocSnapshot.data();
+            const friendIds = userData.friends || [];
 
-                const friendPromises = friendIds.map(friendId => db.collection('users').doc(friendId).get());
-                const friendDocs = await Promise.all(friendPromises);
-
-                friendDocs.forEach(friendDoc => {
-                    if (friendDoc.exists) {
-                        const friendData = friendDoc.data();
-                        const friendItem = document.createElement('li');
-                        friendItem.innerHTML = `
-                            <span class="friend-name">${friendData.displayName || friendData.email}</span>
-                            <button class="start-chat-btn" data-friend-id="${friendData.uid}" data-friend-name="${friendData.displayName || friendData.email}">Özel Sohbet</button>
-                        `;
-                        friendsListUL.appendChild(friendItem);
-                    }
-                });
+            if (friendIds.length === 0) {
+                friendsListUL.innerHTML = '<li class="info-text" style="padding: 20px;">Henüz arkadaşınız yok. Yukarıdan arkadaş ekleyebilirsiniz.</li>';
+                return;
             }
-        }, error => {
-            console.error('Arkadaş listesini dinlerken hata:', error);
-        });
+
+            const friendPromises = friendIds.map(friendId => getDoc(doc(db, 'users', friendId)));
+            const friendDocs = await Promise.all(friendPromises);
+
+            friendDocs.forEach(friendDoc => {
+                if (friendDoc.exists()) {
+                    const friendData = friendDoc.data();
+                    const friendItem = document.createElement('li');
+                    friendItem.classList.add('friend-item');
+                    friendItem.innerHTML = `
+                        <div class="friend-info">
+                            <div class="friend-avatar">${friendData.displayName ? friendData.displayName[0].toUpperCase() : friendData.email[0].toUpperCase()}</div>
+                            <span class="friend-name">${friendData.displayName || friendData.email}</span>
+                        </div>
+                        <button class="start-chat-button" data-friend-id="${friendData.uid}" data-friend-name="${friendData.displayName || friendData.email}">
+                            <i class="fas fa-comment"></i> Sohbet Et
+                        </button>
+                    `;
+                    friendsListUL.appendChild(friendItem);
+                }
+            });
+        }
+    }, (error) => {
+        console.error('Arkadaş listesini dinlerken hata:', error);
+    });
 }
 
 addFriendBtn.addEventListener('click', async () => {
     const friendEmail = addFriendEmailInput.value.trim();
     addFriendStatus.textContent = '';
     if (!friendEmail || !currentUser) {
-        showMessage(addFriendStatus, 'Bir e-posta girin.', true);
+        showStatusMessage(addFriendStatus, 'Bir e-posta girin.', true);
         return;
     }
     if (friendEmail === currentUser.email) {
-        showMessage(addFriendStatus, 'Kendinizi arkadaş olarak ekleyemezsiniz.', true);
+        showStatusMessage(addFriendStatus, 'Kendinizi arkadaş olarak ekleyemezsiniz.', true);
         return;
     }
 
     try {
-        const usersSnapshot = await db.collection('users').where('email', '==', friendEmail).get();
+        const usersRef = collection(db, 'users');
+        const q = query(usersRef, where('email', '==', friendEmail));
+        const usersSnapshot = await getDocs(q); // getDocs kullanıldı
 
         if (usersSnapshot.empty) {
-            showMessage(addFriendStatus, 'Bu e-postaya sahip bir kullanıcı bulunamadı.', true);
+            showStatusMessage(addFriendStatus, 'Bu e-postaya sahip bir kullanıcı bulunamadı.', true);
             return;
         }
 
-        const friendDoc = usersSnapshot.docs[0];
-        const friendId = friendDoc.id;
+        const friendDocFound = usersSnapshot.docs[0];
+        const friendId = friendDocFound.id;
 
         // Kontrol et: zaten arkadaş mı?
-        const currentUserData = (await db.collection('users').doc(currentUser.uid).get()).data();
+        const currentUserData = (await getDoc(doc(db, 'users', currentUser.uid))).data();
         if (currentUserData.friends && currentUserData.friends.includes(friendId)) {
-            showMessage(addFriendStatus, `${friendDoc.data().displayName || friendDoc.data().email} zaten arkadaş listenizde.`, false);
+            showStatusMessage(addFriendStatus, `${friendDocFound.data().displayName || friendDocFound.data().email} zaten arkadaş listenizde.`, false);
             addFriendEmailInput.value = '';
             return;
         }
 
-
         // Kendi arkadaş listemize ekle
-        await db.collection('users').doc(currentUser.uid).update({
-            friends: FieldValue.arrayUnion(friendId) // Global olarak tanımlanan FieldValue kullanıldı
+        await updateDoc(doc(db, 'users', currentUser.uid), {
+            friends: arrayUnion(friendId)
         });
         // Arkadaşın listesine de bizi ekle (karşılıklı arkadaşlık)
-        await db.collection('users').doc(friendId).update({
-            friends: FieldValue.arrayUnion(currentUser.uid) // Global olarak tanımlanan FieldValue kullanıldı
+        await updateDoc(doc(db, 'users', friendId), {
+            friends: arrayUnion(currentUser.uid)
         });
 
-        showMessage(addFriendStatus, `${friendDoc.data().displayName || friendDoc.data().email} arkadaş listenize eklendi!`, false);
+        showStatusMessage(addFriendStatus, `${friendDocFound.data().displayName || friendDocFound.data().email} arkadaş listenize eklendi!`, false);
         addFriendEmailInput.value = '';
 
     } catch (error) {
         console.error('Arkadaş eklerken hata:', error);
-        showMessage(addFriendStatus, 'Arkadaş eklenirken bir hata oluştu.', true);
+        showStatusMessage(addFriendStatus, 'Arkadaş eklenirken bir hata oluştu.', true);
     }
 });
 
-// Arkadaş listesindeki "Özel Sohbet" butonlarına tıklama
+// Arkadaş listesindeki "Sohbet Et" butonlarına tıklama
 friendsListUL.addEventListener('click', (e) => {
-    if (e.target.classList.contains('start-chat-btn')) {
+    if (e.target.classList.contains('start-chat-button')) {
         const friendId = e.target.dataset.friendId;
         const friendName = e.target.dataset.friendName;
         openPrivateChat(friendId, friendName);
     }
 });
+
 
 // ----- Özel Sohbet İşlemleri -----
 
@@ -470,32 +502,32 @@ async function openPrivateChat(recipientId, recipientName) {
     if (!currentUser) return;
 
     currentPrivateChatRecipientId = recipientId;
-    privateChatTitle.textContent = `${recipientName} ile Sohbet`;
-    privateMessagesContainer.innerHTML = ''; // Önceki mesajları temizle
-    privateMessageInput.value = ''; // Giriş kutusunu temizle
+    privateChatTitle.textContent = `${recipientName} ile Özel Sohbet`;
+    privateMessagesContainer.innerHTML = '';
+    privateMessageInput.value = '';
 
-    privateChatModal.classList.remove('hidden'); // Modalı göster
+    privateChatModal.classList.remove('hidden');
 
     if (unsubscribePrivateChat) {
-        unsubscribePrivateChat(); // Önceki özel sohbet dinleyicisini iptal et
+        unsubscribePrivateChat();
     }
 
     const chatRoomId = getPrivateChatRoomId(currentUser.uid, recipientId);
-    const chatRef = db.collection('privateChats').doc(chatRoomId).collection('messages');
+    const chatCollection = collection(db, 'privateChats', chatRoomId, 'messages');
+    const q = query(chatCollection, orderBy('timestamp', 'asc'));
 
-    // Özel sohbet mesajlarını dinle
-    unsubscribePrivateChat = chatRef.orderBy('timestamp', 'asc').onSnapshot(snapshot => {
+    unsubscribePrivateChat = onSnapshot(q, (snapshot) => {
         privateMessagesContainer.innerHTML = '';
         snapshot.forEach(doc => {
             displayMessage(doc.data(), privateMessagesContainer, true);
         });
-    }, error => {
+    }, (error) => {
         console.error('Özel mesajları dinlerken hata:', error);
     });
 }
 
 closePrivateChatBtn.addEventListener('click', () => {
-    privateChatModal.classList.add('hidden'); // Modalı kapat
+    privateChatModal.classList.add('hidden');
     if (unsubscribePrivateChat) {
         unsubscribePrivateChat();
         unsubscribePrivateChat = null;
@@ -506,18 +538,17 @@ closePrivateChatBtn.addEventListener('click', () => {
 sendPrivateMessageBtn.addEventListener('click', async () => {
     const content = privateMessageInput.value.trim();
     if (content && currentUser && currentPrivateChatRecipientId) {
-        // E-posta doğrulanmış mı kontrol et
         if (!currentUser.emailVerified) {
-            alert('Mesaj gönderebilmek için lütfen e-posta adresinizi doğrulayın. Doğrulama linki e-postanıza gönderildi.');
+            alert('Mesaj gönderebilmek için lütfen e-posta adresinizi doğrulayın.');
             return;
         }
         try {
             const chatRoomId = getPrivateChatRoomId(currentUser.uid, currentPrivateChatRecipientId);
-            await db.collection('privateChats').doc(chatRoomId).collection('messages').add({
+            await addDoc(collection(db, 'privateChats', chatRoomId, 'messages'), {
                 senderId: currentUser.uid,
                 senderName: currentUser.displayName || currentUser.email.split('@')[0],
                 content: content,
-                timestamp: FieldValue.serverTimestamp() // Global olarak tanımlanan FieldValue kullanıldı
+                timestamp: FieldValue.serverTimestamp()
             });
             privateMessageInput.value = '';
         } catch (error) {
@@ -537,10 +568,9 @@ privateMessageInput.addEventListener('keypress', (e) => {
 
 settingsBtn.addEventListener('click', () => {
     showAppContent('settings-section');
-    // Mevcut değerleri inputlara yükle
     newDisplayNameInput.value = currentUser.displayName || currentUser.email.split('@')[0];
     newEmailInput.value = currentUser.email;
-    emailCurrentPasswordInput.value = ''; // E-posta değişimi için şifreyi temizle
+    emailCurrentPasswordInput.value = '';
     currentPasswordInput.value = '';
     newPasswordInput.value = '';
     displayNameStatus.textContent = '';
@@ -548,71 +578,67 @@ settingsBtn.addEventListener('click', () => {
     passwordStatus.textContent = '';
 });
 
-// İsim Değiştir
+// Kullanıcı Adı Değiştir
 updateDisplayNameBtn.addEventListener('click', async () => {
     const newName = newDisplayNameInput.value.trim();
     displayNameStatus.textContent = '';
 
     if (!newName) {
-        showMessage(displayNameStatus, 'Kullanıcı adı boş bırakılamaz.', true);
+        showStatusMessage(displayNameStatus, 'Kullanıcı adı boş bırakılamaz.', true);
         return;
     }
-    if (newName === currentUser.displayName) {
-        showMessage(displayNameStatus, 'Yeni kullanıcı adı mevcut isminizle aynı.', false);
+    if (newName === (currentUser.displayName || currentUser.email.split('@')[0])) {
+        showStatusMessage(displayNameStatus, 'Yeni kullanıcı adı mevcut isminizle aynı.', false);
         return;
     }
 
     try {
-        await currentUser.updateProfile({ displayName: newName });
-        // Firestore'daki public profili de güncelle
-        await db.collection('users').doc(currentUser.uid).update({ displayName: newName });
-        displayNameSpan.textContent = newName; // UI'yı güncelle
-        showMessage(displayNameStatus, 'Kullanıcı adı başarıyla güncellendi.', false);
+        await updateProfile(currentUser, { displayName: newName });
+        await updateDoc(doc(db, 'users', currentUser.uid), { displayName: newName });
+        displayNameSpan.textContent = newName;
+        showStatusMessage(displayNameStatus, 'Kullanıcı adı başarıyla güncellendi.', false);
     } catch (error) {
         console.error('Kullanıcı adı güncellenirken hata:', error);
-        showMessage(displayNameStatus, error.message, true);
+        showStatusMessage(displayNameStatus, error.message, true);
     }
 });
 
 // E-posta Değiştir
 updateEmailBtn.addEventListener('click', async () => {
     const newEmail = newEmailInput.value.trim();
-    const currentPasswordForEmail = emailCurrentPasswordInput.value; // E-posta değişimi için mevcut şifre
+    const currentPasswordForEmail = emailCurrentPasswordInput.value;
     emailStatus.textContent = '';
 
     if (!newEmail || !currentPasswordForEmail) {
-        showMessage(emailStatus, 'Yeni e-posta ve mevcut şifre boş bırakılamaz.', true);
+        showStatusMessage(emailStatus, 'Yeni e-posta ve mevcut şifre boş bırakılamaz.', true);
         return;
     }
     if (newEmail === currentUser.email) {
-        showMessage(emailStatus, 'Yeni e-posta mevcut e-postanızla aynı.', false);
+        showStatusMessage(emailStatus, 'Yeni e-posta mevcut e-postanızla aynı.', false);
         return;
     }
 
     try {
-        // Kullanıcının kimliğini yeniden doğrula
-        const credential = EmailAuthProvider.credential(currentUser.email, currentPasswordForEmail); // Global olarak tanımlanan EmailAuthProvider kullanıldı
-        await currentUser.reauthenticateWithCredential(credential);
+        const credential = EmailAuthProvider.credential(currentUser.email, currentPasswordForEmail);
+        await reauthenticateWithCredential(currentUser, credential);
+        await updateEmail(currentUser, newEmail);
+        await sendEmailVerification(currentUser); // Yeni e-postaya doğrulama linki gönder
 
-        await currentUser.updateEmail(newEmail);
-        await currentUser.sendEmailVerification(); // Yeni e-postaya doğrulama linki gönder
+        await updateDoc(doc(db, 'users', currentUser.uid), { email: newEmail });
 
-        // Firestore'daki public profili de güncelle
-        await db.collection('users').doc(currentUser.uid).update({ email: newEmail });
-
-        userEmailSpan.textContent = newEmail; // UI'yı güncelle
-        showMessage(emailStatus, 'E-posta başarıyla güncellendi. Yeni e-postanıza doğrulama linki gönderildi. Lütfen e-postanızı kontrol edin.', false);
-        // E-posta değiştikten sonra güvenlik için oturumu kapatıyoruz
-        await auth.signOut();
+        userEmailSpan.textContent = newEmail;
+        showStatusMessage(emailStatus, 'E-posta başarıyla güncellendi. Yeni e-postanıza doğrulama linki gönderildi. Lütfen e-postanızı kontrol edin.', false);
+        // Güvenlik için oturumu kapat
+        await signOut(auth);
         alert('E-postanız başarıyla değiştirildi. Yeni e-postanızı doğrulamak için lütfen gelen kutunuzu kontrol edin ve ardından tekrar giriş yapın.');
 
     } catch (error) {
         console.error('E-posta güncellenirken hata:', error);
-        showMessage(emailStatus, error.message, true);
+        showStatusMessage(emailStatus, error.message, true);
         if (error.code === 'auth/requires-recent-login') {
-            showMessage(emailStatus, 'Bu işlemi yapabilmek için lütfen tekrar giriş yapın (güvenlik nedeniyle).', true);
+            showStatusMessage(emailStatus, 'Bu işlemi yapabilmek için lütfen tekrar giriş yapın (güvenlik nedeniyle).', true);
         } else if (error.code === 'auth/wrong-password') {
-            showMessage(emailStatus, 'Mevcut şifreniz yanlış.', true);
+            showStatusMessage(emailStatus, 'Mevcut şifreniz yanlış.', true);
         }
     }
 });
@@ -624,34 +650,31 @@ updatePasswordBtn.addEventListener('click', async () => {
     passwordStatus.textContent = '';
 
     if (!currentPassword || !newPassword) {
-        showMessage(passwordStatus, 'Mevcut ve yeni şifre boş bırakılamaz.', true);
+        showStatusMessage(passwordStatus, 'Mevcut ve yeni şifre boş bırakılamaz.', true);
         return;
     }
     if (newPassword.length < 6) {
-        showMessage(passwordStatus, 'Yeni şifre en az 6 karakter olmalıdır.', true);
+        showStatusMessage(passwordStatus, 'Yeni şifre en az 6 karakter olmalıdır.', true);
         return;
     }
 
     try {
-        // Kullanıcının kimliğini yeniden doğrula
-        const credential = EmailAuthProvider.credential(currentUser.email, currentPassword); // Global olarak tanımlanan EmailAuthProvider kullanıldı
-        await currentUser.reauthenticateWithCredential(credential);
-
-        // Şifreyi güncelle
-        await currentUser.updatePassword(newPassword);
-        showMessage(passwordStatus, 'Şifreniz başarıyla güncellendi!', false);
+        const credential = EmailAuthProvider.credential(currentUser.email, currentPassword);
+        await reauthenticateWithCredential(currentUser, credential);
+        await updatePassword(currentUser, newPassword);
+        showStatusMessage(passwordStatus, 'Şifreniz başarıyla güncellendi!', false);
         currentPasswordInput.value = '';
         newPasswordInput.value = '';
-        await auth.signOut(); // Şifre değiştikten sonra oturumu kapat
+        await signOut(auth);
         alert('Şifreniz başarıyla değiştirildi. Lütfen yeni şifrenizle tekrar giriş yapın.');
 
     } catch (error) {
         console.error('Şifre güncellenirken hata:', error);
-        showMessage(passwordStatus, error.message, true);
+        showStatusMessage(passwordStatus, error.message, true);
         if (error.code === 'auth/wrong-password') {
-            showMessage(passwordStatus, 'Mevcut şifreniz yanlış.', true);
+            showStatusMessage(passwordStatus, 'Mevcut şifreniz yanlış.', true);
         } else if (error.code === 'auth/requires-recent-login') {
-            showMessage(passwordStatus, 'Bu işlemi yapabilmek için lütfen tekrar giriş yapın (güvenlik nedeniyle).', true);
+            showStatusMessage(passwordStatus, 'Bu işlemi yapabilmek için lütfen tekrar giriş yapın (güvenlik nedeniyle).', true);
         }
     }
 });
@@ -659,7 +682,6 @@ updatePasswordBtn.addEventListener('click', async () => {
 
 // ----- Sekme (Tab) Değiştirme Mantığı -----
 function showTab(tabName) {
-    // Butonları güncelle
     showLoginTabBtn.classList.remove('active');
     showRegisterTabBtn.classList.remove('active');
     loginTabContent.classList.add('hidden');
@@ -683,6 +705,9 @@ showRegisterTabBtn.addEventListener('click', () => showTab('register'));
 
 // Uygulama yüklendiğinde varsayılan olarak giriş sekmesini göster
 document.addEventListener('DOMContentLoaded', () => {
-    showSection('auth-section'); // İlk olarak auth bölümünü göster
-    showTab('login'); // Varsayılan olarak giriş sekmesini göster
+    // onAuthStateChanged Firebase'den kullanıcı durumunu alana kadar her şey gizli başlasın
+    authSection.classList.add('hidden');
+    appSection.classList.add('hidden');
+    // Sadece authSection'ın container'ı görüntülenecek, içinde login tab aktif olacak
+    showTab('login');
 });
