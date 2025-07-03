@@ -3,18 +3,578 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sohbet Uygulaması</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js';
-        import { getAuth, GoogleAuthProvider, EmailAuthProvider, updateProfile, sendEmailVerification, sendPasswordResetEmail, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, reauthenticateWithCredential, updateEmail, updatePassword } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-auth.js';
-        import { getFirestore, collection, doc, getDoc, setDoc, updateDoc, arrayUnion, query, orderBy, limit, onSnapshot, addDoc, FieldValue as FirestoreFieldValue, where } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore.js';
-        import { getAnalytics } from 'https://www.gstatic.com/firebasejs/9.6.0/firebase-analytics.js';
-
-        // Firebase yapılandırmanız (Kendi Firebase projenizin bilgileriyle DEĞİŞTİRİN!)
+    <title>BerkChat | Mükemmel Sohbet Deneyimi</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --dark: #212529;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --danger: #e63946;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f0f2f5;
+            color: var(--dark);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Auth Container */
+        .auth-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .left-panel {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .left-panel h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .left-panel p {
+            font-size: 1.2rem;
+            max-width: 600px;
+        }
+        
+        .right-panel {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            background-color: var(--light);
+        }
+        
+        .auth-form {
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .auth-form h2 {
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: var(--dark);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--secondary);
+        }
+        
+        .btn-secondary {
+            background-color: var(--gray);
+            color: white;
+        }
+        
+        .auth-switch {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .auth-switch a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .error-message {
+            color: var(--danger);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+        
+        /* Main App */
+        .app-container {
+            display: none;
+            flex: 1;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* Header */
+        .app-header {
+            background-color: white;
+            padding: 1rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        
+        .logo i {
+            margin-right: 0.5rem;
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--success);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 600;
+            margin-right: 1rem;
+            cursor: pointer;
+        }
+        
+        /* Main Content */
+        .main-content {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 300px;
+            background-color: white;
+            border-right: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .sidebar-header {
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .search-container {
+            position: relative;
+        }
+        
+        .search-container i {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+        
+        .search-container input {
+            width: 100%;
+            padding: 0.6rem 0.6rem 0.6rem 2rem;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+        }
+        
+        .sidebar-tabs {
+            display: flex;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+        
+        .tab.active {
+            border-bottom: 2px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .sidebar-content {
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .friend-list {
+            list-style: none;
+        }
+        
+        .friend-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .friend-item:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .friend-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--success);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 600;
+            margin-right: 1rem;
+        }
+        
+        .friend-info {
+            flex: 1;
+        }
+        
+        .friend-name {
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+        
+        .friend-status {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+        
+        .online {
+            color: #4ade80;
+            font-weight: 600;
+        }
+        
+        /* Chat Area */
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background-color: #f0f2f5;
+        }
+        
+        .chat-header {
+            background-color: white;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            align-items: center;
+        }
+        
+        .chat-header-info {
+            margin-left: 1rem;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .message {
+            max-width: 70%;
+            padding: 0.8rem 1.2rem;
+            margin-bottom: 1rem;
+            border-radius: 18px;
+            position: relative;
+        }
+        
+        .message-sent {
+            align-self: flex-end;
+            background-color: var(--primary);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .message-received {
+            align-self: flex-start;
+            background-color: white;
+            border: 1px solid #eee;
+            border-bottom-left-radius: 5px;
+        }
+        
+        .message-time {
+            font-size: 0.7rem;
+            text-align: right;
+            margin-top: 0.3rem;
+            opacity: 0.8;
+        }
+        
+        .message-input {
+            padding: 1rem;
+            background-color: white;
+            border-top: 1px solid #eee;
+            display: flex;
+        }
+        
+        .message-input input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            margin-right: 1rem;
+        }
+        
+        .send-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+        
+        /* Settings */
+        .settings-container {
+            display: none;
+            padding: 2rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .settings-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            padding: 2rem;
+        }
+        
+        .settings-card h2 {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .settings-section {
+            margin-bottom: 2rem;
+        }
+        
+        .settings-section h3 {
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+        
+        .settings-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .auth-container {
+                flex-direction: column;
+            }
+            
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                max-height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Authentication Container -->
+    <div class="auth-container" id="authContainer">
+        <div class="left-panel">
+            <h1><i class="fas fa-comments"></i> BerkChat</h1>
+            <p>Mükemmel sohbet deneyimi için doğru adres. Arkadaşlarınla anında bağlantı kur, mesajlaş ve eğlen!</p>
+        </div>
+        <div class="right-panel">
+            <div class="auth-form" id="loginForm">
+                <h2>Giriş Yap</h2>
+                <div class="form-group">
+                    <label for="loginEmail">E-posta</label>
+                    <input type="email" id="loginEmail" class="form-control" placeholder="E-postanızı girin">
+                    <div class="error-message" id="loginEmailError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Şifre</label>
+                    <input type="password" id="loginPassword" class="form-control" placeholder="Şifrenizi girin">
+                    <div class="error-message" id="loginPasswordError"></div>
+                </div>
+                <button class="btn btn-primary" id="loginBtn">Giriş Yap</button>
+                <div class="auth-switch">
+                    Hesabınız yok mu? <a href="#" id="showSignup">Kayıt Ol</a>
+                </div>
+            </div>
+            
+            <div class="auth-form" id="signupForm" style="display: none;">
+                <h2>Hesap Oluştur</h2>
+                <div class="form-group">
+                    <label for="signupName">Adınız</label>
+                    <input type="text" id="signupName" class="form-control" placeholder="Adınızı girin">
+                    <div class="error-message" id="signupNameError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="signupEmail">E-posta</label>
+                    <input type="email" id="signupEmail" class="form-control" placeholder="E-postanızı girin">
+                    <div class="error-message" id="signupEmailError"></div>
+                </div>
+                <div class="form-group">
+                    <label for="signupPassword">Şifre</label>
+                    <input type="password" id="signupPassword" class="form-control" placeholder="Şifrenizi oluşturun (en az 6 karakter)">
+                    <div class="error-message" id="signupPasswordError"></div>
+                </div>
+                <button class="btn btn-primary" id="signupBtn">Kayıt Ol</button>
+                <div class="auth-switch">
+                    Zaten hesabınız var mı? <a href="#" id="showLogin">Giriş Yap</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Main Application Container -->
+    <div class="app-container" id="appContainer">
+        <!-- Header -->
+        <div class="app-header">
+            <div class="logo">
+                <i class="fas fa-comments"></i> BerkChat
+            </div>
+            <div class="user-menu">
+                <div class="user-avatar" id="userAvatar">B</div>
+                <button class="btn btn-secondary" id="logoutBtn">Çıkış Yap</button>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <div class="search-container">
+                        <i class="fas fa-search"></i>
+                        <input type="text" placeholder="Arkadaş ara...">
+                    </div>
+                </div>
+                
+                <div class="sidebar-tabs">
+                    <div class="tab active" data-tab="friends">Arkadaşlar</div>
+                    <div class="tab" data-tab="requests">İstekler</div>
+                </div>
+                
+                <div class="sidebar-content">
+                    <ul class="friend-list" id="friendList">
+                        <!-- Friends will be populated here -->
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Chat Area -->
+            <div class="chat-area">
+                <div class="chat-header">
+                    <div class="friend-avatar" id="chatFriendAvatar">A</div>
+                    <div class="chat-header-info">
+                        <div class="friend-name" id="chatFriendName">Arkadaş Seçin</div>
+                        <div class="friend-status" id="chatFriendStatus">Çevrimiçi durumu</div>
+                    </div>
+                </div>
+                
+                <div class="chat-messages" id="chatMessages">
+                    <!-- Messages will appear here -->
+                    <div class="welcome-message">
+                        <p>BerkChat'e hoş geldiniz! Sol taraftan bir arkadaş seçerek sohbete başlayabilirsiniz.</p>
+                    </div>
+                </div>
+                
+                <div class="message-input">
+                    <input type="text" id="messageInput" placeholder="Bir mesaj yazın..." disabled>
+                    <button class="send-btn" id="sendBtn" disabled>
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Firebase Configuration -->
+    <script>
+        // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyDH5GBWQNoZv7LZZ2MbFjh-twI1jZuYqK0",
             authDomain: "newdc-d6404.firebaseapp.com",
@@ -25,182 +585,251 @@
             measurementId: "G-NV86JDVJ27"
         };
 
-        const app = initializeApp(firebaseConfig);
-
-        // Firebase servislerini ve ilgili fonksiyonları global window nesnesine atıyoruz.
-        // Bu sayede script.js dosyası "type=module" olmadan da bunlara erişebilir.
-        window.        auth = getAuth(app);
-        window.db = getFirestore(app);
-        window.analytics = getAnalytics(app); // İsteğe bağlı
-        window.GoogleAuthProvider = GoogleAuthProvider;
-        window.EmailAuthProvider = EmailAuthProvider;
-        window.FieldValue = FirestoreFieldValue; // Firestore FieldValue için benzersiz isim
-
-        // Auth fonksiyonlarını global olarak erişilebilir yap
-        window.updateProfile = updateProfile;
-        window.sendEmailVerification = sendEmailVerification;
-        window.sendPasswordResetEmail = sendPasswordResetEmail;
-        window.signInWithPopup = signInWithPopup;
-        window.signInWithEmailAndPassword = signInWithEmailAndPassword;
-        window.createUserWithEmailAndPassword = createUserWithEmailAndPassword;
-        window.signOut = signOut;
-        window.reauthenticateWithCredential = reauthenticateWithCredential;
-        window.updateEmail = updateEmail;
-        window.updatePassword = updatePassword;
-
-        // Firestore fonksiyonlarını global olarak erişilebilir yap
-        window.collection = collection;
-        window.doc = doc;
-        window.getDoc = getDoc;
-        window.setDoc = setDoc;
-        window.updateDoc = updateDoc;
-        window.arrayUnion = arrayUnion;
-        window.query = query;
-        window.orderBy = orderBy;
-        window.limit = limit;
-        window.onSnapshot = onSnapshot;
-        window.addDoc = addDoc;
-        window.where = where;
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+        
+        // DOM Elements
+        const authContainer = document.getElementById('authContainer');
+        const appContainer = document.getElementById('appContainer');
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        const loginBtn = document.getElementById('loginBtn');
+        const signupBtn = document.getElementById('signupBtn');
+        const showSignup = document.getElementById('showSignup');
+        const showLogin = document.getElementById('showLogin');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const userAvatar = document.getElementById('userAvatar');
+        const friendList = document.getElementById('friendList');
+        const chatMessages = document.getElementById('chatMessages');
+        const messageInput = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const chatFriendName = document.getElementById('chatFriendName');
+        const chatFriendAvatar = document.getElementById('chatFriendAvatar');
+        const chatFriendStatus = document.getElementById('chatFriendStatus');
+        
+        // Toggle auth forms
+        showSignup.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginForm.style.display = 'none';
+            signupForm.style.display = 'block';
+        });
+        
+        showLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            signupForm.style.display = 'none';
+            loginForm.style.display = 'block';
+        });
+        
+        // Login function
+        loginBtn.addEventListener('click', () => {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Check if email is verified
+                    if (userCredential.user.emailVerified) {
+                        // User is logged in and email is verified
+                        showApp();
+                    } else {
+                        // Email not verified
+                        alert('Lütfen e-postanıza gönderilen doğrulama linkine tıklayın. E-postanızı kontrol edin.');
+                        auth.signOut();
+                    }
+                })
+                .catch((error) => {
+                    alert('Giriş başarısız: ' + error.message);
+                });
+        });
+        
+        // Signup function
+        signupBtn.addEventListener('click', () => {
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Send verification email
+                    return userCredential.user.sendEmailVerification();
+                })
+                .then(() => {
+                    alert('Doğrulama e-postası gönderildi. Lütfen e-postanızı kontrol edin ve hesabınızı doğrulayın.');
+                    // Switch to login form
+                    signupForm.style.display = 'none';
+                    loginForm.style.display = 'block';
+                })
+                .catch((error) => {
+                    alert('Kayıt başarısız: ' + error.message);
+                });
+        });
+        
+        // Logout function
+        logoutBtn.addEventListener('click', () => {
+            auth.signOut()
+                .then(() => {
+                    appContainer.style.display = 'none';
+                    authContainer.style.display = 'flex';
+                });
+        });
+        
+        // Show main app
+        function showApp() {
+            authContainer.style.display = 'none';
+            appContainer.style.display = 'flex';
+            
+            // Set user avatar
+            const user = auth.currentUser;
+            if (user) {
+                userAvatar.textContent = user.displayName ? user.displayName.charAt(0) : user.email.charAt(0);
+            }
+            
+            // Load friends
+            loadFriends();
+        }
+        
+        // Load friends
+        function loadFriends() {
+            // In a real app, this would fetch from Firestore
+            const friends = [
+                { id: '1', name: 'Berkcan Yıldız', status: 'online', lastSeen: '' },
+                { id: '2', name: 'Ahmet Kaya', status: 'online', lastSeen: '' },
+                { id: '3', name: 'Ayşe Demir', status: 'offline', lastSeen: '2 saat önce' },
+                { id: '4', name: 'Mehmet Öztürk', status: 'offline', lastSeen: '5 dakika önce' },
+                { id: '5', name: 'Zeynep Şahin', status: 'online', lastSeen: '' }
+            ];
+            
+            friendList.innerHTML = '';
+            
+            friends.forEach(friend => {
+                const li = document.createElement('li');
+                li.className = 'friend-item';
+                li.dataset.id = friend.id;
+                li.innerHTML = `
+                    <div class="friend-avatar">${friend.name.charAt(0)}</div>
+                    <div class="friend-info">
+                        <div class="friend-name">${friend.name}</div>
+                        <div class="friend-status ${friend.status === 'online' ? 'online' : ''}">
+                            ${friend.status === 'online' ? 'Çevrimiçi' : `Çevrimdışı - ${friend.lastSeen}`}
+                        </div>
+                    </div>
+                `;
+                
+                li.addEventListener('click', () => {
+                    // Set chat header
+                    chatFriendName.textContent = friend.name;
+                    chatFriendAvatar.textContent = friend.name.charAt(0);
+                    chatFriendStatus.textContent = friend.status === 'online' ? 'Çevrimiçi' : 'Çevrimdışı';
+                    chatFriendStatus.className = `friend-status ${friend.status === 'online' ? 'online' : ''}`;
+                    
+                    // Enable message input
+                    messageInput.disabled = false;
+                    sendBtn.disabled = false;
+                    
+                    // Load chat messages
+                    loadChatMessages(friend.id);
+                });
+                
+                friendList.appendChild(li);
+            });
+        }
+        
+        // Load chat messages
+        function loadChatMessages(friendId) {
+            // In a real app, this would fetch from Firestore
+            chatMessages.innerHTML = '';
+            
+            // Sample messages
+            const messages = [
+                { id: '1', text: 'Merhaba! Nasılsın?', sender: friendId, time: '10:30' },
+                { id: '2', text: 'İyiyim, sen nasılsın?', sender: 'me', time: '10:32' },
+                { id: '3', text: 'Ben de iyiyim, teşekkür ederim. Bugün ne yapıyorsun?', sender: friendId, time: '10:33' },
+                { id: '4', text: 'Biraz kod yazıyorum. Yeni bir sohbet uygulaması geliştiriyorum.', sender: 'me', time: '10:35' },
+                { id: '5', text: 'Harika görünüyor! Başarılar dilerim.', sender: friendId, time: '10:36' }
+            ];
+            
+            messages.forEach(msg => {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${msg.sender === 'me' ? 'message-sent' : 'message-received'}`;
+                messageDiv.innerHTML = `
+                    <div class="message-text">${msg.text}</div>
+                    <div class="message-time">${msg.time}</div>
+                `;
+                chatMessages.appendChild(messageDiv);
+            });
+            
+            // Scroll to bottom
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        // Send message
+        sendBtn.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        function sendMessage() {
+            const message = messageInput.value.trim();
+            if (message) {
+                // In a real app, this would save to Firestore
+                const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message message-sent';
+                messageDiv.innerHTML = `
+                    <div class="message-text">${message}</div>
+                    <div class="message-time">${time}</div>
+                `;
+                chatMessages.appendChild(messageDiv);
+                
+                // Clear input
+                messageInput.value = '';
+                
+                // Scroll to bottom
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                // Add a fake response after 1-3 seconds
+                setTimeout(() => {
+                    const responses = [
+                        'Anladım, teşekkürler!',
+                        'Bu çok ilginç!',
+                        'Bana biraz daha anlatır mısın?',
+                        'Harika bir fikir!',
+                        'Bunu daha önce hiç düşünmemiştim.'
+                    ];
+                    
+                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                    const responseTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                    
+                    const responseDiv = document.createElement('div');
+                    responseDiv.className = 'message message-received';
+                    responseDiv.innerHTML = `
+                        <div class="message-text">${randomResponse}</div>
+                        <div class="message-time">${responseTime}</div>
+                    `;
+                    chatMessages.appendChild(responseDiv);
+                    
+                    // Scroll to bottom
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }, 1000 + Math.random() * 2000);
+            }
+        }
+        
+        // Auth state observer
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                if (user.emailVerified) {
+                    showApp();
+                } else {
+                    alert('Lütfen e-postanızı doğrulayın. E-postanızı kontrol edin.');
+                    auth.signOut();
+                }
+            }
+        });
     </script>
-</head>
-<body>
-    <div class="app-container">
-        <section id="auth-section" class="auth-section">
-            <div class="auth-box">
-                <div class="auth-header">
-                    <button id="show-login-tab" class="tab-button active">Giriş Yap</button>
-                    <button id="show-register-tab" class="tab-button">Kayıt Ol</button>
-                </div>
-
-                <div id="login-tab-content" class="tab-content active">
-                    <h2>Giriş Yap</h2>
-                    <form id="login-form">
-                        <div class="input-group">
-                            <i class="fas fa-envelope icon"></i>
-                            <input type="email" id="login-email" placeholder="E-posta adresiniz" required>
-                        </div>
-                        <div class="input-group">
-                            <i class="fas fa-lock icon"></i>
-                            <input type="password" id="login-password" placeholder="Şifreniz" required>
-                        </div>
-                        <button type="submit" class="auth-button primary">Giriş Yap</button>
-                        <button type="button" id="google-login-btn" class="auth-button google"><i class="fab fa-google"></i> Google ile Giriş Yap</button>
-                        <button type="button" id="forgot-password-btn" class="text-link">Şifremi Unuttum?</button>
-                        <p id="login-error" class="message error-message"></p>
-                    </form>
-                </div>
-
-                <div id="register-tab-content" class="tab-content">
-                    <h2>Kayıt Ol</h2>
-                    <form id="register-form">
-                        <div class="input-group">
-                            <i class="fas fa-envelope icon"></i>
-                            <input type="email" id="register-email" placeholder="E-posta adresiniz" required>
-                        </div>
-                        <div class="input-group">
-                            <i class="fas fa-lock icon"></i>
-                            <input type="password" id="register-password" placeholder="Min. 6 karakter" required>
-                        </div>
-                        <button type="submit" class="auth-button primary">Kayıt Ol</button>
-                        <p class="info-text"><i class="fas fa-info-circle"></i> Kayıt olduktan sonra e-posta adresinize bir doğrulama linki gönderilecektir.</p>
-                        <p id="register-message" class="message success-message"></p>
-                    </form>
-                </div>
-            </div>
-        </section>
-
-        <section id="app-section" class="main-app hidden">
-            <aside class="sidebar">
-                <div class="user-profile">
-                    <div class="user-avatar">
-                        <i class="fas fa-user-circle"></i>
-                    </div>
-                    <div class="user-details">
-                        <span id="display-name" class="username"></span>
-                        <span id="user-email" class="email"></span>
-                    </div>
-                </div>
-                <nav class="main-nav">
-                    <ul>
-                        <li><button id="main-chat-btn" class="nav-item active"><i class="fas fa-globe"></i> Genel Sohbet</button></li>
-                        <li><button id="friends-list-btn" class="nav-item"><i class="fas fa-user-friends"></i> Arkadaşlar</button></li>
-                        <li><button id="settings-btn" class="nav-item"><i class="fas fa-cog"></i> Ayarlar</button></li>
-                    </ul>
-                </nav>
-                <button id="logout-btn" class="logout-button"><i class="fas fa-sign-out-alt"></i> Çıkış Yap</button>
-            </aside>
-
-            <main class="chat-area">
-                <div id="main-chat-area" class="chat-main active-content">
-                    <div class="chat-header">
-                        <h3>Genel Sohbet</h3>
-                    </div>
-                    <div id="messages-container" class="messages-container">
-                        </div>
-                    <div class="message-input-area">
-                        <input type="text" id="message-input" placeholder="Bir mesaj yazın..." />
-                        <button id="send-message-btn" class="send-message-button"><i class="fas fa-paper-plane"></i></button>
-                    </div>
-                </div>
-
-                <div id="friends-section" class="content-view">
-                    <div class="content-header">
-                        <h3>Arkadaşlar</h3>
-                    </div>
-                    <div class="add-friend-area">
-                        <input type="email" id="add-friend-email" placeholder="Arkadaşın e-posta adresi">
-                        <button id="add-friend-btn" class="button small-button"><i class="fas fa-user-plus"></i> Ekle</button>
-                        <p id="add-friend-status" class="message"></p>
-                    </div>
-                    <ul id="friends-list" class="friends-list">
-                        </ul>
-                </div>
-
-                <div id="settings-section" class="content-view">
-                    <div class="content-header">
-                        <h3>Ayarlar</h3>
-                    </div>
-                    <div class="settings-group">
-                        <h4><i class="fas fa-user-edit"></i> Kullanıcı Adı Değiştir</h4>
-                        <input type="text" id="new-display-name" placeholder="Yeni kullanıcı adınız">
-                        <button id="update-display-name-btn" class="button small-button">Güncelle</button>
-                        <p id="display-name-status" class="message"></p>
-                    </div>
-                    <div class="settings-group">
-                        <h4><i class="fas fa-envelope-open-text"></i> E-posta Değiştir</h4>
-                        <input type="password" id="email-current-password" placeholder="Mevcut Şifreniz (onay için)">
-                        <input type="email" id="new-email" placeholder="Yeni e-posta adresiniz">
-                        <button id="update-email-btn" class="button small-button">Güncelle</button>
-                        <p id="email-status" class="message"></p>
-                        <p class="info-text"><i class="fas fa-info-circle"></i> E-posta değişikliği sonrası güvenlik için tekrar giriş yapmanız ve yeni e-postanızı doğrulamanız gerekebilir.</p>
-                    </div>
-                    <div class="settings-group">
-                        <h4><i class="fas fa-key"></i> Şifre Değiştir</h4>
-                        <input type="password" id="current-password" placeholder="Mevcut şifreniz">
-                        <input type="password" id="new-password" placeholder="Yeni şifreniz (min. 6 karakter)">
-                        <button id="update-password-btn" class="button small-button">Güncelle</button>
-                        <p id="password-status" class="message"></p>
-                        <p class="info-text"><i class="fas fa-info-circle"></i> Şifre değişikliği sonrası güvenlik için tekrar giriş yapmanız gerekmektedir.</p>
-                    </div>
-                </div>
-            </main>
-        </section>
-
-        <div id="private-chat-modal" class="modal-overlay hidden">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 id="private-chat-title"></h3>
-                    <button class="close-button" id="close-private-chat">&times;</button>
-                </div>
-                <div id="private-messages-container" class="messages-container"></div>
-                <div class="message-input-area">
-                    <input type="text" id="private-message-input" placeholder="Bir mesaj yazın..." />
-                    <button id="send-private-message-btn" class="send-message-button"><i class="fas fa-paper-plane"></i></button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="script.js"></script>
 </body>
 </html>
