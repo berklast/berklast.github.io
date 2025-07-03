@@ -1,5 +1,8 @@
 // script.js
+// Firebase servislerini ve yardımcı sınıfları içeri aktar
 import { auth, db } from './firebase-config.js'; // Firebase yapılandırmasını içeri aktar
+import { GoogleAuthProvider, EmailAuthProvider } from "firebase/auth"; // Kimlik doğrulama sağlayıcıları için
+import { FieldValue } from "firebase/firestore"; // Firestore alan değerleri için (serverTimestamp gibi)
 
 // ----- HTML Elementlerini Seçme -----
 // Auth Bölümü
@@ -195,7 +198,7 @@ loginBtn.addEventListener('click', async () => {
 
 // Google ile Giriş Yap
 googleLoginBtn.addEventListener('click', async () => {
-    const provider = new firebase.auth.GoogleAuthProvider();
+    const provider = new GoogleAuthProvider(); // Modüler import kullanıldı
     authError.textContent = '';
     try {
         await auth.signInWithPopup(provider);
@@ -268,14 +271,14 @@ async function createUserProfile(user) {
             email: user.email,
             displayName: user.displayName || user.email.split('@')[0],
             friends: [], // Başlangıçta arkadaş listesi boş
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            createdAt: FieldValue.serverTimestamp() // Modüler import kullanıldı
         });
     } else {
         // Kullanıcı bilgileri güncellenmiş olabilir
         await userRef.update({
             email: user.email,
             displayName: user.displayName || user.email.split('@')[0],
-            lastLoginAt: firebase.firestore.FieldValue.serverTimestamp()
+            lastLoginAt: FieldValue.serverTimestamp() // Modüler import kullanıldı
         });
     }
     // Ekran adını güncelle
@@ -319,7 +322,7 @@ sendMessageBtn.addEventListener('click', async () => {
                 senderId: currentUser.uid,
                 senderName: currentUser.displayName || currentUser.email.split('@')[0],
                 content: content,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                timestamp: FieldValue.serverTimestamp() // Modüler import kullanıldı
             });
             messageInput.value = '';
         } catch (error) {
@@ -419,11 +422,11 @@ addFriendBtn.addEventListener('click', async () => {
 
         // Kendi arkadaş listemize ekle
         await db.collection('users').doc(currentUser.uid).update({
-            friends: firebase.firestore.FieldValue.arrayUnion(friendId)
+            friends: FieldValue.arrayUnion(friendId) // Modüler import kullanıldı
         });
         // Arkadaşın listesine de bizi ekle (karşılıklı arkadaşlık)
         await db.collection('users').doc(friendId).update({
-            friends: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
+            friends: FieldValue.arrayUnion(currentUser.uid) // Modüler import kullanıldı
         });
 
         addFriendStatus.textContent = `${friendDoc.data().displayName || friendDoc.data().email} arkadaş listenize eklendi!`;
@@ -501,7 +504,7 @@ sendPrivateMessageBtn.addEventListener('click', async () => {
                 senderId: currentUser.uid,
                 senderName: currentUser.displayName || currentUser.email.split('@')[0],
                 content: content,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                timestamp: FieldValue.serverTimestamp() // Modüler import kullanıldı
             });
             privateMessageInput.value = '';
         } catch (error) {
@@ -579,22 +582,10 @@ updateEmailBtn.addEventListener('click', async () => {
     }
 
     try {
-        // Firebase Auth'un reauthenticateWithCredential veya updateEmail'deki doğrulama mekanizmasını kullanacağız.
-        // updateEmail metodu kullanıcının kimliğini yakın zamanda doğrulamış olmasını ister.
-        // Eğer yakın zamanda giriş yapmadıysa, tekrar kimlik doğrulaması ister.
-
-        // Kullanıcıya bir doğrulama e-postası gönderme mantığı:
-        // Firebase doğrudan "kod gönder" demediği için, Email Link Authentication'ı kullanacağız.
-        // Bu, kullanıcının yeni e-postasına bir link gönderir, tıklayınca e-posta güncellenir.
-        // Bu özelliği kullanabilmek için Firebase Auth'ta 'Email Link (passwordless sign-in)' özelliğini açmanız gerekir.
-        // Eğer bunu açmak istemiyorsanız, kullanıcının mevcut şifresini alıp reauthenticateWithCredential ile yeniden kimlik doğrulaması yapmasını isteyebilirsiniz.
-
-        // Basitçe: mevcut e-postaya bir doğrulama linki gönderip kullanıcıya bu linke tıklamasını söyleyelim.
-        // Ancak bu, Email Link Authentication'dan farklıdır. updateEmail metodu ile e-posta değiştirme, kullanıcının aktif oturumuyla ilgilidir.
-        // E-posta değiştirme işlemini daha güvenli hale getirmek için kullanıcının kimliğini yeniden doğrulaması gerekir.
-
-        // Eğer mevcut şifremi biliyorsam re-authenticate ol
-        const credential = firebase.auth.EmailAuthProvider.credential(currentUser.email, currentPasswordInput.value);
+        // Kullanıcının kimliğini yeniden doğrula
+        // Bu, güvenlik için Firebase'in gerektirdiği bir adımdır.
+        // Kullanıcının mevcut şifresini alıp reauthenticateWithCredential ile yeniden kimlik doğrulaması yapmalıyız.
+        const credential = EmailAuthProvider.credential(currentUser.email, currentPasswordInput.value); // Modüler import kullanıldı
         await currentUser.reauthenticateWithCredential(credential);
 
         await currentUser.updateEmail(newEmail);
@@ -609,12 +600,16 @@ updateEmailBtn.addEventListener('click', async () => {
         setTimeout(() => { emailStatus.textContent = ''; emailStatus.classList.remove('success-message'); }, 5000);
         // E-posta değiştikten sonra Firebase genellikle oturumu sonlandırır veya yeniden giriş ister.
         await auth.signOut(); // Güvenlik için oturumu kapat
+        alert('E-postanız başarıyla değiştirildi. Yeni e-postanızı doğrulamak için lütfen gelen kutunuzu kontrol edin ve ardından tekrar giriş yapın.');
+
     } catch (error) {
         console.error('E-posta güncellenirken hata:', error);
         emailStatus.textContent = error.message;
         emailStatus.classList.remove('success-message');
         if (error.code === 'auth/requires-recent-login') {
-            emailStatus.textContent = 'Bu işlemi yapabilmek için lütfen tekrar giriş yapın (güvenlik nedeniyle).';
+            emailStatus.textContent = 'Bu işlemi yapabilmek için lütfen tekrar giriş yapın (güvenlik nedeniyle). Mevcut şifrenizi girerek tekrar deneyin.';
+        } else if (error.code === 'auth/wrong-password') {
+            emailStatus.textContent = 'Mevcut şifreniz yanlış. E-posta değiştirmek için doğru şifreyi girin.';
         }
     }
 });
@@ -636,7 +631,7 @@ updatePasswordBtn.addEventListener('click', async () => {
 
     try {
         // Kullanıcının kimliğini yeniden doğrula
-        const credential = firebase.auth.EmailAuthProvider.credential(currentUser.email, currentPassword);
+        const credential = EmailAuthProvider.credential(currentUser.email, currentPassword); // Modüler import kullanıldı
         await currentUser.reauthenticateWithCredential(credential);
 
         // Şifreyi güncelle
