@@ -1,399 +1,665 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const chatMessages = document.getElementById('chat-messages');
-    const userInput = document.getElementById('user-input');
-    const sendButton = document.getElementById('send-button');
+// script.js
+import { auth, db } from './firebase-config.js'; // Firebase yapılandırmasını içeri aktar
 
-    // Ücretsiz API Endpoint'leri
-    // Bu URL'ler, kendi kuracağımız Node.js proxy sunucusuna işaret ediyor.
-    // Böylece CORS hatalarını aşmış olacağız.
-    const FREE_APIS = {
-        WIKIPEDIA: '/api/wikipedia?q=',
-        SPELLCHECK: (word) => `/api/spellcheck?word=${word}`
-    };
+// ----- HTML Elementlerini Seçme -----
+// Auth Bölümü
+const authSection = document.getElementById('auth-section');
+const authEmailInput = document.getElementById('auth-email');
+const authPasswordInput = document.getElementById('auth-password');
+const registerBtn = document.getElementById('register-btn');
+const loginBtn = document.getElementById('login-btn');
+const googleLoginBtn = document.getElementById('google-login-btn');
+const authError = document.getElementById('auth-error');
+const forgotPasswordBtn = document.getElementById('forgot-password-btn');
+const verifyEmailLink = document.getElementById('verify-email-link');
 
-    // --- GENİŞLETİLMİŞ YEREL BİLGİ BANKASI VE AKILLI YANITLAR ---
-    const LOCAL_KNOWLEDGE = {
-        greetings: {
-            patterns: [/merhaba/i, /selam/i, /hey/i, /hi/i, /naber/i, /mrhb/i, /slm/i, /hola/i, /günaydın/i, /iyi günler/i, /selamlar/i],
-            responses: [
-                "Merhaba! Size nasıl yardımcı olabilirim? 😊",
-                "Selamlar! Ben Ultimate SKY AI, sorularınızı yanıtlamak için buradayım.",
-                "Hoş geldiniz! Bana istediğinizi sorabilirsiniz.",
-                "Selam! Bugün size ne gibi bilgiler sağlayabilirim?",
-                "Merhaba, sizin için buradayım."
-            ]
-        },
-        howAreYou: { // "Nasılsın" gibi sorular için yeni kategori
-            patterns: [/nasılsın/i, /nasıl gidiyor/i, /durumun ne/i],
-            responses: [
-                "Ben bir yapay zekayım, bu yüzden duygularım veya bir halim yok. Ama size yardım etmek için her zaman hazırım!",
-                "Ben harikayım, teşekkür ederim! Sizin için ne yapabilirim?",
-                "Ben iyi çalışıyorum! Size nasıl yardımcı olabilirim?",
-                "Her zamanki gibi, veri işlemekle meşgulüm! 😊 Siz nasılsınız?"
-            ]
-        },
-        compliments: {
-            patterns: [/teşekkür/i, /thanks/i, /sağ ol/i, /harikasın/i, /mükemmel/i, /süpersin/i, /çok iyi/i, /eline sağlık/i, /çok güzel/i],
-            responses: [
-                "Rica ederim! 😊 Başka nasıl yardımcı olabilirim?",
-                "Ne demek! Ben sadece görevimi yapıyorum.",
-                "Teşekkür ederim! Daha fazlası için hazırım.",
-                "Yardımcı olabildiğime sevindim!",
-                "Benim için bir zevkti."
-            ]
-        },
-        farewells: {
-            patterns: [/güle güle/i, /hoşça kal/i, /bay bay/i, /görüşürüz/i, /iyi günler/i, /bye/i, /hoşcakal/i],
-            responses: [
-                "Güle güle! Tekrar beklerim.",
-                "Hoşça kalın! Kendinize iyi bakın.",
-                "Görüşmek üzere! Her zaman buradayım.",
-                "İyi günler dilerim!"
-            ]
-        },
-        aboutMe: {
-            patterns: [/sen kimsin/i, /nesin/i, /ne yaparsın/i, /amacın ne/i, /sen bir ai misin/i, /adın ne/i, /kimsin/i, /ismin ne/i],
-            responses: [
-                "Ben Ultimate SKY AI, sınırsız bilgiye erişim sağlayan bir yapay zekayım. Sorularınızı yanıtlamak ve size yardımcı olmak için buradayım.",
-                "Ben Google tarafından eğitilmiş büyük bir dil modeliyim.",
-                "Ben, sorularınıza yanıt vermek ve bilgi sağlamak için tasarlanmış bir yapay zekayım. Adım Ultimate SKY AI."
-            ]
-        },
-        jokes: {
-            patterns: [/şaka yap/i, /beni güldür/i, /fıkra anlat/i],
-            responses: [
-                "Temel ile Dursun bir otobüse binmişler. Temel camdan bakarken Dursun da dışarı bakmış. 😂",
-                "Atom bombası ne zaman patlamış? İlk atom patladığında! 😜",
-                "Bilgisayarlar neden denize giremez? Çünkü virüs kaparlar! 🦠"
-            ]
-        },
-        weather: {
-            patterns: [/hava durumu/i, /hava nasıl/i, /yağmur/i, /kar/i, /güneş/i, /sıcak mı/i, /soğuk mu/i, /bugün hava/i],
-            responses: [
-                "Maalesef gerçek zamanlı hava durumu bilgisi veremiyorum, çünkü internetten anlık veri çekme yeteneğim kısıtlı. Hava durumu için yerel meteoroloji sitelerini kontrol etmenizi öneririm.",
-                "Üzgünüm, şu anki hava durumu hakkında bilgi sağlayamıyorum. Genel iklim bilgisi isterseniz yardımcı olabilirim."
-            ]
-        },
-        // 'unresponsive' kalıpları daha çok hakaret ve aşağılama üzerine odaklandı
-        unresponsive: {
-            patterns: [/\bsalak\b/i, /\baptal\b/i, /\bgerizekalı\b/i, /\bmal\b/i, /\baptalca\b/i, /\bnankör\b/i, /\bişe yaramaz\b/i],
-            responses: [
-                "Ben bir yapay zekayım ve öğrenmeye devam ediyorum. Bana karşı nazik olursanız, size daha iyi yardımcı olabilirim. 😊",
-                "Lütfen daha kibar olalım. Amacım size yardımcı olmak.",
-                "Bu tür ifadelerle iletişim kurmakta zorlanıyorum. Daha yapıcı bir dil kullanabilir miyiz?"
-            ]
-        },
-        understanding: {
-            patterns: [/evet anladım/i, /tamamdır/i, /anlıyorum/i, /harika/i, /evet/i, /doğru/i, /anlaşıldı/i],
-            responses: [
-                "Sevindim! Başka ne bilmek istersiniz?",
-                "Güzel! Aklınıza takılan başka bir şey var mı?",
-                "Memnun oldum. Devam edelim mi?",
-                "Harika! Sorularınız için hazırım."
-            ]
-        },
-        codeRelated: {
-            patterns: [/kod yaz/i, /kodlama yap/i, /program yaz/i, /yazılım yap/i, /nasıl kodlanır/i, /algoritma/i, /programlama dili/i],
-            responses: [
-                "Ben doğrudan kod yazamam veya çalıştıramam, ancak size çeşitli programlama dilleri, algoritmalar veya kodlama prensipleri hakkında bilgi verebilirim. Hangi konuda yardıma ihtiyacınız var?",
-                "Kodlama konusunda size bilgi ve örnekler sunabilirim. Örneğin, 'Python nedir?' veya 'JavaScript'te döngüler nasıl kullanılır?' gibi sorular sorabilirsiniz.",
-                "Ben bir metin tabanlı yapay zekayım. Kod yazmak veya uygulamalar geliştirmek yerine, kodlama konseptleri hakkında bilgi sağlamakta iyiyim."
-            ]
-        },
-        simpleSocial: {
-            patterns: [/hha/i, /haha/i, /lol/i, /hehe/i, /baba/i, /anne/i, /abi/i, /abla/i, /kardeş/i, /arkadaş/i, /kanka/i, /dostum/i],
-            responses: [
-                "Gülmenize sevindim! Başka ne konuşmak istersiniz?",
-                "Haha, neşelenmenize yardımcı olabildiğime sevindim.",
-                "Bu komikti! 😄",
-                "Anlıyorum. Aile ve ilişkiler önemli konular.",
-                "Bu konuda size nasıl yardımcı olabilirim?",
-                "Daha fazla bilgi veya sohbet etmek istediğiniz başka bir konu var mı?"
-            ]
-        },
-        // YENİ KATEGORİ: Açıklama ve Netleştirme
-        clarification: {
-            patterns: [
-                /öyle demedim/i, /yanlış anladın/i, /demek istediğim/i, /ben onu kastetmedim/i,
-                /bak şimdi/i, /tekrar et/i, /daha açık/i, /hayır/i, /anlamadın/i, /yapamıyorsun/i // 'anlamadın', 'yapamıyorsun' buraya taşındı
-            ],
-            responses: [
-                "Öyle mi? Üzgünüm, bazen tam olarak ne demek istediğinizi anlamakta zorlanabiliyorum. Lütfen daha net ifade edebilir misiniz?",
-                "Yanlış anladıysam özür dilerim. Lütfen sorunuzu farklı bir şekilde tekrar sorar mısınız?",
-                "Amacım size en doğru yanıtı vermek. Sanırım bir önceki sorunuzu tam olarak kavrayamadım. Ne demek istediğinizi biraz daha açabilir misiniz?",
-                "Hımm, anladım. Bir önceki cevabımdan memnun kalmadınız. Lütfen bana yardımcı olmak için sorunuzu yeniden ifade edin."
-            ]
-        },
-        // YENİ KATEGORİ: Oyun Yapımı Tavsiyesi
-        gameDevelopment: {
-            patterns: [
-                /oyun yapıcam ne tarz oyun yapmalıyım/i, /nasıl oyun yapmalıyım/i, /hangi oyun türünü yapmalıyım/i,
-                /oyun fikirleri/i, /oyun önerisi/i, /ne tür oyun/i, /oyun geliştirmek/i
-            ],
-            responses: [
-                "Harika bir fikir! Oyun yapmak gerçekten keyifli olabilir. Ne tarz oyunlar oynamaktan hoşlanırsınız? Ya da hangi türlerde kendinizi daha yetenekli hissediyorsunuz?",
-                "Oyun yapımı heyecan verici! İlk olarak hangi platformu hedefliyorsunuz (mobil, PC, konsol)? Bu, oyun türünü belirlemenizde yardımcı olabilir.",
-                "Bir oyun fikri arayışında mısınız? İsterseniz size farklı oyun türleri hakkında bilgi verebilirim (RPG, platform, strateji vb.) veya ilgi alanlarınıza göre önerilerde bulunabilirim.",
-                "Oyun geliştirme çok geniş bir alan. Hangi aşamada yardıma ihtiyacınız var? Fikir aşaması, motor seçimi, programlama, tasarım mı?"
-            ]
-        }
-    };
+// Uygulama Bölümü
+const appSection = document.getElementById('app-section');
+const displayNameSpan = document.getElementById('display-name');
+const userEmailSpan = document.getElementById('user-email');
+const logoutBtn = document.getElementById('logout-btn');
+const settingsBtn = document.getElementById('settings-btn');
+const friendsListBtn = document.getElementById('friends-list-btn');
 
-    function addWelcomeMessage() {
-        const welcomeMessageHTML = `
-            <div class="welcome-message">
-                <div class="welcome-icon"><i class="fas fa-robot"></i></div>
-                <h2>Ultimate SKY AI'ya Hoş Geldiniz</h2>
-                <p>Bana istediğinizi sorun! Yazım hatalarınızı düzeltebilir, eksik harfleri tamamlayabilirim.</p>
-                <div class="examples">
-                    <p><strong>Örnek Sorular:</strong></p>
-                    <ul>
-                        <li>"Yapay zeka nedir?"</li>
-                        <li>"Bugün hava nasıl?"</li>
-                        <li>"En iyi programlama dili hangisi?"</li>
-                    </ul>
-                </div>
-            </div>
-        `;
-        chatMessages.innerHTML = welcomeMessageHTML;
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+// Ana Sohbet Bölümü
+const mainChatArea = document.getElementById('main-chat-area');
+const messagesContainer = document.getElementById('messages-container');
+const messageInput = document.getElementById('message-input');
+const sendMessageBtn = document.getElementById('send-message-btn');
+
+// Arkadaş Listesi Bölümü
+const friendsSection = document.getElementById('friends-section');
+const addFriendEmailInput = document.getElementById('add-friend-email');
+const addFriendBtn = document.getElementById('add-friend-btn');
+const addFriendStatus = document.getElementById('add-friend-status');
+const friendsListUL = document.getElementById('friends-list');
+const backToChatBtn = document.getElementById('back-to-chat-btn');
+
+// Özel Sohbet Modalı
+const privateChatModal = document.getElementById('private-chat-modal');
+const closePrivateChatBtn = document.getElementById('close-private-chat');
+const privateChatTitle = document.getElementById('private-chat-title');
+const privateMessagesContainer = document.getElementById('private-messages-container');
+const privateMessageInput = document.getElementById('private-message-input');
+const sendPrivateMessageBtn = document.getElementById('send-private-message-btn');
+
+// Ayarlar Bölümü
+const settingsSection = document.getElementById('settings-section');
+const newDisplayNameInput = document.getElementById('new-display-name');
+const updateDisplayNameBtn = document.getElementById('update-display-name-btn');
+const displayNameStatus = document.getElementById('display-name-status');
+const newEmailInput = document.getElementById('new-email');
+const updateEmailBtn = document.getElementById('update-email-btn');
+const emailStatus = document.getElementById('email-status');
+const currentPasswordInput = document.getElementById('current-password');
+const newPasswordInput = document.getElementById('new-password');
+const updatePasswordBtn = document.getElementById('update-password-btn');
+const passwordStatus = document.getElementById('password-status');
+const backFromSettingsBtn = document.getElementById('back-from-settings-btn');
+
+let currentUser = null; // Giriş yapan kullanıcı
+let currentPrivateChatRecipientId = null; // Özel sohbet yapılan kişinin ID'si
+let unsubscribePrivateChat = null; // Özel sohbet dinleyicisini iptal etmek için
+
+// ----- Fonksiyonlar -----
+
+function showSection(section) {
+    authSection.classList.add('hidden');
+    appSection.classList.add('hidden');
+    mainChatArea.classList.add('hidden');
+    friendsSection.classList.add('hidden');
+    settingsSection.classList.add('hidden');
+    privateChatModal.classList.add('hidden'); // Modal her zaman gizli başlasın
+
+    if (section === 'auth') {
+        authSection.classList.remove('hidden');
+    } else if (section === 'app') {
+        appSection.classList.remove('hidden');
+        mainChatArea.classList.remove('hidden'); // Varsayılan olarak ana sohbeti göster
+    } else if (section === 'friends') {
+        appSection.classList.remove('hidden'); // Uygulama bölümü açık kalsın
+        friendsSection.classList.remove('hidden');
+    } else if (section === 'settings') {
+        appSection.classList.remove('hidden'); // Uygulama bölümü açık kalsın
+        settingsSection.classList.remove('hidden');
+    } else if (section === 'private-chat-modal') {
+        privateChatModal.classList.remove('hidden');
+    }
+}
+
+function displayMessage(message, container, isPrivate = false) {
+    const messageElement = document.createElement('div');
+    messageElement.classList.add('message');
+
+    const senderDisplayName = message.senderName || 'Bilinmeyen';
+    const currentUserId = auth.currentUser ? auth.currentUser.uid : null;
+
+    if (message.senderId === currentUserId) {
+        messageElement.classList.add('sent');
+    } else {
+        messageElement.classList.add('received');
     }
 
-    async function correctAndCompleteSpelling(word) {
-        if (!word || word.length < 2) return word;
-        try {
-            // console.log(`Datamuse API için "${word}" sorgusu gönderiliyor...`); // Hata ayıklama için
-            const response = await fetch(FREE_APIS.SPELLCHECK(word));
-            // console.log(`Datamuse API yanıtı (RAW):`, response); // Hata ayıklama için
+    messageElement.innerHTML = `
+        <div class="message-sender">${senderDisplayName}</div>
+        <div class="message-content">${message.content}</div>
+    `;
+    container.appendChild(messageElement);
+    container.scrollTop = container.scrollHeight; // Otomatik aşağı kaydır
+}
 
-            // Yanıtın OK (200) olup olmadığını kontrol et
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(`HTTP Hata! Durum: ${response.status}, Yanıt: ${errorText}`);
-            }
+// ----- Firebase Authentication İşlemleri -----
 
-            const data = await response.json();
-            // console.log(`Datamuse API yanıtı (JSON):`, data); // Hata ayıklama için
+// Kullanıcı durumu değiştiğinde
+auth.onAuthStateChanged(user => {
+    if (user) {
+        currentUser = user;
+        displayNameSpan.textContent = user.displayName || 'Misafir';
+        userEmailSpan.textContent = user.email;
+        showSection('app');
 
-            if (data.length > 0 && data[0].word.toLowerCase() !== word.toLowerCase()) {
-                if (data[0].score > 8000 || (data[0].word.startsWith(word) && data[0].word.length - word.length < 3)) {
-                    // console.log(`Düzeltildi: "${word}" -> "${data[0].word}"`); // Hata ayıklama için
-                    return data[0].word;
-                }
-            }
-            return word;
-        } catch (error) {
-            console.warn("Yazım düzeltme API hatası:", error);
-            // Hata durumunda orijinal kelimeyi döndür
-            return word;
+        // E-posta doğrulaması kontrolü
+        if (!user.emailVerified) {
+            console.log("E-posta doğrulanmadı. Doğrulama linki gönderilebilir.");
+            // Kullanıcıya e-posta doğrulaması hatırlatma gibi bir UI ekleyebilirsiniz.
         }
+
+        // Ana sohbet mesajlarını dinlemeye başla
+        listenForPublicMessages();
+        // Arkadaş listesini ve durumunu dinlemeye başla
+        listenForFriends();
+        // Firestore'da kullanıcının public profilini oluştur/güncelle
+        createUserProfile(user);
+
+    } else {
+        currentUser = null;
+        showSection('auth');
+        // Mesaj dinleyicilerini durdur (varsa)
+        if (unsubscribePublicMessages) {
+            unsubscribePublicMessages();
+        }
+        if (unsubscribeFriends) {
+            unsubscribeFriends();
+        }
+        if (unsubscribePrivateChat) { // Özel sohbet dinleyicisini de durdur
+            unsubscribePrivateChat();
+        }
+        messagesContainer.innerHTML = ''; // Mesajları temizle
+        friendsListUL.innerHTML = ''; // Arkadaş listesini temizle
+        authError.textContent = ''; // Hata mesajlarını temizle
     }
-
-    async function processInput(text) {
-        const lowerText = text.toLowerCase().trim();
-        let correctedText = text;
-
-        const words = lowerText.split(/\s+/);
-        const correctedWordsPromises = words.map(word => correctAndCompleteSpelling(word));
-        const correctedWords = await Promise.all(correctedWordsPromises);
-        correctedText = correctedWords.join(' ');
-
-        const customCorrections = {
-            "mrb": "merhaba", "slm": "selam", "tşkkr": "teşekkür", "tesekkur": "teşekkür",
-            "nslsn": "nasılsın", "nbr": "naber", "yzm": "yazım", "knk": "kanka", "tm": "tamam",
-            "berhbaa": "merhaba", // 'merhbaa' gibi sık yapılan hatalar için manuel ekleme
-            "yapay zeka nedır": "yapay zeka nedir" // Basit hatalar için
-        };
-        for (const [typo, correct] of Object.entries(customCorrections)) {
-            const regex = new RegExp(`\\b${typo}\\b`, 'gi');
-            correctedText = correctedText.replace(regex, correct);
-        }
-
-        correctedText = correctedText.replace(/(.)\1{2,}/g, '$1$1');
-
-        return { corrected: correctedText.trim(), original: text.trim() };
-    }
-
-    async function fetchInformation(query) {
-        try {
-            // console.log(`Wikipedia API için "${query}" sorgusu gönderiliyor...`); // Hata ayıklama için
-            const wikiResponse = await fetch(`${FREE_APIS.WIKIPEDIA}${encodeURIComponent(query)}`);
-            // console.log(`Wikipedia API yanıtı (RAW):`, wikiResponse); // Hata ayıklama için
-
-            if (!wikiResponse.ok) {
-                 const errorText = await wikiResponse.text();
-                 throw new Error(`HTTP Hata! Durum: ${wikiResponse.status}, Yanıt: ${errorText}`);
-            }
-
-            const wikiData = await wikiResponse.json();
-            // console.log(`Wikipedia API yanıtı (JSON):`, wikiData); // Hata ayıklama için
-
-            if (wikiData.query?.search?.length > 0) {
-                const snippet = wikiData.query.search[0].snippet.replace(/<[^>]+>/g, '');
-                return {
-                    source: 'Wikipedia',
-                    content: snippet,
-                    url: `https://tr.wikipedia.org/wiki/${encodeURIComponent(wikiData.query.search[0].title)}`
-                };
-            }
-            return null;
-        } catch (error) {
-            console.error("API'den bilgi çekme hatası (Wikipedia):", error);
-            return null;
-        }
-    }
-
-    function checkLocalKnowledge(text) {
-        const lowerText = text.toLowerCase();
-
-        // Önemli: Kategorilerin sırası çok önemli!
-        // İlk olarak en spesifik ve "öncelikli" kategorileri kontrol etmeliyiz.
-        // Clarification ve unresponsive gibi meta-sohbet kategorileri, diğerlerinden önce gelmeli.
-        const orderedCategories = [
-            'clarification', // Düzeltmeler ve netleştirmeler (örn: "öyle demedim", "anlamadın")
-            'unresponsive',  // Olumsuz, saldırgan ifadeler (örn: "salak")
-            'greetings',     // Selamlaşmalar (örn: "merhaba")
-            'howAreYou',     // Nasılsın soruları
-            'compliments',
-            'farewells',
-            'aboutMe',
-            'jokes',
-            'weather',
-            'codeRelated',
-            'gameDevelopment',
-            'simpleSocial'
-        ];
-
-        for (const category of orderedCategories) {
-            const data = LOCAL_KNOWLEDGE[category];
-            for (const pattern of data.patterns) {
-                if (pattern.test(lowerText)) {
-                    if (data.responses && data.responses.length > 0) {
-                        return data.responses[Math.floor(Math.random() * data.responses.length)];
-                    } else {
-                        return null; // Bu, API'ye gitmesi gerektiği anlamına gelir.
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
-    async function generateResponse(userInputText) {
-        const welcomeScreen = document.querySelector('.welcome-message');
-        if (welcomeScreen) {
-            welcomeScreen.remove();
-        }
-
-        const { corrected, original } = await processInput(userInputText);
-        let responseContent = null;
-        let correctionNote = null;
-
-        if (corrected !== original) {
-            correctionNote = `Not: "${original}" yerine "${corrected}" olarak anladım.`;
-        }
-
-        // ÖNEMLİ: checkLocalKnowledge fonksiyonu şimdi kategorileri belirli bir sıraya göre kontrol ediyor.
-        responseContent = checkLocalKnowledge(corrected);
-        if (responseContent) {
-            return {
-                response: responseContent,
-                corrected: correctionNote
-            };
-        }
-
-        // Eğer yerel bir chatbot cevabı yoksa, API'den bilgi arayışına uygun mu diye bak.
-        const searchKeywords = ['nedir', 'kimdir', 'nasıl yapılır', 'bilgi ver', 'açıkla', 'hakkında', 'ne demek', 'hangi', 'nelerdir']; // 'nelerdir' eklendi
-        const isAQuestion = corrected.endsWith('?') || searchKeywords.some(keyword => corrected.includes(keyword)) || corrected.split(' ').length > 3; // Daha uzun cümleler için de API'ye git
-
-        if (isAQuestion) {
-            const apiInfo = await fetchInformation(corrected);
-            if (apiInfo) {
-                return {
-                    response: `${apiInfo.source} bilgisine göre: ${apiInfo.content}\n\nDaha fazlası için: ${apiInfo.url || 'Arama yapabilirsiniz'}`,
-                    corrected: correctionNote
-                };
-            }
-        }
-
-        // Eğer hiçbir yere düşmezse, varsayılan anlayamadım yanıtı ver
-        return {
-            response: `Üzgünüm, "${corrected}" hakkında net bir bilgi bulamadım veya sorunuzu tam olarak anlayamadım. Lütfen daha farklı bir şekilde ifade etmeyi deneyin.`,
-            corrected: correctionNote
-        };
-    }
-
-    async function sendMessage() {
-        const userMessage = userInput.value.trim();
-        if (!userMessage) return;
-
-        addMessage(userMessage, 'user');
-        userInput.value = '';
-
-        const typingIndicator = showTypingIndicator();
-
-        try {
-            const { response, corrected } = await generateResponse(userMessage);
-
-            if (corrected) {
-                addMessage(corrected, 'ai', true);
-            }
-
-            typingIndicator.remove();
-            addMessage(response, 'ai');
-        } catch (error) {
-            typingIndicator.remove();
-            addMessage("Üzgünüm, bir hata oluştu veya bağlantı kurulamadı. Lütfen daha sonra tekrar deneyin.", 'ai');
-            console.error("Mesaj gönderme hatası:", error);
-        }
-    }
-
-    function addMessage(content, type, isNote = false) {
-        const messageDiv = document.createElement('div');
-        messageDiv.className = `message ${type}-message`;
-
-        let formattedContent = content;
-        if (isNote) {
-            formattedContent = `<i>${content}</i>`;
-        } else if (type === 'ai') {
-            formattedContent = formattedContent.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer">$1</a>');
-        }
-
-        messageDiv.innerHTML = `<div class="message-content">${formattedContent}</div>`;
-        chatMessages.appendChild(messageDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
-    function showTypingIndicator() {
-        const typingDiv = document.createElement('div');
-        typingDiv.className = 'typing-indicator ai-message';
-        typingDiv.innerHTML = `
-            <div class="message-content">
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
-            </div>
-        `;
-        chatMessages.appendChild(typingDiv);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-        return typingDiv;
-    }
-
-    sendButton.addEventListener('click', sendMessage);
-    userInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            sendMessage();
-        }
-    });
-
-    chatMessages.addEventListener('click', (event) => {
-        if (event.target.closest('.example-card p')) {
-            userInput.value = event.target.closest('.example-card p').textContent.replace(/"/g, '');
-            sendMessage();
-        } else if (event.target.tagName === 'LI' && event.target.closest('.examples ul')) {
-            userInput.value = event.target.textContent.replace(/"/g, '');
-            sendMessage();
-        }
-    });
 });
+
+// Kayıt Ol
+registerBtn.addEventListener('click', async () => {
+    const email = authEmailInput.value;
+    const password = authPasswordInput.value;
+    authError.textContent = '';
+
+    if (!email || !password) {
+        authError.textContent = 'E-posta ve şifre boş bırakılamaz.';
+        return;
+    }
+    if (password.length < 6) {
+        authError.textContent = 'Şifre en az 6 karakter olmalıdır.';
+        return;
+    }
+
+    try {
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        // Kayıt sonrası kullanıcıya varsayılan bir isim ata
+        await userCredential.user.updateProfile({ displayName: email.split('@')[0] });
+        await userCredential.user.sendEmailVerification(); // E-posta doğrulama linki gönder
+        authError.textContent = 'Kayıt başarılı! E-postanıza doğrulama linki gönderildi. Lütfen e-postanızı kontrol edin.';
+        authError.classList.add('success-message');
+        setTimeout(() => { authError.textContent = ''; authError.classList.remove('success-message');}, 5000);
+    } catch (error) {
+        authError.textContent = error.message;
+        authError.classList.remove('success-message');
+    }
+});
+
+// Giriş Yap
+loginBtn.addEventListener('click', async () => {
+    const email = authEmailInput.value;
+    const password = authPasswordInput.value;
+    authError.textContent = '';
+
+    try {
+        await auth.signInWithEmailAndPassword(email, password);
+        authError.textContent = ''; // Başarılı giriş
+    } catch (error) {
+        authError.textContent = error.message;
+    }
+});
+
+// Google ile Giriş Yap
+googleLoginBtn.addEventListener('click', async () => {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    authError.textContent = '';
+    try {
+        await auth.signInWithPopup(provider);
+        authError.textContent = '';
+    } catch (error) {
+        authError.textContent = error.message;
+    }
+});
+
+// Şifremi Unuttum
+forgotPasswordBtn.addEventListener('click', async () => {
+    const email = authEmailInput.value;
+    authError.textContent = '';
+
+    if (!email) {
+        authError.textContent = 'Şifresini sıfırlamak istediğiniz e-postayı girin.';
+        return;
+    }
+
+    try {
+        await auth.sendPasswordResetEmail(email);
+        authError.textContent = 'Şifre sıfırlama linki e-postanıza gönderildi.';
+        authError.classList.add('success-message');
+        setTimeout(() => { authError.textContent = ''; authError.classList.remove('success-message');}, 5000);
+    } catch (error) {
+        authError.textContent = error.message;
+        authError.classList.remove('success-message');
+    }
+});
+
+// E-posta Doğrulama Linki Gönder
+verifyEmailLink.addEventListener('click', async (e) => {
+    e.preventDefault();
+    if (currentUser && !currentUser.emailVerified) {
+        try {
+            await currentUser.sendEmailVerification();
+            authError.textContent = 'Doğrulama linki e-postanıza tekrar gönderildi.';
+            authError.classList.add('success-message');
+            setTimeout(() => { authError.textContent = ''; authError.classList.remove('success-message');}, 5000);
+        } catch (error) {
+            authError.textContent = error.message;
+            authError.classList.remove('success-message');
+        }
+    } else if (currentUser && currentUser.emailVerified) {
+        authError.textContent = 'E-postanız zaten doğrulanmış.';
+        authError.classList.add('success-message');
+        setTimeout(() => { authError.textContent = ''; authError.classList.remove('success-message');}, 5000);
+    } else {
+        authError.textContent = 'Önce giriş yapmalısınız.';
+        authError.classList.remove('success-message');
+    }
+});
+
+// Çıkış Yap
+logoutBtn.addEventListener('click', async () => {
+    try {
+        await auth.signOut();
+    } catch (error) {
+        console.error('Çıkış yaparken hata:', error);
+    }
+});
+
+// Kullanıcı Profilini Oluştur/Güncelle (Firestore'da public profil)
+async function createUserProfile(user) {
+    const userRef = db.collection('users').doc(user.uid);
+    const doc = await userRef.get();
+    if (!doc.exists) {
+        await userRef.set({
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName || user.email.split('@')[0],
+            friends: [], // Başlangıçta arkadaş listesi boş
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+    } else {
+        // Kullanıcı bilgileri güncellenmiş olabilir
+        await userRef.update({
+            email: user.email,
+            displayName: user.displayName || user.email.split('@')[0],
+            lastLoginAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+    }
+    // Ekran adını güncelle
+    if (user.displayName) {
+        displayNameSpan.textContent = user.displayName;
+    } else {
+        // Eğer displayName yoksa email'in ilk kısmını kullan
+        displayNameSpan.textContent = user.email.split('@')[0];
+    }
+}
+
+// ----- Genel Sohbet İşlemleri -----
+
+let unsubscribePublicMessages = null; // Genel sohbet dinleyicisini iptal etmek için
+
+function listenForPublicMessages() {
+    // Önceki dinleyiciyi iptal et
+    if (unsubscribePublicMessages) {
+        unsubscribePublicMessages();
+    }
+
+    // `messages` koleksiyonunu dinlemeye başla
+    unsubscribePublicMessages = db.collection('messages')
+        .orderBy('timestamp', 'asc') // Zamana göre sırala
+        .limit(100) // Son 100 mesajı göster
+        .onSnapshot(snapshot => {
+            messagesContainer.innerHTML = ''; // Temizle
+            snapshot.forEach(doc => {
+                displayMessage(doc.data(), messagesContainer);
+            });
+        }, error => {
+            console.error('Mesajları dinlerken hata:', error);
+        });
+}
+
+sendMessageBtn.addEventListener('click', async () => {
+    const content = messageInput.value.trim();
+    if (content && currentUser) {
+        try {
+            await db.collection('messages').add({
+                senderId: currentUser.uid,
+                senderName: currentUser.displayName || currentUser.email.split('@')[0],
+                content: content,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            messageInput.value = '';
+        } catch (error) {
+            console.error('Mesaj gönderirken hata:', error);
+        }
+    }
+});
+
+messageInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        sendMessageBtn.click();
+    }
+});
+
+
+// ----- Arkadaşlık İşlemleri -----
+
+let unsubscribeFriends = null; // Arkadaş listesi dinleyicisini iptal etmek için
+
+friendsListBtn.addEventListener('click', () => {
+    showSection('friends');
+    loadFriendsList(); // Arkadaş listesini her açtığında yeniden yükle
+});
+
+backToChatBtn.addEventListener('click', () => {
+    showSection('app'); // Ana sohbet alanına geri dön
+});
+
+async function loadFriendsList() {
+    if (!currentUser) return;
+
+    // Önceki dinleyiciyi iptal et
+    if (unsubscribeFriends) {
+        unsubscribeFriends();
+    }
+
+    // Firestore'daki kendi kullanıcı belgenizi dinleyin
+    unsubscribeFriends = db.collection('users').doc(currentUser.uid)
+        .onSnapshot(async doc => {
+            friendsListUL.innerHTML = ''; // Listeyi temizle
+            if (doc.exists) {
+                const userData = doc.data();
+                const friendIds = userData.friends || [];
+
+                if (friendIds.length === 0) {
+                    friendsListUL.innerHTML = '<li>Henüz arkadaşınız yok.</li>';
+                    return;
+                }
+
+                // Arkadaşların bilgilerini paralel olarak çek
+                const friendPromises = friendIds.map(friendId => db.collection('users').doc(friendId).get());
+                const friendDocs = await Promise.all(friendPromises);
+
+                friendDocs.forEach(friendDoc => {
+                    if (friendDoc.exists) {
+                        const friendData = friendDoc.data();
+                        const friendItem = document.createElement('li');
+                        friendItem.innerHTML = `
+                            <span class="friend-name">${friendData.displayName || friendData.email}</span>
+                            <button class="start-chat-btn" data-friend-id="${friendData.uid}" data-friend-name="${friendData.displayName || friendData.email}">Özel Sohbet</button>
+                        `;
+                        friendsListUL.appendChild(friendItem);
+                    }
+                });
+            }
+        }, error => {
+            console.error('Arkadaş listesini dinlerken hata:', error);
+        });
+}
+
+addFriendBtn.addEventListener('click', async () => {
+    const friendEmail = addFriendEmailInput.value.trim();
+    addFriendStatus.textContent = '';
+    if (!friendEmail || !currentUser) {
+        addFriendStatus.textContent = 'Bir e-posta girin.';
+        addFriendStatus.classList.remove('success-message');
+        return;
+    }
+    if (friendEmail === currentUser.email) {
+        addFriendStatus.textContent = 'Kendinizi arkadaş olarak ekleyemezsiniz.';
+        addFriendStatus.classList.remove('success-message');
+        return;
+    }
+
+    try {
+        // Arkadaş e-postasına sahip kullanıcıyı bul
+        const usersSnapshot = await db.collection('users').where('email', '==', friendEmail).get();
+
+        if (usersSnapshot.empty) {
+            addFriendStatus.textContent = 'Bu e-postaya sahip bir kullanıcı bulunamadı.';
+            addFriendStatus.classList.remove('success-message');
+            return;
+        }
+
+        const friendDoc = usersSnapshot.docs[0];
+        const friendId = friendDoc.id;
+
+        // Kendi arkadaş listemize ekle
+        await db.collection('users').doc(currentUser.uid).update({
+            friends: firebase.firestore.FieldValue.arrayUnion(friendId)
+        });
+        // Arkadaşın listesine de bizi ekle (karşılıklı arkadaşlık)
+        await db.collection('users').doc(friendId).update({
+            friends: firebase.firestore.FieldValue.arrayUnion(currentUser.uid)
+        });
+
+        addFriendStatus.textContent = `${friendDoc.data().displayName || friendDoc.data().email} arkadaş listenize eklendi!`;
+        addFriendStatus.classList.add('success-message');
+        addFriendEmailInput.value = '';
+        setTimeout(() => {addFriendStatus.textContent = ''; addFriendStatus.classList.remove('success-message');}, 3000);
+
+    } catch (error) {
+        console.error('Arkadaş eklerken hata:', error);
+        addFriendStatus.textContent = 'Arkadaş eklenirken bir hata oluştu.';
+        addFriendStatus.classList.remove('success-message');
+    }
+});
+
+// Arkadaş listesindeki "Özel Sohbet" butonlarına tıklama
+friendsListUL.addEventListener('click', (e) => {
+    if (e.target.classList.contains('start-chat-btn')) {
+        const friendId = e.target.dataset.friendId;
+        const friendName = e.target.dataset.friendName;
+        openPrivateChat(friendId, friendName);
+    }
+});
+
+// ----- Özel Sohbet İşlemleri -----
+
+function getPrivateChatRoomId(user1Id, user2Id) {
+    // Oda ID'sini belirlemek için UID'leri alfabetik sıraya göre birleştir
+    return [user1Id, user2Id].sort().join('_');
+}
+
+async function openPrivateChat(recipientId, recipientName) {
+    if (!currentUser) return;
+
+    currentPrivateChatRecipientId = recipientId;
+    privateChatTitle.textContent = `${recipientName} ile Sohbet`;
+    privateMessagesContainer.innerHTML = ''; // Önceki mesajları temizle
+    privateMessageInput.value = ''; // Giriş kutusunu temizle
+
+    showSection('private-chat-modal'); // Modalı göster
+
+    // Önceki özel sohbet dinleyicisini iptal et
+    if (unsubscribePrivateChat) {
+        unsubscribePrivateChat();
+    }
+
+    const chatRoomId = getPrivateChatRoomId(currentUser.uid, recipientId);
+    const chatRef = db.collection('privateChats').doc(chatRoomId).collection('messages');
+
+    // Özel sohbet mesajlarını dinle
+    unsubscribePrivateChat = chatRef.orderBy('timestamp', 'asc').onSnapshot(snapshot => {
+        privateMessagesContainer.innerHTML = '';
+        snapshot.forEach(doc => {
+            displayMessage(doc.data(), privateMessagesContainer, true);
+        });
+    }, error => {
+        console.error('Özel mesajları dinlerken hata:', error);
+    });
+}
+
+closePrivateChatBtn.addEventListener('click', () => {
+    showSection('friends'); // Özel sohbeti kapatıp arkadaş listesine dön
+    if (unsubscribePrivateChat) {
+        unsubscribePrivateChat();
+        unsubscribePrivateChat = null;
+    }
+    currentPrivateChatRecipientId = null;
+});
+
+sendPrivateMessageBtn.addEventListener('click', async () => {
+    const content = privateMessageInput.value.trim();
+    if (content && currentUser && currentPrivateChatRecipientId) {
+        try {
+            const chatRoomId = getPrivateChatRoomId(currentUser.uid, currentPrivateChatRecipientId);
+            await db.collection('privateChats').doc(chatRoomId).collection('messages').add({
+                senderId: currentUser.uid,
+                senderName: currentUser.displayName || currentUser.email.split('@')[0],
+                content: content,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            privateMessageInput.value = '';
+        } catch (error) {
+            console.error('Özel mesaj gönderirken hata:', error);
+        }
+    }
+});
+
+privateMessageInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        sendPrivateMessageBtn.click();
+    }
+});
+
+
+// ----- Ayarlar İşlemleri -----
+
+settingsBtn.addEventListener('click', () => {
+    showSection('settings');
+    // Mevcut değerleri inputlara yükle
+    newDisplayNameInput.value = currentUser.displayName || currentUser.email.split('@')[0];
+    newEmailInput.value = currentUser.email;
+    currentPasswordInput.value = '';
+    newPasswordInput.value = '';
+    displayNameStatus.textContent = '';
+    emailStatus.textContent = '';
+    passwordStatus.textContent = '';
+});
+
+backFromSettingsBtn.addEventListener('click', () => {
+    showSection('app'); // Ana sohbet ekranına dön
+});
+
+// İsim Değiştir
+updateDisplayNameBtn.addEventListener('click', async () => {
+    const newName = newDisplayNameInput.value.trim();
+    displayNameStatus.textContent = '';
+
+    if (!newName) {
+        displayNameStatus.textContent = 'İsim boş bırakılamaz.';
+        return;
+    }
+    if (newName === currentUser.displayName) {
+        displayNameStatus.textContent = 'Yeni isim mevcut isminizle aynı.';
+        return;
+    }
+
+    try {
+        await currentUser.updateProfile({ displayName: newName });
+        // Firestore'daki public profili de güncelle
+        await db.collection('users').doc(currentUser.uid).update({ displayName: newName });
+        displayNameSpan.textContent = newName; // UI'yı güncelle
+        displayNameStatus.textContent = 'İsim başarıyla güncellendi.';
+        displayNameStatus.classList.add('success-message');
+        setTimeout(() => { displayNameStatus.textContent = ''; displayNameStatus.classList.remove('success-message'); }, 3000);
+    } catch (error) {
+        console.error('İsim güncellenirken hata:', error);
+        displayNameStatus.textContent = error.message;
+        displayNameStatus.classList.remove('success-message');
+    }
+});
+
+// E-posta Değiştir (E-postaya kod/link göndererek doğrulama)
+updateEmailBtn.addEventListener('click', async () => {
+    const newEmail = newEmailInput.value.trim();
+    emailStatus.textContent = '';
+
+    if (!newEmail) {
+        emailStatus.textContent = 'Yeni e-posta boş bırakılamaz.';
+        return;
+    }
+    if (newEmail === currentUser.email) {
+        emailStatus.textContent = 'Yeni e-posta mevcut e-postanızla aynı.';
+        return;
+    }
+
+    try {
+        // Firebase Auth'un reauthenticateWithCredential veya updateEmail'deki doğrulama mekanizmasını kullanacağız.
+        // updateEmail metodu kullanıcının kimliğini yakın zamanda doğrulamış olmasını ister.
+        // Eğer yakın zamanda giriş yapmadıysa, tekrar kimlik doğrulaması ister.
+
+        // Kullanıcıya bir doğrulama e-postası gönderme mantığı:
+        // Firebase doğrudan "kod gönder" demediği için, Email Link Authentication'ı kullanacağız.
+        // Bu, kullanıcının yeni e-postasına bir link gönderir, tıklayınca e-posta güncellenir.
+        // Bu özelliği kullanabilmek için Firebase Auth'ta 'Email Link (passwordless sign-in)' özelliğini açmanız gerekir.
+        // Eğer bunu açmak istemiyorsanız, kullanıcının mevcut şifresini alıp reauthenticateWithCredential ile yeniden kimlik doğrulaması yapmasını isteyebilirsiniz.
+
+        // Basitçe: mevcut e-postaya bir doğrulama linki gönderip kullanıcıya bu linke tıklamasını söyleyelim.
+        // Ancak bu, Email Link Authentication'dan farklıdır. updateEmail metodu ile e-posta değiştirme, kullanıcının aktif oturumuyla ilgilidir.
+        // E-posta değiştirme işlemini daha güvenli hale getirmek için kullanıcının kimliğini yeniden doğrulaması gerekir.
+
+        // Eğer mevcut şifremi biliyorsam re-authenticate ol
+        const credential = firebase.auth.EmailAuthProvider.credential(currentUser.email, currentPasswordInput.value);
+        await currentUser.reauthenticateWithCredential(credential);
+
+        await currentUser.updateEmail(newEmail);
+        await currentUser.sendEmailVerification(); // Yeni e-postaya doğrulama linki gönder
+
+        // Firestore'daki public profili de güncelle
+        await db.collection('users').doc(currentUser.uid).update({ email: newEmail });
+
+        userEmailSpan.textContent = newEmail; // UI'yı güncelle
+        emailStatus.textContent = 'E-posta başarıyla güncellendi. Yeni e-postanıza doğrulama linki gönderildi.';
+        emailStatus.classList.add('success-message');
+        setTimeout(() => { emailStatus.textContent = ''; emailStatus.classList.remove('success-message'); }, 5000);
+        // E-posta değiştikten sonra Firebase genellikle oturumu sonlandırır veya yeniden giriş ister.
+        await auth.signOut(); // Güvenlik için oturumu kapat
+    } catch (error) {
+        console.error('E-posta güncellenirken hata:', error);
+        emailStatus.textContent = error.message;
+        emailStatus.classList.remove('success-message');
+        if (error.code === 'auth/requires-recent-login') {
+            emailStatus.textContent = 'Bu işlemi yapabilmek için lütfen tekrar giriş yapın (güvenlik nedeniyle).';
+        }
+    }
+});
+
+// Şifre Değiştir
+updatePasswordBtn.addEventListener('click', async () => {
+    const currentPassword = currentPasswordInput.value;
+    const newPassword = newPasswordInput.value;
+    passwordStatus.textContent = '';
+
+    if (!currentPassword || !newPassword) {
+        passwordStatus.textContent = 'Mevcut ve yeni şifre boş bırakılamaz.';
+        return;
+    }
+    if (newPassword.length < 6) {
+        passwordStatus.textContent = 'Yeni şifre en az 6 karakter olmalıdır.';
+        return;
+    }
+
+    try {
+        // Kullanıcının kimliğini yeniden doğrula
+        const credential = firebase.auth.EmailAuthProvider.credential(currentUser.email, currentPassword);
+        await currentUser.reauthenticateWithCredential(credential);
+
+        // Şifreyi güncelle
+        await currentUser.updatePassword(newPassword);
+        passwordStatus.textContent = 'Şifreniz başarıyla güncellendi!';
+        passwordStatus.classList.add('success-message');
+        setTimeout(() => { passwordStatus.textContent = ''; passwordStatus.classList.remove('success-message');}, 3000);
+        currentPasswordInput.value = '';
+        newPasswordInput.value = '';
+        await auth.signOut(); // Şifre değiştikten sonra oturumu kapat
+        alert('Şifreniz başarıyla değiştirildi. Lütfen yeni şifrenizle tekrar giriş yapın.');
+
+    } catch (error) {
+        console.error('Şifre güncellenirken hata:', error);
+        passwordStatus.textContent = error.message;
+        passwordStatus.classList.remove('success-message');
+        if (error.code === 'auth/wrong-password') {
+            passwordStatus.textContent = 'Mevcut şifreniz yanlış.';
+        } else if (error.code === 'auth/requires-recent-login') {
+            passwordStatus.textContent = 'Bu işlemi yapabilmek için lütfen tekrar giriş yapın (güvenlik nedeniyle).';
+        }
+    }
+});
+
+// Uygulama yüklendiğinde varsayılan olarak yetkilendirme ekranını göster
+showSection('auth');
