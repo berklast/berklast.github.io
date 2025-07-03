@@ -1,178 +1,378 @@
 /* style.css */
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+/* Genel Sıfırlamalar ve Temel Ayarlar */
+* {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    background-color: #f0f2f5;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #eef2f7; /* Hafif mavi arka plan */
+    color: #333;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    color: #333;
+    line-height: 1.6;
 }
 
-.container {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    width: 90%;
-    max-width: 800px;
-    display: flex;
-    flex-direction: column;
+/* Ana Sarmalayıcı */
+.main-wrapper {
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+    width: 95%;
+    max-width: 1200px; /* Geniş ekranlar için maksimum genişlik */
     overflow: hidden;
-    min-height: 600px;
+    display: flex;
+    flex-direction: column; /* Mobil için dikey, desktop için yatay */
+    min-height: 700px; /* Minimum yükseklik */
 }
 
-/* Genel Form ve Buton Stilleri */
+/* Gizleme Sınıfı */
+.hidden {
+    display: none !important;
+}
+
+/* Mesajlar ve Hata/Başarı Mesajları */
+.message {
+    font-size: 0.9em;
+    margin-top: 5px;
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    border-radius: 5px;
+}
+.error-message {
+    color: #d9534f; /* Kırmızı hata */
+    background-color: #fcebeb;
+    border: 1px solid #d9534f;
+}
+.success-message {
+    color: #5cb85c; /* Yeşil başarı */
+    background-color: #eff9ef;
+    border: 1px solid #5cb85c;
+}
+.small-text {
+    font-size: 0.8em;
+    color: #666;
+    margin-top: -10px;
+    margin-bottom: 15px;
+}
+
+/* --- Form Elemanları ve Buton Stilleri --- */
 input[type="email"],
 input[type="password"],
 input[type="text"] {
-    width: calc(100% - 20px);
-    padding: 12px;
+    width: 100%;
+    padding: 12px 15px;
     margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
     font-size: 1em;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
 }
 
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="text"]:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+.input-group {
+    margin-bottom: 20px;
+}
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #555;
+}
+
+/* Temel Buton Stilleri */
 button {
-    background-color: #007bff;
-    color: white;
-    padding: 12px 20px;
+    padding: 12px 25px;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 1em;
-    transition: background-color 0.3s ease;
-    margin-right: 10px;
+    font-weight: 600;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    text-align: center;
+    display: inline-block;
+    vertical-align: middle;
 }
 
-button:hover {
+.primary-btn {
+    background-color: #007bff;
+    color: white;
+    width: 100%;
+    margin-top: 10px;
+}
+.primary-btn:hover {
     background-color: #0056b3;
+    transform: translateY(-2px);
 }
 
 .google-btn {
     background-color: #dd4b39;
+    color: white;
+    margin-top: 15px;
+    width: 100%;
 }
 .google-btn:hover {
     background-color: #c23321;
+    transform: translateY(-2px);
+}
+
+.text-btn {
+    background: none;
+    color: #007bff;
+    padding: 5px 10px;
+    font-size: 0.9em;
+    font-weight: 400;
+    margin-top: 10px;
+    width: auto;
+    display: block; /* Yeni satıra al */
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+.text-btn:hover {
+    color: #0056b3;
+    text-decoration: underline;
+    background: none; /* Hover'da arka planı olmasın */
+    transform: none; /* Animasyon olmasın */
 }
 
 .icon-btn {
     background: none;
     border: none;
-    font-size: 1.5em;
+    font-size: 1.8em;
     cursor: pointer;
-    color: #007bff;
+    color: #6c757d;
     padding: 5px;
-    margin: 0 5px;
+    transition: color 0.3s ease;
 }
 .icon-btn:hover {
-    color: #0056b3;
+    color: #333;
 }
-
-.status-message {
+.small-btn { /* Küçük butonlar için */
+    width: auto;
+    padding: 8px 15px;
     font-size: 0.9em;
-    margin-top: -10px;
-    margin-bottom: 10px;
+    margin-left: 10px; /* Diğer input/elementlerden ayrım */
 }
-.error-message {
-    color: #dc3545;
-    font-size: 0.9em;
-    margin-top: -10px;
-    margin-bottom: 10px;
-}
-.success-message {
-    color: #28a745;
-}
-.small-text {
-    font-size: 0.8em;
-    color: #666;
+.send-btn { /* Sohbet mesaj gönderme butonu */
+    flex-shrink: 0;
+    width: auto;
+    padding: 10px 20px;
+    margin-top: 0;
 }
 
-/* Bölümlerin Gizlenmesi */
-.hidden {
-    display: none !important;
-}
 
-/* Auth Section */
-.auth-section {
+/* --- Auth Section (Giriş/Kayıt) --- */
+.auth-container {
     padding: 40px;
     text-align: center;
+    max-width: 500px;
+    margin: 40px auto;
+    background-color: #fefefe;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.auth-tabs {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 30px;
     border-bottom: 1px solid #eee;
 }
-.auth-section h2 {
-    color: #333;
-    margin-bottom: 30px;
+
+.tab-button {
+    background: none;
+    border: none;
+    padding: 15px 30px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    color: #777;
+    border-bottom: 3px solid transparent;
+    transition: color 0.3s ease, border-bottom-color 0.3s ease;
 }
-.auth-section button {
-    margin-top: 10px;
+.tab-button.active {
+    color: #007bff;
+    border-bottom-color: #007bff;
+}
+.tab-button:hover:not(.active) {
+    color: #555;
 }
 
-/* App Section */
-.app-section {
+.tab-content {
+    padding: 20px 0;
+}
+.tab-content h2 {
+    color: #333;
+    margin-bottom: 25px;
+    font-size: 1.8em;
+    font-weight: 600;
+}
+
+
+/* --- App Section (Ana Uygulama) --- */
+.app-container {
     display: flex;
-    flex-direction: column;
     flex-grow: 1;
 }
-header {
+
+/* Sol Kenar Çubuğu (Sidebar) */
+.sidebar {
+    width: 280px; /* Sabit genişlik */
+    background-color: #f8f9fa; /* Açık gri */
+    border-right: 1px solid #e0e0e0;
+    padding: 20px;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 20px;
-    background-color: #e9ecef;
-    border-bottom: 1px solid #dee2e6;
-    color: #333;
-}
-.user-info span {
-    font-weight: bold;
-    color: #007bff;
+    flex-direction: column;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.05);
 }
 
-/* Main Chat Area */
-.main-chat-area, .friends-section, .settings-section {
+.user-profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+.user-profile .user-name {
+    font-size: 1.3em;
+    font-weight: 600;
+    color: #007bff;
+    margin-bottom: 5px;
+}
+.user-profile .user-email {
+    font-size: 0.9em;
+    color: #666;
+    margin-bottom: 15px;
+}
+.user-profile .logout-btn {
+    font-size: 1.5em;
+    color: #dc3545;
+}
+.user-profile .logout-btn:hover {
+    color: #c82333;
+}
+
+.nav-menu {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* Menünün kalan alanı kaplamasını sağlar */
+}
+.nav-item {
+    background: none;
+    border: none;
+    padding: 15px 20px;
+    text-align: left;
+    font-size: 1.1em;
+    font-weight: 500;
+    color: #555;
+    cursor: pointer;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+.nav-item:hover {
+    background-color: #e9ecef;
+    color: #333;
+}
+.nav-item.active {
+    background-color: #007bff;
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+}
+.nav-item.active:hover {
+    background-color: #0056b3;
+    color: white;
+}
+
+/* Ana İçerik Alanı */
+.content-area {
+    flex-grow: 1; /* Kalan alanı kapla */
+    padding: 20px 30px;
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-area, .friends-area, .settings-area {
+    background-color: #fdfdfd;
+    border-radius: 10px;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.03);
     padding: 20px;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
 }
+.content-item { /* Diğer bölümler için ortak */
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+.chat-area h3, .friends-area h3, .settings-area h3 {
+    color: #007bff;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+}
+
+/* Mesaj Kutusu */
 .messages-container {
     flex-grow: 1;
     overflow-y: auto;
-    border: 1px solid #e9ecef;
-    border-radius: 5px;
     padding: 15px;
-    margin-bottom: 15px;
-    background-color: #f8f9fa;
-    max-height: 400px; /* Mesaj kutusu yüksekliği */
+    background-color: #eef2f7; /* Mesaj geçmişi arka planı */
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Mesajlar arasında boşluk */
 }
 
 .message {
-    margin-bottom: 10px;
-    padding: 8px 12px;
-    border-radius: 15px;
-    max-width: 80%;
+    padding: 10px 15px;
+    border-radius: 20px;
+    max-width: 75%;
     word-wrap: break-word;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+    position: relative;
 }
 .message-sender {
-    font-weight: bold;
-    font-size: 0.9em;
+    font-weight: 600;
+    font-size: 0.85em;
     margin-bottom: 3px;
-    color: #0056b3;
+    color: #0056b3; /* Gönderen adı rengi */
 }
 .message-content {
-    font-size: 1em;
+    font-size: 0.95em;
+    color: #333;
 }
 .message.sent {
-    background-color: #dcf8c6; /* Kendi mesajınız */
+    background-color: #dcf8c6; /* Kendi mesajınız - WhatsApp yeşili gibi */
     margin-left: auto;
-    text-align: right;
+    border-bottom-right-radius: 5px; /* Köşeyi biraz kır */
 }
 .message.received {
-    background-color: #e9e9eb; /* Başkasının mesajı */
+    background-color: #e9e9eb; /* Başkasının mesajı - Gri tonu */
     margin-right: auto;
-    text-align: left;
+    border-bottom-left-radius: 5px; /* Köşeyi biraz kır */
+}
+/* Gönderen ismi kendi mesajında olmasın (opsiyonel) */
+.message.sent .message-sender {
+    display: none;
 }
 
 .message-input-area {
@@ -183,84 +383,93 @@ header {
     flex-grow: 1;
     margin-bottom: 0;
 }
-.message-input-area button {
-    flex-shrink: 0;
-    margin-right: 0;
-}
 
-/* Friends Section */
+/* Arkadaş Listesi Alanı */
 .add-friend-area {
     display: flex;
     gap: 10px;
     margin-bottom: 20px;
     align-items: center;
-    flex-wrap: wrap; /* Küçük ekranlarda alta geçsin */
+    flex-wrap: wrap;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #eee;
 }
 .add-friend-area input {
     flex-grow: 1;
     margin-bottom: 0;
 }
-.add-friend-area button {
-    flex-shrink: 0;
-    margin-right: 0;
-}
 
-#friends-list {
+.friends-list {
     list-style: none;
     padding: 0;
     margin: 0;
     flex-grow: 1;
     overflow-y: auto;
-    border: 1px solid #e9ecef;
-    border-radius: 5px;
-    padding: 15px;
-    background-color: #f8f9fa;
 }
-#friends-list li {
-    padding: 10px;
+.friends-list li {
+    padding: 12px 15px;
     border-bottom: 1px solid #eee;
     display: flex;
     justify-content: space-between;
     align-items: center;
     cursor: pointer;
     transition: background-color 0.2s ease;
+    border-radius: 8px;
+    margin-bottom: 5px;
 }
-#friends-list li:last-child {
+.friends-list li:last-child {
     border-bottom: none;
 }
-#friends-list li:hover {
-    background-color: #e9ecef;
+.friends-list li:hover {
+    background-color: #f0f2f5;
 }
-#friends-list .friend-name {
-    font-weight: bold;
+.friends-list .friend-name {
+    font-weight: 600;
+    color: #333;
 }
-#friends-list .start-chat-btn {
-    background-color: #28a745;
+.friends-list .start-chat-btn {
+    background-color: #28a745; /* Yeşil */
     color: white;
-    padding: 8px 12px;
-    font-size: 0.8em;
-    border-radius: 3px;
+    padding: 8px 15px;
+    font-size: 0.85em;
+    border-radius: 5px;
     margin-left: 10px;
+    width: auto;
+    box-shadow: 0 2px 5px rgba(40, 167, 69, 0.2);
 }
-#friends-list .start-chat-btn:hover {
+.friends-list .start-chat-btn:hover {
     background-color: #218838;
+    transform: translateY(-1px);
 }
 
-/* Ayarlar Bölümü */
-.settings-section .setting-item {
+
+/* Ayarlar Alanı */
+.settings-area .setting-block {
     background-color: #f8f9fa;
-    border: 1px solid #e9ecef;
-    border-radius: 5px;
-    padding: 15px;
-    margin-bottom: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
-.settings-section .setting-item h4 {
+.settings-area .setting-block h4 {
     margin-top: 0;
+    margin-bottom: 15px;
     color: #007bff;
+    font-size: 1.2em;
+    font-weight: 600;
 }
-.settings-section button {
+.settings-area .setting-block input {
+    margin-bottom: 10px; /* Inputlar arasında boşluk */
+}
+.settings-area .setting-block button {
+    margin-top: 5px;
+    margin-left: 0; /* Inputların altında sola yaslı */
+}
+.settings-area .setting-block .message {
     margin-top: 10px;
 }
+
 
 /* Modals (Özel Sohbet Penceresi) */
 .modal {
@@ -270,76 +479,176 @@ header {
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto;
-    background-color: rgba(0,0,0,0.6);
+    background-color: rgba(0,0,0,0.5); /* Yarı şeffaf arka plan */
     display: flex;
     justify-content: center;
     align-items: center;
+    backdrop-filter: blur(5px); /* Arka planı hafif bulanıklaştır */
 }
 .modal-content {
     background-color: #fff;
-    margin: auto;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     width: 90%;
-    max-width: 600px;
+    max-width: 700px;
     display: flex;
     flex-direction: column;
-    min-height: 400px;
+    min-height: 500px;
+    padding: 30px;
+    position: relative;
 }
 .modal-content .close-button {
+    position: absolute;
+    top: 15px;
+    right: 20px;
     color: #aaa;
-    float: right;
-    font-size: 28px;
+    font-size: 35px;
     font-weight: bold;
     cursor: pointer;
-    align-self: flex-end;
+    transition: color 0.2s ease;
 }
 .modal-content .close-button:hover,
 .modal-content .close-button:focus {
-    color: black;
-    text-decoration: none;
+    color: #333;
 }
-.modal-content h4 {
-    margin-top: 0;
+.modal-content .modal-title {
     color: #007bff;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 25px;
+    font-size: 1.8em;
+    font-weight: 600;
 }
+/* Modal içindeki mesaj konteynerı */
 #private-messages-container {
-    max-height: 300px; /* Özel mesaj kutusu yüksekliği */
+    max-height: 350px;
+    min-height: 200px; /* Minimum yükseklik */
 }
 
-/* Duyarlı Tasarım */
+
+/* Duyarlı Tasarım (Responsive Design) */
 @media (max-width: 768px) {
-    .container {
-        width: 95%;
-        margin-top: 20px;
-        margin-bottom: 20px;
+    .main-wrapper {
+        margin: 20px 0;
+        min-height: 95vh;
+        border-radius: 0;
+        box-shadow: none; /* Mobil tam ekranda gölgeye gerek yok */
     }
-    header {
-        flex-direction: column;
-        align-items: flex-start;
+
+    .app-container {
+        flex-direction: column; /* Mobil için dikey düzen */
+    }
+
+    .sidebar {
+        width: 100%; /* Mobil tam genişlik */
+        border-right: none;
+        border-bottom: 1px solid #e0e0e0;
+        padding: 15px;
+        flex-direction: row; /* Menü ve profil yatayda */
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .user-profile {
+        flex-direction: row;
+        border-bottom: none;
+        padding-bottom: 0;
+        margin-bottom: 0;
+        align-items: center;
         gap: 10px;
     }
-    .header-buttons {
+    .user-profile .user-name {
+        margin-bottom: 0;
+        font-size: 1.1em;
+    }
+    .user-profile .user-email {
+        display: none; /* Mobil küçük ekranda e-postayı gizle */
+    }
+    .user-profile .logout-btn {
+        margin-left: 15px;
+        font-size: 1.3em;
+    }
+
+    .nav-menu {
+        flex-direction: row; /* Menü butonları yan yana */
         width: 100%;
-        display: flex;
         justify-content: space-around;
+        padding-top: 15px;
+        border-top: 1px solid #eee;
+        margin-top: 15px;
+    }
+    .nav-item {
+        padding: 10px 15px;
+        font-size: 0.9em;
+        margin-bottom: 0;
+        text-align: center;
+    }
+
+    .content-area {
+        padding: 15px;
+    }
+
+    .tab-button {
+        padding: 12px 20px;
+        font-size: 1em;
+    }
+
+    .auth-container {
+        padding: 20px;
+        margin: 20px auto;
+        box-shadow: none; /* Mobil uyum için */
+    }
+
+    .modal-content {
+        width: 95%;
+        margin: 10px;
+        padding: 20px;
+    }
+    .modal-content .close-button {
+        font-size: 30px;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-container {
+        padding: 15px;
+    }
+    .auth-tabs {
+        flex-direction: column; /* Mobil çok küçük ekranlarda tab butonları alt alta */
+    }
+    .tab-button {
+        width: 100%;
+        margin-bottom: 5px;
+    }
+    .auth-tabs .tab-button:last-child {
+        margin-bottom: 0;
+    }
+    .tab-content h2 {
+        font-size: 1.5em;
+    }
+    .primary-btn, .google-btn {
+        padding: 10px 15px;
+        font-size: 0.95em;
+    }
+
+    .add-friend-area {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .add-friend-area input, .add-friend-area button {
+        width: 100%;
+        margin-left: 0;
+        margin-top: 5px;
+    }
+    .small-btn {
+        width: 100%;
+        margin-left: 0;
     }
     .message-input-area {
         flex-direction: column;
     }
     .message-input-area input, .message-input-area button {
         width: 100%;
-        margin-right: 0;
-    }
-    .add-friend-area {
-        flex-direction: column;
-    }
-    .add-friend-area input, .add-friend-area button {
-        width: 100%;
-        margin-right: 0;
+        margin-left: 0;
+        margin-top: 5px;
     }
 }
