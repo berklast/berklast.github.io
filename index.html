@@ -1729,328 +1729,6 @@
                 padding: 20px;
             }
         }
-
-        /* === YENİ ÖZELLİKLER === */
-        .advanced-features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .feature-card {
-            background: var(--bg-primary);
-            border-radius: var(--radius-lg);
-            padding: 15px;
-            text-align: center;
-            box-shadow: var(--shadow-sm);
-            transition: var(--transition);
-            border: 1px solid var(--gray-200);
-        }
-
-        .feature-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-            border-color: var(--primary);
-        }
-
-        .feature-card i {
-            font-size: 2rem;
-            color: var(--primary);
-            margin-bottom: 10px;
-        }
-
-        .feature-card h4 {
-            font-size: 1rem;
-            margin-bottom: 5px;
-        }
-
-        .feature-card p {
-            font-size: 0.8rem;
-            color: var(--text-light);
-        }
-
-        .document-export-options {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .export-option {
-            flex: 1;
-            padding: 10px;
-            background: var(--bg-secondary);
-            border-radius: var(--radius);
-            text-align: center;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .export-option:hover {
-            background: var(--primary);
-            color: white;
-        }
-
-        .document-history {
-            max-height: 200px;
-            overflow-y: auto;
-            margin-top: 15px;
-            border: 1px solid var(--gray-200);
-            border-radius: var(--radius);
-            padding: 10px;
-        }
-
-        .history-item {
-            padding: 8px;
-            border-bottom: 1px solid var(--gray-200);
-            font-size: 0.8rem;
-        }
-
-        .history-item:last-child {
-            border-bottom: none;
-        }
-
-        .collaboration-indicators {
-            display: flex;
-            gap: 5px;
-        }
-
-        .user-cursor {
-            width: 2px;
-            height: 20px;
-            background: var(--secondary);
-            position: absolute;
-        }
-
-        .ai-assistant {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 60px;
-            height: 60px;
-            background: var(--gradient-primary);
-            border-radius: var(--radius-full);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
-            box-shadow: var(--shadow-primary-lg);
-            z-index: var(--z-tooltip);
-            transition: var(--transition);
-        }
-
-        .ai-assistant:hover {
-            transform: scale(1.1);
-        }
-
-        .ai-panel {
-            position: fixed;
-            bottom: 90px;
-            right: 20px;
-            width: 300px;
-            background: var(--bg-primary);
-            border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-2xl);
-            z-index: var(--z-modal);
-            display: none;
-            overflow: hidden;
-        }
-
-        .ai-panel-header {
-            background: var(--gradient-primary);
-            color: white;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .ai-panel-content {
-            padding: 15px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-
-        .ai-suggestion {
-            padding: 10px;
-            margin-bottom: 10px;
-            background: var(--bg-secondary);
-            border-radius: var(--radius);
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .ai-suggestion:hover {
-            background: var(--primary);
-            color: white;
-        }
-
-        .document-templates {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .template-card {
-            background: var(--bg-primary);
-            border-radius: var(--radius-lg);
-            padding: 15px;
-            text-align: center;
-            cursor: pointer;
-            transition: var(--transition);
-            border: 2px solid transparent;
-        }
-
-        .template-card:hover {
-            border-color: var(--primary);
-            transform: translateY(-3px);
-        }
-
-        .template-card i {
-            font-size: 2rem;
-            color: var(--primary);
-            margin-bottom: 10px;
-        }
-
-        .version-control {
-            margin-top: 20px;
-        }
-
-        .version-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px;
-            border-bottom: 1px solid var(--gray-200);
-            cursor: pointer;
-        }
-
-        .version-item:hover {
-            background: var(--bg-secondary);
-        }
-
-        .real-time-stats {
-            display: flex;
-            gap: 20px;
-            margin-top: 15px;
-        }
-
-        .stat-card {
-            flex: 1;
-            background: var(--bg-primary);
-            padding: 15px;
-            border-radius: var(--radius);
-            text-align: center;
-            box-shadow: var(--shadow-sm);
-        }
-
-        .stat-value {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--primary);
-        }
-
-        .stat-label {
-            font-size: 0.8rem;
-            color: var(--text-light);
-        }
-
-        .document-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            margin-top: 10px;
-        }
-
-        .tag {
-            background: var(--primary-soft);
-            color: var(--primary);
-            padding: 3px 8px;
-            border-radius: var(--radius-full);
-            font-size: 0.7rem;
-        }
-
-        .search-box {
-            position: relative;
-            margin-bottom: 20px;
-        }
-
-        .search-box input {
-            width: 100%;
-            padding: 10px 15px 10px 40px;
-            border: 1px solid var(--gray-300);
-            border-radius: var(--radius-full);
-            background: var(--bg-primary);
-            color: var(--text);
-        }
-
-        .search-box i {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-light);
-        }
-
-        .quick-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .quick-action {
-            flex: 1;
-            padding: 8px;
-            background: var(--bg-secondary);
-            border-radius: var(--radius);
-            text-align: center;
-            cursor: pointer;
-            transition: var(--transition);
-            font-size: 0.8rem;
-        }
-
-        .quick-action:hover {
-            background: var(--primary);
-            color: white;
-        }
-
-        .document-insights {
-            margin-top: 20px;
-            padding: 15px;
-            background: var(--bg-primary);
-            border-radius: var(--radius);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .insight-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 0.8rem;
-        }
-
-        .focus-mode .sidebar,
-        .focus-mode .toolbar-actions,
-        .focus-mode .editor-header,
-        .focus-mode .editor-stats {
-            display: none;
-        }
-
-        .focus-mode .content-area {
-            padding: 0;
-        }
-
-        .focus-mode .editor-container {
-            border-radius: 0;
-            height: 100vh;
-        }
-
-        .focus-mode .editor {
-            padding: 40px;
-            font-size: 1.2rem;
-        }
     </style>
 </head>
 <body>
@@ -2110,29 +1788,6 @@
                         <div class="feature">
                             <i class="fas fa-palette"></i>
                             <span>Modern Arayüz</span>
-                        </div>
-                    </div>
-
-                    <div class="advanced-features">
-                        <div class="feature-card">
-                            <i class="fas fa-robot"></i>
-                            <h4>AI Asistan</h4>
-                            <p>Akıllı metin önerileri</p>
-                        </div>
-                        <div class="feature-card">
-                            <i class="fas fa-history"></i>
-                            <h4>Versiyon Geçmişi</h4>
-                            <p>Tüm değişiklikleri takip edin</p>
-                        </div>
-                        <div class="feature-card">
-                            <i class="fas fa-download"></i>
-                            <h4>Çoklu Export</h4>
-                            <p>PDF, DOCX, TXT formatları</p>
-                        </div>
-                        <div class="feature-card">
-                            <i class="fas fa-magic"></i>
-                            <h4>Şablonlar</h4>
-                            <p>Hızlı başlangıç şablonları</p>
                         </div>
                     </div>
                 </div>
@@ -2238,10 +1893,6 @@
                     <h3 class="sidebar-title">
                         <i class="fas fa-users"></i> Çevrimiçi Kullanıcılar
                     </h3>
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="userSearch" placeholder="Kullanıcı ara...">
-                    </div>
                     <ul class="online-users" id="onlineUsers">
                         <!-- Online kullanıcılar burada listelenecek -->
                     </ul>
@@ -2250,39 +1901,12 @@
                     <h3 class="sidebar-title">
                         <i class="fas fa-file-alt"></i> Dokümanlarım
                     </h3>
-                    <div class="quick-actions">
-                        <div class="quick-action" id="newDocQuickBtn">
-                            <i class="fas fa-plus"></i> Yeni
-                        </div>
-                        <div class="quick-action" id="importDocBtn">
-                            <i class="fas fa-upload"></i> İçe Aktar
-                        </div>
-                        <div class="quick-action" id="searchDocBtn">
-                            <i class="fas fa-search"></i> Ara
-                        </div>
-                    </div>
-                    <div class="search-box">
-                        <i class="fas fa-search"></i>
-                        <input type="text" id="documentSearch" placeholder="Doküman ara...">
-                    </div>
+                    <button class="btn" id="newDocumentBtn">
+                        <i class="fas fa-plus"></i> Yeni Doküman
+                    </button>
                     <ul class="documents-list" id="documentsList">
                         <!-- Dokümanlar burada listelenecek -->
                     </ul>
-                </div>
-                <div class="sidebar-section">
-                    <h3 class="sidebar-title">
-                        <i class="fas fa-chart-bar"></i> İstatistikler
-                    </h3>
-                    <div class="real-time-stats">
-                        <div class="stat-card">
-                            <div class="stat-value" id="totalDocuments">0</div>
-                            <div class="stat-label">Doküman</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-value" id="totalWords">0</div>
-                            <div class="stat-label">Kelime</div>
-                        </div>
-                    </div>
                 </div>
             </div>
             <div class="content-area">
@@ -2291,26 +1915,12 @@
                         <i class="fas fa-file"></i> Doküman Seçin
                     </div>
                     <div class="toolbar-actions">
-                        <button class="btn btn-outline btn-sm" id="focusModeBtn" style="display: none;">
-                            <i class="fas fa-expand"></i> Odak Modu
-                        </button>
                         <button class="btn btn-outline btn-sm" id="closeDocumentBtn" style="display: none;">
-                            <i class="fas fa-times"></i> Kapat
+                            <i class="fas fa-times"></i> Dokümanı Kapat
                         </button>
                         <button class="btn btn-success btn-sm" id="saveDocumentBtn" style="display: none;">
                             <i class="fas fa-save"></i> Kaydet
                         </button>
-                        <div class="document-export-options" style="display: none;" id="exportOptions">
-                            <div class="export-option" data-format="pdf">
-                                <i class="fas fa-file-pdf"></i> PDF
-                            </div>
-                            <div class="export-option" data-format="docx">
-                                <i class="fas fa-file-word"></i> DOCX
-                            </div>
-                            <div class="export-option" data-format="txt">
-                                <i class="fas fa-file-alt"></i> TXT
-                            </div>
-                        </div>
                     </div>
                 </div>
                 
@@ -2318,24 +1928,6 @@
                     <i class="fas fa-file-alt"></i>
                     <h3>Henüz bir doküman seçmediniz</h3>
                     <p>Yeni bir doküman oluşturun veya mevcut bir dokümanı seçin</p>
-                    <div class="document-templates">
-                        <div class="template-card" data-template="blank">
-                            <i class="fas fa-file"></i>
-                            <div>Boş Doküman</div>
-                        </div>
-                        <div class="template-card" data-template="notes">
-                            <i class="fas fa-sticky-note"></i>
-                            <div>Notlar</div>
-                        </div>
-                        <div class="template-card" data-template="article">
-                            <i class="fas fa-newspaper"></i>
-                            <div>Makale</div>
-                        </div>
-                        <div class="template-card" data-template="report">
-                            <i class="fas fa-chart-bar"></i>
-                            <div>Rapor</div>
-                        </div>
-                    </div>
                 </div>
                 
                 <div class="editor-container" id="editorContainer" style="display: none;">
@@ -2352,55 +1944,12 @@
                     <div class="editor-stats">
                         <div class="word-count">Kelime: <span id="wordCount">0</span></div>
                         <div class="char-count">Karakter: <span id="charCount">0</span></div>
-                        <div class="line-count">Satır: <span id="lineCount">0</span></div>
                         <div class="auto-save" id="autoSaveStatus">
                             <i class="fas fa-check-circle" style="color: var(--success);"></i>
                             <span>Otomatik kaydedildi</span>
                         </div>
                     </div>
                 </div>
-
-                <div class="document-insights" id="documentInsights" style="display: none;">
-                    <h4>Doküman Analizi</h4>
-                    <div class="insight-item">
-                        <span>Okunabilirlik Skoru:</span>
-                        <span id="readabilityScore">-</span>
-                    </div>
-                    <div class="insight-item">
-                        <span>Tahmini Okuma Süresi:</span>
-                        <span id="readingTime">-</span>
-                    </div>
-                    <div class="insight-item">
-                        <span>En Sık Kullanılan Kelimeler:</span>
-                        <span id="commonWords">-</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- AI Asistan -->
-    <div class="ai-assistant" id="aiAssistant">
-        <i class="fas fa-robot"></i>
-    </div>
-
-    <div class="ai-panel" id="aiPanel">
-        <div class="ai-panel-header">
-            <h4>AI Yazım Asistanı</h4>
-            <button class="close-modal" id="closeAIPanel">&times;</button>
-        </div>
-        <div class="ai-panel-content">
-            <div class="ai-suggestion" data-action="improve">
-                <i class="fas fa-magic"></i> Yazıyı iyileştir
-            </div>
-            <div class="ai-suggestion" data-action="summarize">
-                <i class="fas fa-compress"></i> Özetle
-            </div>
-            <div class="ai-suggestion" data-action="expand">
-                <i class="fas fa-expand"></i> Genişlet
-            </div>
-            <div class="ai-suggestion" data-action="grammar">
-                <i class="fas fa-spell-check"></i> Dil bilgisi kontrolü
             </div>
         </div>
     </div>
@@ -2416,55 +1965,7 @@
                 <label for="newDocumentName">Doküman Adı</label>
                 <input type="text" id="newDocumentName" class="form-control" placeholder="Doküman adını girin" required>
             </div>
-            <div class="form-group">
-                <label for="documentTemplate">Şablon Seçin</label>
-                <select id="documentTemplate" class="form-control">
-                    <option value="blank">Boş Doküman</option>
-                    <option value="notes">Notlar</option>
-                    <option value="article">Makale</option>
-                    <option value="report">Rapor</option>
-                    <option value="letter">Mektup</option>
-                </select>
-            </div>
-            <div class="document-tags">
-                <div class="tag" data-tag="iş">İş</div>
-                <div class="tag" data-tag="kişisel">Kişisel</div>
-                <div class="tag" data-tag="eğitim">Eğitim</div>
-                <div class="tag" data-tag="proje">Proje</div>
-            </div>
             <button class="btn btn-success" id="createDocumentBtn">Oluştur</button>
-        </div>
-    </div>
-
-    <!-- Doküman Ayarları Modal -->
-    <div class="modal" id="documentSettingsModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Doküman Ayarları</h3>
-                <button class="close-modal" id="closeDocumentSettingsModal">&times;</button>
-            </div>
-            <div class="form-group">
-                <label for="docSettingsName">Doküman Adı</label>
-                <input type="text" id="docSettingsName" class="form-control">
-            </div>
-            <div class="form-group">
-                <label>İzinler</label>
-                <div class="permission-options">
-                    <label><input type="checkbox" id="allowComments"> Yorumlara izin ver</label>
-                    <label><input type="checkbox" id="allowEditing"> Düzenlemeye izin ver</label>
-                    <label><input type="checkbox" id="isPublic"> Herkese açık</label>
-                </div>
-            </div>
-            <div class="form-group">
-                <label>Versiyon Geçmişi</label>
-                <div class="version-control" id="versionHistory">
-                    <!-- Versiyonlar burada listelenecek -->
-                </div>
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-outline" id="cancelDocumentSettings">İptal</button>
-                <button class="btn btn-success" id="saveDocumentSettings">Kaydet</button>
-            </div>
         </div>
     </div>
 
@@ -2504,16 +2005,6 @@
                 <label for="profileMemberSince">Üyelik Tarihi</label>
                 <input type="text" id="profileMemberSince" class="form-control" readonly>
             </div>
-            <div class="real-time-stats">
-                <div class="stat-card">
-                    <div class="stat-value" id="profileDocCount">0</div>
-                    <div class="stat-label">Doküman</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value" id="profileWordCount">0</div>
-                    <div class="stat-label">Toplam Kelime</div>
-                </div>
-            </div>
             <div class="modal-actions">
                 <button class="btn btn-outline" id="closeProfileBtn">Kapat</button>
             </div>
@@ -2538,10 +2029,6 @@
                 </div>
             </div>
             <div class="form-group">
-                <label for="autoSaveInterval">Otomatik Kaydetme Aralığı (saniye)</label>
-                <input type="number" id="autoSaveInterval" class="form-control" value="5" min="1" max="60">
-            </div>
-            <div class="form-group">
                 <label for="editorFontSize">Editör Yazı Boyutu</label>
                 <select id="editorFontSize" class="form-control">
                     <option value="14px">Küçük</option>
@@ -2558,34 +2045,9 @@
                     <option value="light">Açık</option>
                 </select>
             </div>
-            <div class="form-group">
-                <label for="editorFontFamily">Editör Yazı Tipi</label>
-                <select id="editorFontFamily" class="form-control">
-                    <option value="'Courier New', monospace" selected>Courier New</option>
-                    <option value="'Arial', sans-serif">Arial</option>
-                    <option value="'Times New Roman', serif">Times New Roman</option>
-                    <option value="'Georgia', serif">Georgia</option>
-                </select>
-            </div>
             <div class="modal-actions">
                 <button class="btn btn-outline" id="closeSettingsBtn">Kapat</button>
                 <button class="btn btn-success" id="saveSettingsBtn">Kaydet</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Versiyon Geçmişi Modalı -->
-    <div class="modal" id="versionHistoryModal" style="display: none;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 class="modal-title">Versiyon Geçmişi</h3>
-                <button class="close-modal" id="closeVersionHistoryModal">&times;</button>
-            </div>
-            <div class="version-control" id="versionHistoryList">
-                <!-- Versiyon geçmişi burada listelenecek -->
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-outline" id="closeVersionHistoryBtn">Kapat</button>
             </div>
         </div>
     </div>
@@ -2637,7 +2099,6 @@
         const editorPlaceholder = document.getElementById('editorPlaceholder');
         const wordCount = document.getElementById('wordCount');
         const charCount = document.getElementById('charCount');
-        const lineCount = document.getElementById('lineCount');
         const autoSaveStatus = document.getElementById('autoSaveStatus');
         const notification = document.getElementById('notification');
         const notificationText = document.getElementById('notificationText');
@@ -2665,24 +2126,6 @@
         const autoSaveToggle = document.getElementById('autoSaveToggle');
         const editorFontSize = document.getElementById('editorFontSize');
         const editorTheme = document.getElementById('editorTheme');
-        const aiAssistant = document.getElementById('aiAssistant');
-        const aiPanel = document.getElementById('aiPanel');
-        const closeAIPanel = document.getElementById('closeAIPanel');
-        const focusModeBtn = document.getElementById('focusModeBtn');
-        const exportOptions = document.getElementById('exportOptions');
-        const documentInsights = document.getElementById('documentInsights');
-        const newDocQuickBtn = document.getElementById('newDocQuickBtn');
-        const documentSearch = document.getElementById('documentSearch');
-        const userSearch = document.getElementById('userSearch');
-        const totalDocuments = document.getElementById('totalDocuments');
-        const totalWords = document.getElementById('totalWords');
-        const profileDocCount = document.getElementById('profileDocCount');
-        const profileWordCount = document.getElementById('profileWordCount');
-        const documentSettingsModal = document.getElementById('documentSettingsModal');
-        const closeDocumentSettingsModal = document.getElementById('closeDocumentSettingsModal');
-        const versionHistoryModal = document.getElementById('versionHistoryModal');
-        const closeVersionHistoryModal = document.getElementById('closeVersionHistoryModal');
-        const versionHistoryList = document.getElementById('versionHistoryList');
 
         // Değişkenler
         let currentUser = null;
@@ -2697,21 +2140,10 @@
         let lastSavedContent = '';
         let autoSaveTimeout = null;
         let autoSaveEnabled = true;
-        let autoSaveInterval = 5000; // 5 saniye
         let userSettings = {
             autoSave: true,
             editorFontSize: '16px',
-            editorTheme: 'default',
-            editorFontFamily: "'Courier New', monospace",
-            autoSaveInterval: 5
-        };
-        let isFocusMode = false;
-        let documentTemplates = {
-            blank: '',
-            notes: '# Notlarım\n\n## Önemli Notlar\n- \n- \n\n## Yapılacaklar\n- [ ] \n- [ ] \n\n## Fikirler\n- ',
-            article: '# Makale Başlığı\n\n## Giriş\n\n## Ana Bölüm\n\n## Sonuç\n\n## Kaynaklar\n- ',
-            report: '# Rapor Başlığı\n\n## Özet\n\n## Giriş\n\n## Yöntem\n\n## Bulgular\n\n## Tartışma\n\n## Sonuç\n\n',
-            letter: 'Sayın [Ad Soyad],\n\n\n\nSaygılarımla,\n[Adınız]'
+            editorTheme: 'default'
         };
 
         // Tema değiştirme
@@ -2886,8 +2318,6 @@
                         autoSave: true,
                         editorFontSize: '16px',
                         editorTheme: 'default',
-                        editorFontFamily: "'Courier New', monospace",
-                        autoSaveInterval: 5,
                         createdAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
                     
@@ -2960,10 +2390,6 @@
                 profileUsername.value = currentUser.displayName;
                 profileEmail.value = currentUser.email;
                 profileMemberSince.value = new Date(currentUser.memberSince).toLocaleDateString('tr-TR');
-                
-                // Kullanıcı istatistiklerini güncelle
-                updateUserStats();
-                
                 profileModal.style.display = 'flex';
             }
         });
@@ -2976,31 +2402,11 @@
             profileModal.style.display = 'none';
         });
 
-        // Kullanıcı istatistiklerini güncelle
-        function updateUserStats() {
-            if (currentUser) {
-                // Toplam doküman sayısı
-                const userDocs = documents.filter(doc => doc.owner === currentUser.uid);
-                profileDocCount.textContent = userDocs.length;
-                
-                // Toplam kelime sayısı
-                let totalWordCount = 0;
-                userDocs.forEach(doc => {
-                    if (doc.content) {
-                        totalWordCount += doc.content.split(/\s+/).length;
-                    }
-                });
-                profileWordCount.textContent = totalWordCount;
-            }
-        }
-
         // Ayarlar
         function openSettings() {
             autoSaveToggle.checked = userSettings.autoSave;
             editorFontSize.value = userSettings.editorFontSize;
             editorTheme.value = userSettings.editorTheme;
-            document.getElementById('editorFontFamily').value = userSettings.editorFontFamily;
-            document.getElementById('autoSaveInterval').value = userSettings.autoSaveInterval;
             settingsModal.style.display = 'flex';
         }
 
@@ -3016,12 +2422,9 @@
             userSettings.autoSave = autoSaveToggle.checked;
             userSettings.editorFontSize = editorFontSize.value;
             userSettings.editorTheme = editorTheme.value;
-            userSettings.editorFontFamily = document.getElementById('editorFontFamily').value;
-            userSettings.autoSaveInterval = parseInt(document.getElementById('autoSaveInterval').value);
             
-            // Editör ayarlarını güncelle
+            // Editör font boyutunu güncelle
             documentEditor.style.fontSize = userSettings.editorFontSize;
-            documentEditor.style.fontFamily = userSettings.editorFontFamily;
             
             // Editör temasını güncelle
             if (userSettings.editorTheme === 'dark') {
@@ -3034,9 +2437,6 @@
                 documentEditor.style.backgroundColor = '';
                 documentEditor.style.color = '';
             }
-            
-            // Otomatik kaydetme aralığını güncelle
-            autoSaveInterval = userSettings.autoSaveInterval * 1000;
             
             // Ayarları Firestore'a kaydet
             if (currentUser) {
@@ -3061,9 +2461,7 @@
                         
                         // Ayarları uygula
                         documentEditor.style.fontSize = userSettings.editorFontSize;
-                        documentEditor.style.fontFamily = userSettings.editorFontFamily;
                         autoSaveEnabled = userSettings.autoSave;
-                        autoSaveInterval = userSettings.autoSaveInterval * 1000;
                         
                         if (userSettings.editorTheme === 'dark') {
                             documentEditor.style.backgroundColor = '#1E2030';
@@ -3085,12 +2483,6 @@
             newDocumentName.focus();
         });
 
-        // Hızlı yeni doküman butonu
-        newDocQuickBtn.addEventListener('click', () => {
-            newDocumentModal.style.display = 'flex';
-            newDocumentName.focus();
-        });
-
         // Yeni doküman modalını kapat
         closeNewDocumentModal.addEventListener('click', () => {
             newDocumentModal.style.display = 'none';
@@ -3100,22 +2492,17 @@
         // Yeni doküman oluştur
         createDocumentBtn.addEventListener('click', async () => {
             const docName = newDocumentName.value.trim();
-            const template = document.getElementById('documentTemplate').value;
-            
             if (docName) {
                 try {
                     const newDoc = {
                         title: docName,
-                        content: documentTemplates[template] || '',
+                        content: '',
                         owner: currentUser.uid,
                         ownerName: currentUser.displayName,
                         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                         updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
                         lastEditedBy: currentUser.uid,
-                        collaborators: [currentUser.uid],
-                        template: template,
-                        tags: [],
-                        version: 1
+                        collaborators: [currentUser.uid]
                     };
                     
                     const docRef = await db.collection('documents').add(newDoc);
@@ -3162,126 +2549,6 @@
                 closeCurrentDocument();
             }
         });
-
-        // Odak modu
-        focusModeBtn.addEventListener('click', () => {
-            isFocusMode = !isFocusMode;
-            document.body.classList.toggle('focus-mode', isFocusMode);
-            
-            if (isFocusMode) {
-                focusModeBtn.innerHTML = '<i class="fas fa-compress"></i> Normal Mod';
-                showNotification('Odak modu etkinleştirildi', 'success');
-            } else {
-                focusModeBtn.innerHTML = '<i class="fas fa-expand"></i> Odak Modu';
-                showNotification('Normal moda dönüldü', 'success');
-            }
-        });
-
-        // AI Asistan
-        aiAssistant.addEventListener('click', () => {
-            aiPanel.style.display = aiPanel.style.display === 'block' ? 'none' : 'block';
-        });
-
-        closeAIPanel.addEventListener('click', () => {
-            aiPanel.style.display = 'none';
-        });
-
-        // AI önerileri
-        document.querySelectorAll('.ai-suggestion').forEach(suggestion => {
-            suggestion.addEventListener('click', () => {
-                const action = suggestion.getAttribute('data-action');
-                applyAISuggestion(action);
-                aiPanel.style.display = 'none';
-            });
-        });
-
-        // AI önerisi uygula
-        function applyAISuggestion(action) {
-            const currentText = documentEditor.value;
-            let newText = currentText;
-            
-            switch (action) {
-                case 'improve':
-                    newText = improveText(currentText);
-                    break;
-                case 'summarize':
-                    newText = summarizeText(currentText);
-                    break;
-                case 'expand':
-                    newText = expandText(currentText);
-                    break;
-                case 'grammar':
-                    newText = checkGrammar(currentText);
-                    break;
-            }
-            
-            documentEditor.value = newText;
-            hasUnsavedChanges = true;
-            updateEditorStats();
-            showNotification('AI önerisi uygulandı', 'success');
-        }
-
-        // Metin iyileştirme (basit bir örnek)
-        function improveText(text) {
-            // Burada daha gelişmiş bir AI entegrasyonu olabilir
-            // Şimdilik basit bir örnek:
-            return text.replace(/\b(\w+)\b/g, (match, p1) => {
-                // Bazı kelimeleri daha iyi alternatifleriyle değiştir
-                const improvements = {
-                    'iyi': 'mükemmel',
-                    'kötü': 'geliştirilebilir',
-                    'güzel': 'harika',
-                    'çok': 'oldukça',
-                    'yapmak': 'gerçekleştirmek'
-                };
-                return improvements[p1.toLowerCase()] || p1;
-            });
-        }
-
-        // Metin özetleme (basit bir örnek)
-        function summarizeText(text) {
-            const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
-            if (sentences.length <= 3) return text;
-            
-            // İlk, orta ve son cümleleri al
-            const summary = [
-                sentences[0],
-                sentences[Math.floor(sentences.length / 2)],
-                sentences[sentences.length - 1]
-            ].join('. ') + '.';
-            
-            return summary;
-        }
-
-        // Metin genişletme (basit bir örnek)
-        function expandText(text) {
-            // Basit bir genişletme örneği
-            const expansions = {
-                'rapor': 'Detaylı analiz raporu',
-                'not': 'Önemli not ve gözlemler',
-                'fikir': 'Yaratıcı fikir ve öneriler'
-            };
-            
-            let expanded = text;
-            Object.keys(expansions).forEach(key => {
-                const regex = new RegExp(`\\b${key}\\b`, 'gi');
-                expanded = expanded.replace(regex, expansions[key]);
-            });
-            
-            return expanded;
-        }
-
-        // Dil bilgisi kontrolü (basit bir örnek)
-        function checkGrammar(text) {
-            // Basit dil bilgisi düzeltmeleri
-            return text
-                .replace(/\b(ben)\b/gi, 'Ben')
-                .replace(/\b(sen)\b/gi, 'Sen')
-                .replace(/\b(o)\b/gi, 'O')
-                .replace(/\s+\./g, '.')
-                .replace(/\s+,/g, ',')
-                .replace(/\s+;/g, ';');
-        }
 
         // Onay modalını kapat
         closeConfirmModal.addEventListener('click', () => {
@@ -3359,22 +2626,6 @@
             
             // Online kullanıcıları ve dokümanları dinlemeye başla
             setupRealtimeListeners();
-            
-            // İstatistikleri güncelle
-            updateGlobalStats();
-        }
-
-        // Global istatistikleri güncelle
-        function updateGlobalStats() {
-            totalDocuments.textContent = documents.length;
-            
-            let totalWordCount = 0;
-            documents.forEach(doc => {
-                if (doc.content) {
-                    totalWordCount += doc.content.split(/\s+/).length;
-                }
-            });
-            totalWords.textContent = totalWordCount;
         }
 
         // Gerçek zamanlı dinleyicileri kur
@@ -3449,14 +2700,8 @@
                                     <span style="margin: 0 5px;">•</span>
                                     <span>${formattedDate} ${formattedTime}</span>
                                 </div>
-                                <div class="document-tags">
-                                    ${document.tags && document.tags.map(tag => `<div class="tag">${tag}</div>`).join('') || ''}
-                                </div>
                             </div>
                             <div class="document-actions">
-                                <button class="share-doc" data-id="${document.id}" title="Paylaş">
-                                    <i class="fas fa-share-alt"></i>
-                                </button>
                                 <button class="edit-doc" data-id="${document.id}" title="Düzenle">
                                     <i class="fas fa-edit"></i>
                                 </button>
@@ -3471,12 +2716,6 @@
                         docElement.querySelector('.edit-doc').addEventListener('click', (e) => {
                             e.stopPropagation();
                             openDocument(document.id);
-                        });
-                        
-                        // Doküman paylaşma butonuna tıklama
-                        docElement.querySelector('.share-doc').addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            shareDocument(document.id);
                         });
                         
                         // Doküman silme butonuna tıklama
@@ -3500,10 +2739,6 @@
                             </div>
                         `;
                     }
-                    
-                    // İstatistikleri güncelle
-                    updateGlobalStats();
-                    updateUserStats();
                 }, error => {
                     console.error('Dokümanlar dinleme hatası:', error);
                 });
@@ -3555,11 +2790,8 @@
                             // Editörü göster, placeholder'ı gizle
                             editorPlaceholder.style.display = 'none';
                             editorContainer.style.display = 'flex';
-                            documentInsights.style.display = 'block';
                             closeDocumentBtn.style.display = 'flex';
                             saveDocumentBtn.style.display = 'flex';
-                            focusModeBtn.style.display = 'flex';
-                            exportOptions.style.display = 'flex';
                             
                             // Aktif dokümanı vurgula
                             document.querySelectorAll('.document-item').forEach(item => {
@@ -3574,9 +2806,6 @@
                             // Kelime ve karakter sayısını güncelle
                             updateEditorStats();
                             
-                            // Doküman analizini güncelle
-                            updateDocumentInsights();
-                            
                             // Aktif düzenleyicileri dinle
                             setupActiveEditorsListener(docId);
                             
@@ -3589,39 +2818,6 @@
                         showNotification('Doküman açılamadı', 'error');
                     });
             }
-        }
-
-        // Doküman analizini güncelle
-        function updateDocumentInsights() {
-            const text = documentEditor.value;
-            const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-            const characters = text.length;
-            const readingTime = Math.ceil(words / 200); // Dakika cinsinden
-            
-            // Okunabilirlik skoru (basit bir hesaplama)
-            const sentenceCount = text.split(/[.!?]+/).filter(s => s.trim().length > 0).length;
-            const avgWordsPerSentence = sentenceCount > 0 ? words / sentenceCount : 0;
-            let readabilityScore = 100 - (avgWordsPerSentence * 1.5);
-            readabilityScore = Math.max(0, Math.min(100, Math.round(readabilityScore)));
-            
-            // En sık kullanılan kelimeler
-            const wordFreq = {};
-            const wordsArray = text.toLowerCase().match(/\b\w+\b/g) || [];
-            wordsArray.forEach(word => {
-                if (word.length > 3) { // 3 harften uzun kelimeler
-                    wordFreq[word] = (wordFreq[word] || 0) + 1;
-                }
-            });
-            
-            const commonWords = Object.entries(wordFreq)
-                .sort((a, b) => b[1] - a[1])
-                .slice(0, 3)
-                .map(([word]) => word)
-                .join(', ');
-            
-            document.getElementById('readabilityScore').textContent = `${readabilityScore}/100`;
-            document.getElementById('readingTime').textContent = `${readingTime} dakika`;
-            document.getElementById('commonWords').textContent = commonWords || 'Yeterli veri yok';
         }
 
         // Aktif düzenleyici ekle
@@ -3710,7 +2906,6 @@
                             lastSavedContent = docData.content;
                             hasUnsavedChanges = false;
                             updateEditorStats();
-                            updateDocumentInsights();
                             updateAutoSaveStatus(true);
                         }
                     }
@@ -3723,7 +2918,6 @@
                 if (currentDocumentId === docId) {
                     hasUnsavedChanges = (documentEditor.value !== lastSavedContent);
                     updateEditorStats();
-                    updateDocumentInsights();
                     
                     // Otomatik kaydetme durumunu güncelle
                     updateAutoSaveStatus(false);
@@ -3735,7 +2929,7 @@
                             if (hasUnsavedChanges) {
                                 saveDocument(docId, documentEditor.value);
                             }
-                        }, autoSaveInterval);
+                        }, 2000); // 2 saniye sonra otomatik kaydet
                     }
                 }
             });
@@ -3744,14 +2938,10 @@
         // Doküman kaydet
         async function saveDocument(docId, content) {
             try {
-                // Versiyon geçmişi oluştur
-                await createVersionHistory(docId, content);
-                
                 await db.collection('documents').doc(docId).update({
                     content: content,
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    lastEditedBy: currentUser.uid,
-                    version: firebase.firestore.FieldValue.increment(1)
+                    lastEditedBy: currentUser.uid
                 });
                 
                 lastSavedContent = content;
@@ -3766,23 +2956,6 @@
             }
         }
 
-        // Versiyon geçmişi oluştur
-        async function createVersionHistory(docId, content) {
-            try {
-                const versionDoc = {
-                    content: content,
-                    savedBy: currentUser.uid,
-                    savedByDisplayName: currentUser.displayName,
-                    savedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    version: (await db.collection('documents').doc(docId).get()).data().version + 1
-                };
-                
-                await db.collection('documents').doc(docId).collection('versions').add(versionDoc);
-            } catch (error) {
-                console.error('Versiyon geçmişi oluşturma hatası:', error);
-            }
-        }
-
         // Editör istatistiklerini güncelle
         function updateEditorStats() {
             const text = documentEditor.value;
@@ -3792,7 +2965,6 @@
             
             wordCount.textContent = words;
             charCount.textContent = characters;
-            lineCount.textContent = lines;
         }
 
         // Otomatik kaydetme durumunu güncelle
@@ -3829,54 +3001,14 @@
                 hasUnsavedChanges = false;
                 
                 editorContainer.style.display = 'none';
-                documentInsights.style.display = 'none';
                 editorPlaceholder.style.display = 'flex';
                 closeDocumentBtn.style.display = 'none';
                 saveDocumentBtn.style.display = 'none';
-                focusModeBtn.style.display = 'none';
-                exportOptions.style.display = 'none';
                 
                 // Aktif doküman vurgusunu kaldır
                 document.querySelectorAll('.document-item').forEach(item => {
                     item.classList.remove('active');
                 });
-                
-                // Odak modundan çık
-                if (isFocusMode) {
-                    isFocusMode = false;
-                    document.body.classList.remove('focus-mode');
-                }
-            }
-        }
-
-        // Doküman paylaş
-        async function shareDocument(docId) {
-            const doc = documents.find(d => d.id === docId);
-            if (doc) {
-                const email = prompt('Paylaşmak istediğiniz kullanıcının e-posta adresini girin:');
-                if (email) {
-                    try {
-                        // Kullanıcıyı bul
-                        const userQuery = await db.collection('users').where('email', '==', email).get();
-                        if (userQuery.empty) {
-                            showNotification('Kullanıcı bulunamadı', 'error');
-                            return;
-                        }
-                        
-                        const targetUser = userQuery.docs[0];
-                        const targetUserId = targetUser.id;
-                        
-                        // Dokümanı paylaş
-                        await db.collection('documents').doc(docId).update({
-                            collaborators: firebase.firestore.FieldValue.arrayUnion(targetUserId)
-                        });
-                        
-                        showNotification('Doküman başarıyla paylaşıldı', 'success');
-                    } catch (error) {
-                        console.error('Doküman paylaşma hatası:', error);
-                        showNotification('Doküman paylaşılamadı', 'error');
-                    }
-                }
             }
         }
 
@@ -3901,115 +3033,6 @@
                 }
             );
         }
-
-        // Export işlemleri
-        document.querySelectorAll('.export-option').forEach(option => {
-            option.addEventListener('click', () => {
-                const format = option.getAttribute('data-format');
-                exportDocument(format);
-            });
-        });
-
-        // Dokümanı export et
-        function exportDocument(format) {
-            const content = documentEditor.value;
-            const title = currentDocumentTitle.textContent.replace('📄 ', '');
-            let blob, filename;
-            
-            switch (format) {
-                case 'pdf':
-                    // Basit PDF oluşturma (gerçek uygulamada daha gelişmiş bir çözüm gerekli)
-                    const pdfContent = `
-                        <html>
-                            <head>
-                                <title>${title}</title>
-                                <style>
-                                    body { font-family: Arial, sans-serif; margin: 40px; }
-                                    h1 { color: #333; }
-                                    pre { white-space: pre-wrap; font-family: Arial, sans-serif; }
-                                </style>
-                            </head>
-                            <body>
-                                <h1>${title}</h1>
-                                <pre>${content}</pre>
-                            </body>
-                        </html>
-                    `;
-                    blob = new Blob([pdfContent], { type: 'application/pdf' });
-                    filename = `${title}.pdf`;
-                    break;
-                    
-                case 'docx':
-                    // Basit DOCX oluşturma
-                    const docxContent = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-                    <w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
-                        <w:body>
-                            <w:p><w:r><w:t>${title}</w:t></w:r></w:p>
-                            <w:p><w:r><w:t>${content}</w:t></w:r></w:p>
-                        </w:body>
-                    </w:document>`;
-                    blob = new Blob([docxContent], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
-                    filename = `${title}.docx`;
-                    break;
-                    
-                case 'txt':
-                default:
-                    blob = new Blob([content], { type: 'text/plain' });
-                    filename = `${title}.txt`;
-                    break;
-            }
-            
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            showNotification(`${format.toUpperCase()} formatında export edildi`, 'success');
-        }
-
-        // Doküman arama
-        documentSearch.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            const documentItems = documentsList.querySelectorAll('.document-item');
-            
-            documentItems.forEach(item => {
-                const docName = item.querySelector('.document-name').textContent.toLowerCase();
-                if (docName.includes(searchTerm)) {
-                    item.style.display = 'flex';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-        });
-
-        // Kullanıcı arama
-        userSearch.addEventListener('input', (e) => {
-            const searchTerm = e.target.value.toLowerCase();
-            const userItems = onlineUsers.querySelectorAll('.online-user');
-            
-            userItems.forEach(item => {
-                const userName = item.querySelector('span').textContent.toLowerCase();
-                if (userName.includes(searchTerm)) {
-                    item.style.display = 'flex';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-        });
-
-        // Şablon seçimi
-        document.querySelectorAll('.template-card').forEach(card => {
-            card.addEventListener('click', () => {
-                const template = card.getAttribute('data-template');
-                document.getElementById('documentTemplate').value = template;
-                newDocumentModal.style.display = 'flex';
-                newDocumentName.focus();
-            });
-        });
 
         // Sayfa yüklendiğinde
         window.addEventListener('load', () => {
@@ -4101,20 +3124,6 @@
             if ((e.ctrlKey || e.metaKey) && e.key === 'o') {
                 e.preventDefault();
                 openSettings();
-            }
-            
-            // Ctrl+F veya Cmd+F - Odak modu
-            if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
-                e.preventDefault();
-                if (currentDocumentId) {
-                    focusModeBtn.click();
-                }
-            }
-            
-            // Escape - Odak modundan çık
-            if (e.key === 'Escape' && isFocusMode) {
-                e.preventDefault();
-                focusModeBtn.click();
             }
         });
     </script>
