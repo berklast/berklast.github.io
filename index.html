@@ -3179,6 +3179,7 @@
                             updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
                             lastEditedBy: currentUser.uid,
                             collaborators: [currentUser.uid],
+                            isPublic: true,
                             template: template,
                             tags: [],
                             version: 1
@@ -3517,100 +3518,136 @@
                 });
             
             // Dokümanları dinle
-            unsubscribeDocuments = db.collection('documents')
-                .where('collaborators', 'array-contains', currentUser.uid)
-                .orderBy('updatedAt', 'desc')
-                .onSnapshot(snapshot => {
-                    documents = [];
-                    if (documentsList) documentsList.innerHTML = '';
-                    
-                    snapshot.forEach(doc => {
-                        const docData = doc.data();
-                        docData.id = doc.id;
-                        documents.push(docData);
-                        
-                        // Dokümanları listele
-                        if (documentsList) {
-                            const docElement = document.createElement('li');
-                            docElement.className = 'document-item slide-in-up';
-                            if (docData.id === currentDocumentId) {
-                                docElement.classList.add('active');
-                            }
-                            
-                            const updatedDate = docData.updatedAt ? docData.updatedAt.toDate() : new Date();
-                            const formattedDate = updatedDate.toLocaleDateString('tr-TR');
-                            const formattedTime = updatedDate.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
-                            
-                            docElement.innerHTML = `
-                                <div class="document-info">
-                                    <div class="document-name">${document.title}</div>
-                                    <div class="document-meta">
-                                        <span>${docData.ownerName}</span>
-                                        <span style="margin: 0 5px;">•</span>
-                                        <span>${formattedDate} ${formattedTime}</span>
-                                    </div>
-                                    <div class="document-tags">
-                                        ${docData.tags && docData.tags.map(tag => `<div class="tag">${tag}</div>`).join('') || ''}
-                                    </div>
+            
+            // Dokümanları dinle (hem işbirlikçi hem de herkese açık dokümanları birleştir)
+            // İki ayrı abonelik kurup sonuçları birleştiriyoruz (aynı doküman iki kez gelmemesi için map kullanıyoruz).
+            let docsMap = new Map();
+            let unsubCollab = null;
+            let unsubPublic = null;
+
+            const processSnapshot = (snap) => {
+                snap.forEach(doc => {
+                    const data = doc.data();
+                    data.id = doc.id;
+                    docsMap.set(doc.id, data);
+                });
+                // Convert map to array ve sırala güncellenme zamanına göre (desc)
+                const docsArray = Array.from(docsMap.values()).sort((a, b) => {
+                    const ta = a.updatedAt ? a.updatedAt.toMillis ? a.updatedAt.toMillis() : a.updatedAt.seconds || 0 : 0;
+                    const tb = b.updatedAt ? b.updatedAt.toMillis ? b.updatedAt.toMillis() : b.updatedAt.seconds || 0 : 0;
+                    return tb - ta;
+                });
+                documents = docsArray;
+                if (documentsList) documentsList.innerHTML = '';
+
+                documents.forEach(docData => {
+                    if (documentsList) {
+                        const docElement = document.createElement('li');
+                        docElement.className = 'document-item slide-in-up';
+                        if (docData.id === currentDocumentId) {
+                            docElement.classList.add('active');
+                        }
+
+                        const updatedDate = docData.updatedAt ? (docData.updatedAt.toDate ? docData.updatedAt.toDate() : new Date(docData.updatedAt.seconds * 1000)) : new Date();
+                        const formattedDate = updatedDate.toLocaleDateString('tr-TR');
+                        const formattedTime = updatedDate.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+
+                        docElement.innerHTML = `
+                            <div class="document-info">
+                                <div class="document-name">${docData.title}</div>
+                                <div class="document-meta">
+                                    <span>${docData.ownerName}</span>
+                                    <span style="margin: 0 5px;">•</span>
+                                    <span>${formattedDate} ${formattedTime}</span>
                                 </div>
-                                <div class="document-actions">
-                                    <button class="share-doc" data-id="${docData.id}" title="Paylaş">
-                                        <i class="fas fa-share-alt"></i>
-                                    </button>
-                                    <button class="edit-doc" data-id="${docData.id}" title="Düzenle">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                    <button class="delete-doc" data-id="${docData.id}" title="Sil">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
+                                <div class="document-tags">
+                                    ${docData.tags && docData.tags.map(tag => `<div class="tag">${tag}</div>`).join('') || ''}
                                 </div>
-                            `;
-                            documentsList.appendChild(docElement);
-                            
-                            // Doküman düzenleme butonuna tıklama
-                            docElement.querySelector('.edit-doc').addEventListener('click', (e) => {
+                            </div>
+                            <div class="document-actions">
+                                <button class="share-doc" data-id="${docData.id}" title="Paylaş">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
+                                <button class="edit-doc" data-id="${docData.id}" title="Düzenle">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="delete-doc" data-id="${docData.id}" title="Sil">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        `;
+                        documentsList.appendChild(docElement);
+
+                        // Buton eventleri
+                        const editBtn = docElement.querySelector('.edit-doc');
+                        if (editBtn) {
+                            editBtn.addEventListener('click', (e) => {
                                 e.stopPropagation();
                                 openDocument(docData.id);
                             });
-                            
-                            // Doküman paylaşma butonuna tıklama
-                            docElement.querySelector('.share-doc').addEventListener('click', (e) => {
+                        }
+                        const shareBtn = docElement.querySelector('.share-doc');
+                        if (shareBtn) {
+                            shareBtn.addEventListener('click', (e) => {
                                 e.stopPropagation();
                                 shareDocument(docData.id);
                             });
-                            
-                            // Doküman silme butonuna tıklama
-                            docElement.querySelector('.delete-doc').addEventListener('click', (e) => {
+                        }
+                        const deleteBtn = docElement.querySelector('.delete-doc');
+                        if (deleteBtn) {
+                            deleteBtn.addEventListener('click', (e) => {
                                 e.stopPropagation();
                                 deleteDocument(docData.id);
                             });
-                            
-                            // Doküman öğesine tıklama
-                            docElement.addEventListener('click', () => {
-                                openDocument(docData.id);
-                            });
                         }
-                    });
-                    
-                    // Eğer hiç doküman yoksa boş durum göster
-                    if (snapshot.empty) {
-                        if (documentsList) {
-                            documentsList.innerHTML = `
-                                <div class="empty-state" style="padding: 20px; color: var(--text-light); text-align: center;">
-                                    <i class="fas fa-folder-open" style="font-size: 2rem; margin-bottom: 10px;"></i>
-                                    <p>Henüz dokümanınız yok</p>
-                                </div>
-                            `;
-                        }
+                        docElement.addEventListener('click', () => {
+                            openDocument(docData.id);
+                        });
                     }
-                    
-                    // İstatistikleri güncelle
-                    updateGlobalStats();
-                    updateUserStats();
-                }, error => {
-                    console.error('Dokümanlar dinleme hatası:', error);
                 });
-        }
+
+                // Eğer hiç doküman yoksa boş durum göster
+                if (!docsArray.length) {
+                    if (documentsList) {
+                        documentsList.innerHTML = `
+                            <div class="empty-state" style="padding: 20px; color: var(--text-light); text-align: center;">
+                                <i class="fas fa-folder-open" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                                <p>Henüz dokümanınız yok</p>
+                            </div>
+                        `;
+                    }
+                }
+
+                updateGlobalStats();
+                updateUserStats();
+            };
+
+            // Abonelik 1: işbirlikçi olanlar
+            unsubCollab = db.collection('documents')
+                .where('collaborators', 'array-contains', currentUser.uid)
+                .orderBy('updatedAt', 'desc')
+                .onSnapshot(snapshot => {
+                    processSnapshot(snapshot);
+                }, error => {
+                    console.error('Collaborator documents listen error:', error);
+                });
+
+            // Abonelik 2: herkese açık olanlar
+            unsubPublic = db.collection('documents')
+                .where('isPublic', '==', true)
+                .orderBy('updatedAt', 'desc')
+                .onSnapshot(snapshot => {
+                    processSnapshot(snapshot);
+                }, error => {
+                    console.error('Public documents listen error:', error);
+                });
+
+            // unsubscribeDocuments fonksiyonunu, iki aboneliği sonlandıracak şekilde ayarla
+            unsubscribeDocuments = () => {
+                try { if (unsubCollab) unsubCollab(); } catch(e) {}
+                try { if (unsubPublic) unsubPublic(); } catch(e) {}
+            };
+}
 
         // Doküman aç
         function openDocument(docId) {
