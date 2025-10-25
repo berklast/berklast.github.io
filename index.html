@@ -3525,19 +3525,19 @@
                     if (documentsList) documentsList.innerHTML = '';
                     
                     snapshot.forEach(doc => {
-                        const document = doc.data();
-                        document.id = doc.id;
-                        documents.push(document);
+                        const docData = doc.data();
+                        docData.id = doc.id;
+                        documents.push(docData);
                         
                         // Dokümanları listele
                         if (documentsList) {
                             const docElement = document.createElement('li');
                             docElement.className = 'document-item slide-in-up';
-                            if (document.id === currentDocumentId) {
+                            if (docData.id === currentDocumentId) {
                                 docElement.classList.add('active');
                             }
                             
-                            const updatedDate = document.updatedAt ? document.updatedAt.toDate() : new Date();
+                            const updatedDate = docData.updatedAt ? docData.updatedAt.toDate() : new Date();
                             const formattedDate = updatedDate.toLocaleDateString('tr-TR');
                             const formattedTime = updatedDate.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
                             
@@ -3545,22 +3545,22 @@
                                 <div class="document-info">
                                     <div class="document-name">${document.title}</div>
                                     <div class="document-meta">
-                                        <span>${document.ownerName}</span>
+                                        <span>${docData.ownerName}</span>
                                         <span style="margin: 0 5px;">•</span>
                                         <span>${formattedDate} ${formattedTime}</span>
                                     </div>
                                     <div class="document-tags">
-                                        ${document.tags && document.tags.map(tag => `<div class="tag">${tag}</div>`).join('') || ''}
+                                        ${docData.tags && docData.tags.map(tag => `<div class="tag">${tag}</div>`).join('') || ''}
                                     </div>
                                 </div>
                                 <div class="document-actions">
-                                    <button class="share-doc" data-id="${document.id}" title="Paylaş">
+                                    <button class="share-doc" data-id="${docData.id}" title="Paylaş">
                                         <i class="fas fa-share-alt"></i>
                                     </button>
-                                    <button class="edit-doc" data-id="${document.id}" title="Düzenle">
+                                    <button class="edit-doc" data-id="${docData.id}" title="Düzenle">
                                         <i class="fas fa-edit"></i>
                                     </button>
-                                    <button class="delete-doc" data-id="${document.id}" title="Sil">
+                                    <button class="delete-doc" data-id="${docData.id}" title="Sil">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
@@ -3570,24 +3570,24 @@
                             // Doküman düzenleme butonuna tıklama
                             docElement.querySelector('.edit-doc').addEventListener('click', (e) => {
                                 e.stopPropagation();
-                                openDocument(document.id);
+                                openDocument(docData.id);
                             });
                             
                             // Doküman paylaşma butonuna tıklama
                             docElement.querySelector('.share-doc').addEventListener('click', (e) => {
                                 e.stopPropagation();
-                                shareDocument(document.id);
+                                shareDocument(docData.id);
                             });
                             
                             // Doküman silme butonuna tıklama
                             docElement.querySelector('.delete-doc').addEventListener('click', (e) => {
                                 e.stopPropagation();
-                                deleteDocument(document.id);
+                                deleteDocument(docData.id);
                             });
                             
                             // Doküman öğesine tıklama
                             docElement.addEventListener('click', () => {
-                                openDocument(document.id);
+                                openDocument(docData.id);
                             });
                         }
                     });
@@ -3975,59 +3975,31 @@
         // Doküman paylaş
         async function shareDocument(docId) {
             const doc = documents.find(d => d.id === docId);
-            if (!doc) {
-                showNotification('Doküman bulunamadı', 'error');
-                return;
-            }
-
-            // Kullanıcı adı (displayName) ile paylaşım: kullanıcı adını sor, tam eşleşme yoksa prefix arama yap.
-            const input = prompt('Paylaşmak istediğiniz kullanıcının gösterim adını (displayName) girin:');
-            if (!input) return;
-
-            try {
-                // Önce tam eşleşme deneriz
-                let userQuery = await db.collection('users').where('displayName', '==', input).get();
-
-                // Eğer tam eşleşme yoksa prefix araması yap (startAt/endAt ile)
-                if (userQuery.empty) {
-                    const end = input + '\uf8ff';
-                    userQuery = await db.collection('users').orderBy('displayName').startAt(input).endAt(end).get();
-                }
-
-                if (userQuery.empty) {
-                    showNotification('Kullanıcı bulunamadı', 'error');
-                    return;
-                }
-
-                let targetUserId = null;
-                if (userQuery.docs.length === 1) {
-                    targetUserId = userQuery.docs[0].id;
-                } else {
-                    // Birden fazla kullanıcı bulunduysa kullanıcıya seçim yaptır
-                    let list = 'Birden fazla kullanıcı bulundu:\\n';
-                    userQuery.docs.forEach((d, idx) => {
-                        const data = d.data();
-                        const email = data.email || 'email yok';
-                        list += `${idx+1}) ${data.displayName} (${email})\\n`;
-                    });
-                    const choice = prompt(list + '\\nLütfen numara girin:');
-                    const idx = parseInt(choice, 10) - 1;
-                    if (isNaN(idx) || idx < 0 || idx >= userQuery.docs.length) {
-                        showNotification('Geçersiz seçim', 'error');
-                        return;
+            if (doc) {
+                const email = prompt('Paylaşmak istediğiniz kullanıcının e-posta adresini girin:');
+                if (email) {
+                    try {
+                        // Kullanıcıyı bul
+                        const userQuery = await db.collection('users').where('email', '==', email).get();
+                        if (userQuery.empty) {
+                            showNotification('Kullanıcı bulunamadı', 'error');
+                            return;
+                        }
+                        
+                        const targetUser = userQuery.docs[0];
+                        const targetUserId = targetUser.id;
+                        
+                        // Dokümanı paylaş
+                        await db.collection('documents').doc(docId).update({
+                            collaborators: firebase.firestore.FieldValue.arrayUnion(targetUserId)
+                        });
+                        
+                        showNotification('Doküman başarıyla paylaşıldı', 'success');
+                    } catch (error) {
+                        console.error('Doküman paylaşma hatası:', error);
+                        showNotification('Doküman paylaşılamadı', 'error');
                     }
-                    targetUserId = userQuery.docs[idx].id;
                 }
-
-                // collaborators dizisine kullanıcıyı ekle (arrayUnion)
-                await db.collection('documents').doc(docId).update({
-                    collaborators: firebase.firestore.FieldValue.arrayUnion(targetUserId)
-                });
-
-                showNotification('Doküman başarıyla paylaşıldı', 'success');
-            } catch (error) {
-                console.error('Doküman paylaşma hatası:', error);
-                showNotification('Doküman paylaşılamadı', 'error');
             }
         }
 
