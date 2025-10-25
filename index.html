@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MetinPro Ultimate | Premium Online Metin Düzenleyici</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
@@ -14,21 +14,23 @@
         :root {
             --primary: #6C63FF;
             --primary-dark: #564FD8;
+            --primary-light: #8B7FF0;
             --secondary: #FF6584;
             --success: #4ECDC4;
             --warning: #FFD166;
             --danger: #EF476F;
-            --dark: #2A2D43;
+            --dark: #1E2030;
             --light: #F7F9FC;
             --bg-primary: #FFFFFF;
-            --bg-secondary: #F7F9FC;
+            --bg-secondary: #F8F9FA;
             --text: #2A2D43;
             --text-light: #6C7383;
-            --radius: 8px;
+            --border: #E9ECEF;
+            --radius: 12px;
             --radius-lg: 16px;
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.15);
-            --transition: all 0.3s ease;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.12);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .dark-mode {
@@ -36,8 +38,9 @@
             --bg-secondary: #2A2D43;
             --text: #F7F9FC;
             --text-light: #A0A7C2;
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
-            --shadow-lg: 0 10px 20px rgba(0, 0, 0, 0.5);
+            --border: #343853;
+            --shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.4);
         }
 
         * {
@@ -47,18 +50,12 @@
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: var(--bg-secondary);
             color: var(--text);
             transition: var(--transition);
             min-height: 100vh;
-        }
-
-        /* === SADE ARAYÜZ === */
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 20px;
+            line-height: 1.6;
         }
 
         /* === SPLASH SCREEN === */
@@ -84,7 +81,7 @@
 
         .splash-logo {
             font-size: 4rem;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
             animation: pulse 2s infinite;
         }
 
@@ -94,13 +91,18 @@
             margin-bottom: 0.5rem;
         }
 
+        .splash-subtext {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+
         .loading-bar {
             width: 300px;
             height: 6px;
             background: rgba(255, 255, 255, 0.3);
             border-radius: 10px;
             overflow: hidden;
-            margin-top: 2rem;
         }
 
         .loading-progress {
@@ -113,12 +115,13 @@
 
         /* === AUTH CONTAINER === */
         .auth-container {
-            display: flex;
+            display: none;
             min-height: 100vh;
-            border-radius: 20px;
+            border-radius: 24px;
             overflow: hidden;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            box-shadow: var(--shadow-lg);
             margin: 20px;
+            background: var(--bg-primary);
         }
 
         .welcome-section {
@@ -131,6 +134,69 @@
             justify-content: center;
             align-items: center;
             text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(255,255,255,0.1)"/></svg>');
+            background-size: cover;
+        }
+
+        .welcome-content {
+            position: relative;
+            z-index: 1;
+            max-width: 500px;
+        }
+
+        .welcome-logo {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .welcome-title {
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            font-weight: 800;
+        }
+
+        .welcome-subtitle {
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 2rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 12px;
+            border-radius: var(--radius);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .feature-item i {
+            font-size: 1.2rem;
         }
 
         .form-section {
@@ -149,31 +215,45 @@
         }
 
         .form-title {
-            font-size: 2rem;
+            font-size: 1.8rem;
             color: var(--primary);
-            margin-bottom: 10px;
-            font-weight: 800;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .form-subtitle {
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            font-weight: 400;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text);
         }
 
         .form-control {
             width: 100%;
-            padding: 15px;
-            border: 2px solid #E9ECEF;
+            padding: 14px 16px;
+            border: 2px solid var(--border);
             border-radius: var(--radius);
             font-size: 1rem;
             transition: var(--transition);
             background: var(--bg-primary);
             color: var(--text);
+            font-family: inherit;
         }
 
         .form-control:focus {
             border-color: var(--primary);
             outline: none;
-            box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.2);
+            box-shadow: 0 0 0 3px rgba(108, 99, 255, 0.1);
         }
 
         /* === BUTTONS === */
@@ -181,7 +261,8 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            padding: 15px 24px;
+            gap: 8px;
+            padding: 14px 24px;
             background: var(--primary);
             color: white;
             border: none;
@@ -190,13 +271,18 @@
             font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
-            width: 100%;
+            text-decoration: none;
+            font-family: inherit;
         }
 
         .btn:hover {
             background: var(--primary-dark);
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(108, 99, 255, 0.3);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .btn:active {
+            transform: translateY(0);
         }
 
         .btn-outline {
@@ -213,6 +299,22 @@
         .btn-sm {
             padding: 10px 16px;
             font-size: 0.9rem;
+        }
+
+        .btn-success {
+            background: var(--success);
+        }
+
+        .btn-success:hover {
+            background: #3AA8A0;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: #D43A5D;
         }
 
         /* === APP CONTAINER === */
@@ -234,31 +336,33 @@
             position: sticky;
             top: 0;
             z-index: 100;
+            border-bottom: 1px solid var(--border);
         }
 
         .logo {
-            font-size: 1.8rem;
+            font-size: 1.5rem;
             font-weight: 800;
             color: var(--primary);
             display: flex;
             align-items: center;
+            gap: 10px;
         }
 
         .logo i {
-            margin-right: 10px;
+            font-size: 1.8rem;
         }
 
         .nav-actions {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
         }
 
-        .theme-toggle {
+        .nav-btn {
             background: none;
             border: none;
             color: var(--text);
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             cursor: pointer;
             width: 40px;
             height: 40px;
@@ -266,29 +370,46 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: var(--transition);
+        }
+
+        .nav-btn:hover {
             background: var(--bg-secondary);
+            color: var(--primary);
         }
 
         .user-info {
             display: flex;
             align-items: center;
+            gap: 12px;
             background: var(--bg-secondary);
-            padding: 8px 15px;
+            padding: 8px 16px;
             border-radius: 50px;
             cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .user-info:hover {
+            background: var(--primary);
+            color: white;
         }
 
         .user-avatar {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             background: var(--primary);
             display: flex;
             justify-content: center;
             align-items: center;
-            margin-right: 10px;
-            font-weight: bold;
+            font-weight: 700;
             color: white;
+            font-size: 0.9rem;
+        }
+
+        .user-name {
+            font-weight: 600;
+            font-size: 0.9rem;
         }
 
         /* === MAIN CONTENT === */
@@ -302,68 +423,125 @@
         .sidebar {
             width: 320px;
             background: var(--bg-primary);
-            padding: 25px;
-            border-right: 1px solid #E9ECEF;
+            padding: 24px;
+            border-right: 1px solid var(--border);
             overflow-y: auto;
-            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
         }
 
         .sidebar-section {
-            margin-bottom: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
 
         .sidebar-title {
-            font-size: 1.2rem;
+            font-size: 1rem;
             color: var(--primary);
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--primary);
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
         }
 
         .documents-list {
             list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+            overflow-y: auto;
         }
 
         .document-item {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 15px;
-            margin-bottom: 10px;
+            gap: 12px;
+            padding: 12px 16px;
             background: var(--bg-secondary);
             border-radius: var(--radius);
             transition: var(--transition);
             cursor: pointer;
+            border: 1px solid transparent;
         }
 
         .document-item:hover {
-            transform: translateX(5px);
-            box-shadow: var(--shadow);
+            background: var(--primary);
+            color: white;
+            transform: translateX(4px);
         }
 
         .document-item.active {
             background: var(--primary);
             color: white;
+            border-color: var(--primary-light);
+        }
+
+        .document-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .document-info {
+            flex: 1;
+        }
+
+        .document-name {
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 2px;
+        }
+
+        .document-meta {
+            font-size: 0.75rem;
+            opacity: 0.8;
         }
 
         /* === CONTENT AREA === */
         .content-area {
             flex: 1;
-            padding: 25px;
+            padding: 24px;
             display: flex;
             flex-direction: column;
             background: var(--bg-secondary);
+            gap: 20px;
         }
 
         .toolbar {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
             padding: 20px;
             background: var(--bg-primary);
             border-radius: var(--radius-lg);
             box-shadow: var(--shadow);
+        }
+
+        .document-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toolbar-actions {
+            display: flex;
+            gap: 8px;
         }
 
         .editor-container {
@@ -376,27 +554,40 @@
             overflow: hidden;
         }
 
+        .editor-header {
+            padding: 16px 20px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
         .editor {
             flex: 1;
-            padding: 25px;
+            padding: 24px;
             border: none;
             outline: none;
             resize: none;
             font-size: 1rem;
-            line-height: 1.6;
-            font-family: 'Courier New', monospace;
+            line-height: 1.7;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
             background: var(--bg-primary);
             color: var(--text);
             transition: var(--transition);
         }
 
+        .editor:focus {
+            box-shadow: inset 0 0 0 2px var(--primary);
+        }
+
         .editor-stats {
-            padding: 10px 20px;
+            padding: 12px 20px;
             background: var(--bg-secondary);
-            border-top: 1px solid #E9ECEF;
+            border-top: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: var(--text-light);
         }
 
@@ -413,9 +604,22 @@
 
         .empty-state i {
             font-size: 4rem;
-            margin-bottom: 20px;
+            margin-bottom: 1.5rem;
             color: var(--primary);
             opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--text);
+            font-weight: 700;
+        }
+
+        .empty-state p {
+            max-width: 400px;
+            margin-bottom: 2rem;
+            line-height: 1.6;
         }
 
         /* === MODALS === */
@@ -427,6 +631,7 @@
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
             justify-content: center;
             align-items: center;
             z-index: 1000;
@@ -434,11 +639,45 @@
 
         .modal-content {
             background: var(--bg-primary);
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+            padding: 32px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
             width: 90%;
-            max-width: 500px;
+            max-width: 480px;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: var(--transition);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .close-modal:hover {
+            background: var(--bg-secondary);
+            color: var(--danger);
         }
 
         /* === NOTIFICATIONS === */
@@ -446,27 +685,43 @@
             position: fixed;
             top: 20px;
             right: 20px;
-            padding: 15px 20px;
+            padding: 16px 20px;
             background: var(--bg-primary);
             color: var(--text);
             border-radius: var(--radius);
             box-shadow: var(--shadow-lg);
             z-index: 1001;
-            transform: translateX(150%);
-            transition: transform 0.5s ease;
+            transform: translateX(400px);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             border-left: 4px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            max-width: 400px;
         }
 
         .notification.show {
             transform: translateX(0);
         }
 
+        .notification.success {
+            border-left-color: var(--success);
+        }
+
+        .notification.error {
+            border-left-color: var(--danger);
+        }
+
+        .notification.warning {
+            border-left-color: var(--warning);
+        }
+
         /* === YENİ ÖZELLİKLER === */
         .background-selector {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-top: 15px;
+            gap: 12px;
+            margin-top: 16px;
         }
 
         .background-option {
@@ -475,6 +730,8 @@
             cursor: pointer;
             transition: var(--transition);
             border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
         }
 
         .background-option:hover {
@@ -485,16 +742,35 @@
             border-color: var(--primary);
         }
 
+        .background-option.active::after {
+            content: '✓';
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: var(--primary);
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
         .bg-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
         .bg-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
         .bg-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
         .bg-4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+        .bg-5 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+        .bg-6 { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
 
         .focus-mode .sidebar,
         .focus-mode .toolbar-actions,
         .focus-mode .editor-header,
         .focus-mode .editor-stats {
-            display: none;
+            display: none !important;
         }
 
         .focus-mode .content-area {
@@ -508,7 +784,35 @@
 
         .focus-mode .editor {
             padding: 40px;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
+            line-height: 1.8;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .stat-card {
+            background: var(--bg-primary);
+            padding: 16px;
+            border-radius: var(--radius);
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-light);
         }
 
         /* === ANIMATIONS === */
@@ -528,6 +832,17 @@
             to { opacity: 1; }
         }
 
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
         @keyframes slideInUp {
             from {
                 transform: translateY(100%);
@@ -540,6 +855,12 @@
         }
 
         /* === RESPONSIVE === */
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 280px;
+            }
+        }
+
         @media (max-width: 768px) {
             .auth-container {
                 flex-direction: column;
@@ -557,12 +878,50 @@
             }
             
             .header {
-                padding: 0 15px;
+                padding: 0 20px;
+            }
+            
+            .content-area {
+                padding: 20px;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 0 16px;
+            }
+            
+            .user-name {
+                display: none;
+            }
+            
+            .toolbar {
+                flex-direction: column;
+                gap: 12px;
+                align-items: flex-start;
+            }
+            
+            .toolbar-actions {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .modal-content {
+                padding: 24px;
+                margin: 20px;
             }
         }
     </style>
 </head>
-<body>
+<body class="bg-1">
     <!-- Splash Screen -->
     <div id="splashScreen">
         <div class="splash-content">
@@ -594,29 +953,54 @@
                     </div>
                     <h1 class="welcome-title">Metin Düzenlemenin Yeni Standartı</h1>
                     <p class="welcome-subtitle">Gerçek zamanlı işbirliği, modern arayüz ve güçlü özelliklerle metinlerinizi yönetin.</p>
+                    
+                    <div class="features-grid">
+                        <div class="feature-item">
+                            <i class="fas fa-users"></i>
+                            <span>Gerçek Zamanlı İşbirliği</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-bolt"></i>
+                            <span>Anlık Senkronizasyon</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-cloud"></i>
+                            <span>Bulut Depolama</span>
+                        </div>
+                        <div class="feature-item">
+                            <i class="fas fa-palette"></i>
+                            <span>Modern Arayüz</span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="form-section">
                 <div class="form-container">
-                    <div class="alert alert-danger" id="authError" style="display: none;"></div>
+                    <div id="authError" style="display: none; padding: 12px; background: #FDEEF2; color: #D43A5D; border-radius: var(--radius); margin-bottom: 16px; border-left: 4px solid #EF476F;"></div>
                     
                     <!-- Giriş Formu -->
                     <form id="loginForm">
                         <h2 class="form-title">Hoş Geldiniz</h2>
                         <p class="form-subtitle">Hesabınıza giriş yapın</p>
+                        
                         <div class="form-group">
-                            <label for="loginUsername">Kullanıcı Adı</label>
+                            <label class="form-label" for="loginUsername">Kullanıcı Adı</label>
                             <input type="text" id="loginUsername" class="form-control" placeholder="Kullanıcı adınızı girin" required>
                         </div>
+                        
                         <div class="form-group">
-                            <label for="loginPassword">Şifre</label>
+                            <label class="form-label" for="loginPassword">Şifre</label>
                             <input type="password" id="loginPassword" class="form-control" placeholder="Şifrenizi girin" required>
                         </div>
+                        
                         <button type="submit" class="btn" id="loginBtn">
-                            <span class="btn-text">Giriş Yap</span>
+                            <i class="fas fa-sign-in-alt"></i>
+                            <span>Giriş Yap</span>
                         </button>
-                        <div class="switch-form" style="text-align: center; margin-top: 20px;">
-                            Hesabınız yok mu? <a href="#" id="showRegister">Kayıt Olun</a>
+                        
+                        <div style="text-align: center; margin-top: 20px;">
+                            <span style="color: var(--text-light);">Hesabınız yok mu? </span>
+                            <a href="#" id="showRegister" style="color: var(--primary); text-decoration: none; font-weight: 600;">Kayıt Olun</a>
                         </div>
                     </form>
                     
@@ -624,23 +1008,30 @@
                     <form id="registerForm" style="display: none;">
                         <h2 class="form-title">Hesap Oluşturun</h2>
                         <p class="form-subtitle">Yeni bir hesap oluşturun</p>
+                        
                         <div class="form-group">
-                            <label for="registerUsername">Kullanıcı Adı</label>
+                            <label class="form-label" for="registerUsername">Kullanıcı Adı</label>
                             <input type="text" id="registerUsername" class="form-control" placeholder="Kullanıcı adınızı girin" required>
                         </div>
+                        
                         <div class="form-group">
-                            <label for="registerPassword">Şifre</label>
+                            <label class="form-label" for="registerPassword">Şifre</label>
                             <input type="password" id="registerPassword" class="form-control" placeholder="Şifrenizi girin" required>
                         </div>
+                        
                         <div class="form-group">
-                            <label for="confirmPassword">Şifreyi Onayla</label>
+                            <label class="form-label" for="confirmPassword">Şifreyi Onayla</label>
                             <input type="password" id="confirmPassword" class="form-control" placeholder="Şifrenizi tekrar girin" required>
                         </div>
-                        <button type="submit" class="btn" id="registerBtn">
-                            <span class="btn-text">Kayıt Ol</span>
+                        
+                        <button type="submit" class="btn btn-success" id="registerBtn">
+                            <i class="fas fa-user-plus"></i>
+                            <span>Kayıt Ol</span>
                         </button>
-                        <div class="switch-form" style="text-align: center; margin-top: 20px;">
-                            Zaten hesabınız var mı? <a href="#" id="showLogin">Giriş Yapın</a>
+                        
+                        <div style="text-align: center; margin-top: 20px;">
+                            <span style="color: var(--text-light);">Zaten hesabınız var mı? </span>
+                            <a href="#" id="showLogin" style="color: var(--primary); text-decoration: none; font-weight: 600;">Giriş Yapın</a>
                         </div>
                     </form>
                 </div>
@@ -652,54 +1043,91 @@
     <div class="app-container" id="appContainer">
         <div class="header">
             <div class="logo">
-                <i class="fas fa-file-alt"></i> MetinPro Ultimate
+                <i class="fas fa-file-alt"></i>
+                <span>MetinPro Ultimate</span>
             </div>
             <div class="nav-actions">
-                <button class="theme-toggle" id="themeToggle">
+                <button class="nav-btn" id="themeToggle" title="Tema Değiştir">
                     <i class="fas fa-moon"></i>
+                </button>
+                <button class="nav-btn" id="settingsBtn" title="Ayarlar">
+                    <i class="fas fa-cog"></i>
                 </button>
                 <div class="user-info" id="userInfo">
                     <div class="user-avatar" id="userAvatar">U</div>
                     <span class="user-name" id="userName">Kullanıcı</span>
-                    <button class="logout-btn" id="logoutBtn" title="Çıkış Yap" style="background: none; border: none; margin-left: 10px; cursor: pointer;">
+                    <button class="nav-btn" id="logoutBtn" title="Çıkış Yap">
                         <i class="fas fa-sign-out-alt"></i>
                     </button>
                 </div>
             </div>
         </div>
+        
         <div class="main-content">
             <div class="sidebar">
                 <div class="sidebar-section">
                     <h3 class="sidebar-title">
-                        <i class="fas fa-file-alt"></i> Dokümanlarım
+                        <i class="fas fa-file-alt"></i>
+                        <span>Dokümanlarım</span>
                     </h3>
-                    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                        <button class="btn btn-sm" id="newDocQuickBtn" style="flex: 1;">
-                            <i class="fas fa-plus"></i> Yeni
+                    
+                    <div class="quick-actions">
+                        <button class="btn btn-sm" id="newDocQuickBtn">
+                            <i class="fas fa-plus"></i>
+                            <span>Yeni</span>
                         </button>
-                        <button class="btn btn-outline btn-sm" id="settingsBtn" style="flex: 1;">
-                            <i class="fas fa-cog"></i> Ayarlar
+                        <button class="btn btn-outline btn-sm" id="refreshDocsBtn">
+                            <i class="fas fa-sync-alt"></i>
+                            <span>Yenile</span>
                         </button>
                     </div>
+                    
                     <ul class="documents-list" id="documentsList">
                         <!-- Dokümanlar burada listelenecek -->
                     </ul>
                 </div>
+                
+                <div class="sidebar-section">
+                    <h3 class="sidebar-title">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>İstatistikler</span>
+                    </h3>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalDocuments">0</div>
+                            <div class="stat-label">Doküman</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalWords">0</div>
+                            <div class="stat-label">Kelime</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalChars">0</div>
+                            <div class="stat-label">Karakter</div>
+                        </div>
+                    </div>
+                </div>
             </div>
+            
             <div class="content-area">
                 <div class="toolbar">
                     <div class="document-title" id="currentDocumentTitle">
-                        <i class="fas fa-file"></i> Doküman Seçin
+                        <i class="fas fa-file"></i>
+                        <span>Doküman Seçin</span>
                     </div>
                     <div class="toolbar-actions">
                         <button class="btn btn-outline btn-sm" id="focusModeBtn" style="display: none;">
-                            <i class="fas fa-expand"></i> Odak Modu
+                            <i class="fas fa-expand"></i>
+                            <span>Odak Modu</span>
                         </button>
                         <button class="btn btn-outline btn-sm" id="closeDocumentBtn" style="display: none;">
-                            <i class="fas fa-times"></i> Kapat
+                            <i class="fas fa-times"></i>
+                            <span>Kapat</span>
                         </button>
                         <button class="btn btn-sm" id="saveDocumentBtn" style="display: none;">
-                            <i class="fas fa-save"></i> Kaydet
+                            <i class="fas fa-save"></i>
+                            <span>Kaydet</span>
                         </button>
                     </div>
                 </div>
@@ -707,20 +1135,28 @@
                 <div id="editorPlaceholder" class="empty-state">
                     <i class="fas fa-file-alt"></i>
                     <h3>Henüz bir doküman seçmediniz</h3>
-                    <p>Yeni bir doküman oluşturun veya mevcut bir dokümanı seçin</p>
-                    <button class="btn" id="newDocumentBtn" style="margin-top: 20px; width: auto;">
-                        <i class="fas fa-plus"></i> Yeni Doküman Oluştur
+                    <p>Yeni bir doküman oluşturun veya mevcut bir dokümanı seçerek düzenlemeye başlayın</p>
+                    <button class="btn" id="newDocumentBtn">
+                        <i class="fas fa-plus"></i>
+                        <span>Yeni Doküman Oluştur</span>
                     </button>
                 </div>
                 
                 <div class="editor-container" id="editorContainer" style="display: none;">
-                    <textarea class="editor" id="documentEditor" placeholder="Bir doküman seçin veya yeni bir doküman oluşturun..."></textarea>
+                    <div class="editor-header">
+                        <div>Doküman İçeriği</div>
+                        <div style="display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: var(--text-light);">
+                            <i class="fas fa-edit"></i>
+                            <span>Düzenleniyor</span>
+                        </div>
+                    </div>
+                    <textarea class="editor" id="documentEditor" placeholder="Buraya yazmaya başlayın..."></textarea>
                     <div class="editor-stats">
                         <div class="word-count">Kelime: <span id="wordCount">0</span></div>
                         <div class="char-count">Karakter: <span id="charCount">0</span></div>
                         <div class="line-count">Satır: <span id="lineCount">0</span></div>
                         <div class="auto-save" id="autoSaveStatus">
-                            <i class="fas fa-check-circle" style="color: #4ECDC4;"></i>
+                            <i class="fas fa-check-circle" style="color: var(--success);"></i>
                             <span>Otomatik kaydedildi</span>
                         </div>
                     </div>
@@ -732,55 +1168,67 @@
     <!-- Yeni Doküman Modal -->
     <div class="modal" id="newDocumentModal">
         <div class="modal-content">
-            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h3 class="modal-title" style="color: var(--primary);">Yeni Doküman</h3>
-                <button class="close-modal" id="closeNewDocumentModal" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            <div class="modal-header">
+                <h3 class="modal-title">Yeni Doküman</h3>
+                <button class="close-modal" id="closeNewDocumentModal">&times;</button>
             </div>
             <div class="form-group">
-                <label for="newDocumentName">Doküman Adı</label>
+                <label class="form-label" for="newDocumentName">Doküman Adı</label>
                 <input type="text" id="newDocumentName" class="form-control" placeholder="Doküman adını girin" required>
             </div>
-            <button class="btn" id="createDocumentBtn">Oluştur</button>
+            <button class="btn" id="createDocumentBtn">
+                <i class="fas fa-plus"></i>
+                <span>Oluştur</span>
+            </button>
         </div>
     </div>
 
     <!-- Ayarlar Modalı -->
     <div class="modal" id="settingsModal">
         <div class="modal-content">
-            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h3 class="modal-title" style="color: var(--primary);">Ayarlar</h3>
-                <button class="close-modal" id="closeSettingsModal" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            <div class="modal-header">
+                <h3 class="modal-title">Ayarlar</h3>
+                <button class="close-modal" id="closeSettingsModal">&times;</button>
             </div>
             
             <div class="form-group">
-                <label>Arka Plan Seçimi</label>
+                <label class="form-label">Arka Plan Teması</label>
                 <div class="background-selector">
                     <div class="background-option bg-1 active" data-bg="1"></div>
                     <div class="background-option bg-2" data-bg="2"></div>
                     <div class="background-option bg-3" data-bg="3"></div>
                     <div class="background-option bg-4" data-bg="4"></div>
+                    <div class="background-option bg-5" data-bg="5"></div>
+                    <div class="background-option bg-6" data-bg="6"></div>
                 </div>
             </div>
             
             <div class="form-group">
-                <label for="autoSaveToggle" style="display: flex; justify-content: space-between; align-items: center;">
+                <label class="form-label" for="autoSaveToggle" style="display: flex; justify-content: space-between; align-items: center;">
                     <span>Otomatik Kaydetme</span>
                     <input type="checkbox" id="autoSaveToggle" checked style="width: auto;">
                 </label>
             </div>
             
             <div class="form-group">
-                <label for="editorFontSize">Editör Yazı Boyutu</label>
+                <label class="form-label" for="editorFontSize">Editör Yazı Boyutu</label>
                 <select id="editorFontSize" class="form-control">
                     <option value="14px">Küçük</option>
                     <option value="16px" selected>Orta</option>
                     <option value="18px">Büyük</option>
+                    <option value="20px">Çok Büyük</option>
                 </select>
             </div>
             
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
-                <button class="btn btn-outline" id="closeSettingsBtn" style="flex: 1;">Kapat</button>
-                <button class="btn" id="saveSettingsBtn" style="flex: 1;">Kaydet</button>
+            <div style="display: flex; gap: 12px; margin-top: 24px;">
+                <button class="btn btn-outline" id="closeSettingsBtn" style="flex: 1;">
+                    <i class="fas fa-times"></i>
+                    <span>İptal</span>
+                </button>
+                <button class="btn" id="saveSettingsBtn" style="flex: 1;">
+                    <i class="fas fa-save"></i>
+                    <span>Kaydet</span>
+                </button>
             </div>
         </div>
     </div>
@@ -788,16 +1236,16 @@
     <!-- Onay Modalı -->
     <div class="modal" id="confirmModal">
         <div class="modal-content">
-            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h3 class="modal-title" style="color: var(--primary);" id="confirmModalTitle">Emin misiniz?</h3>
-                <button class="close-modal" id="closeConfirmModal" style="background: none; border: none; font-size: 1.5rem; cursor: pointer;">&times;</button>
+            <div class="modal-header">
+                <h3 class="modal-title" id="confirmModalTitle">Emin misiniz?</h3>
+                <button class="close-modal" id="closeConfirmModal">&times;</button>
             </div>
             <div class="modal-body">
                 <p id="confirmModalMessage">Kaydedilmemiş değişiklikleriniz var. Çıkmak istediğinizden emin misiniz?</p>
             </div>
-            <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <div style="display: flex; gap: 12px; margin-top: 24px;">
                 <button class="btn btn-outline" id="confirmCancel" style="flex: 1;">İptal</button>
-                <button class="btn" id="confirmAction" style="flex: 1;">Evet</button>
+                <button class="btn btn-danger" id="confirmAction" style="flex: 1;">Evet, Çık</button>
             </div>
         </div>
     </div>
@@ -815,61 +1263,16 @@
         };
 
         // Firebase'i başlat
-        firebase.initializeApp(firebaseConfig);
+        try {
+            firebase.initializeApp(firebaseConfig);
+        } catch (error) {
+            console.error('Firebase başlatma hatası:', error);
+        }
+
         const auth = firebase.auth();
         const db = firebase.firestore();
 
-        // DOM elementleri
-        const splashScreen = document.getElementById('splashScreen');
-        const authContainer = document.getElementById('authContainer');
-        const appContainer = document.getElementById('appContainer');
-        const loginForm = document.getElementById('loginForm');
-        const registerForm = document.getElementById('registerForm');
-        const showRegister = document.getElementById('showRegister');
-        const showLogin = document.getElementById('showLogin');
-        const authError = document.getElementById('authError');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const userInfo = document.getElementById('userInfo');
-        const userAvatar = document.getElementById('userAvatar');
-        const userName = document.getElementById('userName');
-        const themeToggle = document.getElementById('themeToggle');
-        const documentsList = document.getElementById('documentsList');
-        const newDocumentBtn = document.getElementById('newDocumentBtn');
-        const newDocQuickBtn = document.getElementById('newDocQuickBtn');
-        const newDocumentModal = document.getElementById('newDocumentModal');
-        const closeNewDocumentModal = document.getElementById('closeNewDocumentModal');
-        const newDocumentName = document.getElementById('newDocumentName');
-        const createDocumentBtn = document.getElementById('createDocumentBtn');
-        const currentDocumentTitle = document.getElementById('currentDocumentTitle');
-        const documentEditor = document.getElementById('documentEditor');
-        const saveDocumentBtn = document.getElementById('saveDocumentBtn');
-        const closeDocumentBtn = document.getElementById('closeDocumentBtn');
-        const editorContainer = document.getElementById('editorContainer');
-        const editorPlaceholder = document.getElementById('editorPlaceholder');
-        const wordCount = document.getElementById('wordCount');
-        const charCount = document.getElementById('charCount');
-        const lineCount = document.getElementById('lineCount');
-        const autoSaveStatus = document.getElementById('autoSaveStatus');
-        const notification = document.getElementById('notification');
-        const notificationText = document.getElementById('notificationText');
-        const confirmModal = document.getElementById('confirmModal');
-        const confirmModalTitle = document.getElementById('confirmModalTitle');
-        const confirmModalMessage = document.getElementById('confirmModalMessage');
-        const confirmCancel = document.getElementById('confirmCancel');
-        const confirmAction = document.getElementById('confirmAction');
-        const closeConfirmModal = document.getElementById('closeConfirmModal');
-        const loginBtn = document.getElementById('loginBtn');
-        const registerBtn = document.getElementById('registerBtn');
-        const settingsBtn = document.getElementById('settingsBtn');
-        const settingsModal = document.getElementById('settingsModal');
-        const closeSettingsModal = document.getElementById('closeSettingsModal');
-        const closeSettingsBtn = document.getElementById('closeSettingsBtn');
-        const saveSettingsBtn = document.getElementById('saveSettingsBtn');
-        const autoSaveToggle = document.getElementById('autoSaveToggle');
-        const editorFontSize = document.getElementById('editorFontSize');
-        const focusModeBtn = document.getElementById('focusModeBtn');
-
-        // Değişkenler
+        // Uygulama durumu
         let currentUser = null;
         let currentDocumentId = null;
         let documents = [];
@@ -877,7 +1280,7 @@
         let lastSavedContent = '';
         let autoSaveTimeout = null;
         let autoSaveEnabled = true;
-        let autoSaveInterval = 5000; // 5 saniye
+        let autoSaveInterval = 5000;
         let isFocusMode = false;
         let userSettings = {
             autoSave: true,
@@ -885,724 +1288,850 @@
             background: '1'
         };
 
+        // DOM elementlerini güvenli şekilde seç
+        function getElement(id) {
+            const element = document.getElementById(id);
+            if (!element) {
+                console.error(`Element bulunamadı: ${id}`);
+            }
+            return element;
+        }
+
+        // Uygulama başlatma
+        function initializeApp() {
+            // Tema kontrolü
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                const themeToggle = getElement('themeToggle');
+                if (themeToggle) {
+                    const icon = themeToggle.querySelector('i');
+                    if (icon) {
+                        icon.className = 'fas fa-sun';
+                    }
+                }
+            }
+
+            // Arka plan kontrolü
+            const savedBackground = localStorage.getItem('background');
+            if (savedBackground) {
+                userSettings.background = savedBackground;
+                applyBackground(savedBackground);
+            }
+
+            // Event listener'ları kur
+            setupEventListeners();
+
+            // Firebase auth state dinleyicisi
+            auth.onAuthStateChanged(handleAuthStateChange);
+        }
+
+        // Event listener'ları kur
+        function setupEventListeners() {
+            // Temel elementler
+            const themeToggle = getElement('themeToggle');
+            const settingsBtn = getElement('settingsBtn');
+            const logoutBtn = getElement('logoutBtn');
+            const newDocumentBtn = getElement('newDocumentBtn');
+            const newDocQuickBtn = getElement('newDocQuickBtn');
+            const refreshDocsBtn = getElement('refreshDocsBtn');
+            const saveDocumentBtn = getElement('saveDocumentBtn');
+            const closeDocumentBtn = getElement('closeDocumentBtn');
+            const focusModeBtn = getElement('focusModeBtn');
+            const documentEditor = getElement('documentEditor');
+
+            // Modal elementleri
+            const closeNewDocumentModal = getElement('closeNewDocumentModal');
+            const createDocumentBtn = getElement('createDocumentBtn');
+            const closeSettingsModal = getElement('closeSettingsModal');
+            const closeSettingsBtn = getElement('closeSettingsBtn');
+            const saveSettingsBtn = getElement('saveSettingsBtn');
+            const closeConfirmModal = getElement('closeConfirmModal');
+            const confirmCancel = getElement('confirmCancel');
+
+            // Form elementleri
+            const showRegister = getElement('showRegister');
+            const showLogin = getElement('showLogin');
+            const loginForm = getElement('loginForm');
+            const registerForm = getElement('registerForm');
+            const loginBtn = getElement('loginBtn');
+            const registerBtn = getElement('registerBtn');
+
+            // Event listener'lar
+            if (themeToggle) themeToggle.addEventListener('click', toggleTheme);
+            if (settingsBtn) settingsBtn.addEventListener('click', openSettings);
+            if (logoutBtn) logoutBtn.addEventListener('click', logout);
+            if (newDocumentBtn) newDocumentBtn.addEventListener('click', openNewDocumentModal);
+            if (newDocQuickBtn) newDocQuickBtn.addEventListener('click', openNewDocumentModal);
+            if (refreshDocsBtn) refreshDocsBtn.addEventListener('click', refreshDocuments);
+            if (saveDocumentBtn) saveDocumentBtn.addEventListener('click', saveCurrentDocument);
+            if (closeDocumentBtn) closeDocumentBtn.addEventListener('click', closeCurrentDocument);
+            if (focusModeBtn) focusModeBtn.addEventListener('click', toggleFocusMode);
+            if (documentEditor) documentEditor.addEventListener('input', handleEditorInput);
+
+            // Modal event'leri
+            if (closeNewDocumentModal) closeNewDocumentModal.addEventListener('click', closeNewDocumentModalFunc);
+            if (createDocumentBtn) createDocumentBtn.addEventListener('click', createNewDocument);
+            if (closeSettingsModal) closeSettingsModal.addEventListener('click', closeSettingsModalFunc);
+            if (closeSettingsBtn) closeSettingsBtn.addEventListener('click', closeSettingsModalFunc);
+            if (saveSettingsBtn) saveSettingsBtn.addEventListener('click', saveSettings);
+            if (closeConfirmModal) closeConfirmModal.addEventListener('click', closeConfirmModalFunc);
+            if (confirmCancel) confirmCancel.addEventListener('click', closeConfirmModalFunc);
+
+            // Form event'leri
+            if (showRegister) showRegister.addEventListener('click', showRegisterForm);
+            if (showLogin) showLogin.addEventListener('click', showLoginForm);
+            if (loginForm) loginForm.addEventListener('submit', handleLogin);
+            if (registerForm) registerForm.addEventListener('submit', handleRegister);
+
+            // Klavye kısayolları
+            document.addEventListener('keydown', handleKeyboardShortcuts);
+        }
+
         // Tema değiştirme
-        themeToggle.addEventListener('click', () => {
+        function toggleTheme() {
             document.body.classList.toggle('dark-mode');
-            const icon = themeToggle.querySelector('i');
-            if (document.body.classList.contains('dark-mode')) {
-                icon.classList.remove('fa-moon');
-                icon.classList.add('fa-sun');
-                showNotification('Koyu tema etkinleştirildi', 'success');
-                localStorage.setItem('theme', 'dark');
-            } else {
-                icon.classList.remove('fa-sun');
-                icon.classList.add('fa-moon');
-                showNotification('Açık tema etkinleştirildi', 'success');
-                localStorage.setItem('theme', 'light');
-            }
-        });
-
-        // Form geçişleri
-        showRegister.addEventListener('click', (e) => {
-            e.preventDefault();
-            loginForm.style.display = 'none';
-            registerForm.style.display = 'block';
-            authError.style.display = 'none';
-        });
-
-        showLogin.addEventListener('click', (e) => {
-            e.preventDefault();
-            registerForm.style.display = 'none';
-            loginForm.style.display = 'block';
-            authError.style.display = 'none';
-        });
-
-        // Giriş işlemi
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const username = document.getElementById('loginUsername').value;
-            const password = document.getElementById('loginPassword').value;
-            
-            if (username && password) {
-                try {
-                    const userCredential = await auth.signInWithEmailAndPassword(username + '@metinpro.com', password);
-                    currentUser = {
-                        uid: userCredential.user.uid,
-                        displayName: username,
-                        email: userCredential.user.email
-                    };
-                    
-                    // Kullanıcı ayarlarını yükle
-                    loadUserSettings();
-                    
-                    // Uygulamayı göster
-                    showApp();
-                    showNotification('Başarıyla giriş yapıldı!', 'success');
-                } catch (error) {
-                    console.error('Giriş hatası:', error);
-                    showError('Giriş başarısız. Kullanıcı adı veya şifre hatalı.');
-                }
-            } else {
-                showError('Lütfen tüm alanları doldurun.');
-            }
-        });
-
-        // Kayıt işlemi
-        registerForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const username = document.getElementById('registerUsername').value;
-            const password = document.getElementById('registerPassword').value;
-            const confirmPassword = document.getElementById('confirmPassword').value;
-            
-            if (username && password) {
-                if (password !== confirmPassword) {
-                    showError('Şifreler eşleşmiyor.');
-                    return;
-                }
-                
-                if (password.length < 6) {
-                    showError('Şifre en az 6 karakter olmalıdır.');
-                    return;
-                }
-                
-                try {
-                    const userCredential = await auth.createUserWithEmailAndPassword(username + '@metinpro.com', password);
-                    
-                    // Kullanıcı profilini güncelle
-                    await userCredential.user.updateProfile({
-                        displayName: username
-                    });
-                    
-                    currentUser = {
-                        uid: userCredential.user.uid,
-                        displayName: username,
-                        email: userCredential.user.email
-                    };
-                    
-                    // Kullanıcıyı veritabanına kaydet
-                    await db.collection('users').doc(currentUser.uid).set({
-                        displayName: currentUser.displayName,
-                        email: currentUser.email,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                    
-                    // Varsayılan kullanıcı ayarlarını kaydet
-                    await db.collection('userSettings').doc(currentUser.uid).set({
-                        autoSave: true,
-                        editorFontSize: '16px',
-                        background: '1',
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                    
-                    // Uygulamayı göster
-                    showApp();
-                    showNotification('Hesabınız başarıyla oluşturuldu!', 'success');
-                } catch (error) {
-                    console.error('Kayıt hatası:', error);
-                    if (error.code === 'auth/email-already-in-use') {
-                        showError('Bu kullanıcı adı zaten kullanılıyor.');
+            const themeToggle = getElement('themeToggle');
+            if (themeToggle) {
+                const icon = themeToggle.querySelector('i');
+                if (icon) {
+                    if (document.body.classList.contains('dark-mode')) {
+                        icon.className = 'fas fa-sun';
+                        localStorage.setItem('theme', 'dark');
+                        showNotification('Koyu tema etkinleştirildi', 'success');
                     } else {
-                        showError('Kayıt işlemi başarısız. Lütfen tekrar deneyin.');
+                        icon.className = 'fas fa-moon';
+                        localStorage.setItem('theme', 'light');
+                        showNotification('Açık tema etkinleştirildi', 'success');
                     }
                 }
-            } else {
-                showError('Lütfen tüm alanları doldurun.');
             }
-        });
+        }
 
-        // Çıkış işlemi
-        logoutBtn.addEventListener('click', async () => {
-            try {
-                await auth.signOut();
-                currentUser = null;
+        // Auth state değişikliği
+        function handleAuthStateChange(user) {
+            if (user) {
+                currentUser = {
+                    uid: user.uid,
+                    displayName: user.displayName || user.email.split('@')[0],
+                    email: user.email
+                };
+                showApp();
+                loadUserSettings();
+                loadDocuments();
+            } else {
                 showAuth();
-                showNotification('Başarıyla çıkış yapıldı', 'success');
-            } catch (error) {
-                console.error('Çıkış hatası:', error);
-                showNotification('Çıkış yapılırken bir hata oluştu', 'error');
             }
-        });
-
-        // Yeni doküman modalını aç
-        newDocumentBtn.addEventListener('click', () => {
-            newDocumentModal.style.display = 'flex';
-            newDocumentName.focus();
-        });
-
-        newDocQuickBtn.addEventListener('click', () => {
-            newDocumentModal.style.display = 'flex';
-            newDocumentName.focus();
-        });
-
-        // Yeni doküman modalını kapat
-        closeNewDocumentModal.addEventListener('click', () => {
-            newDocumentModal.style.display = 'none';
-            newDocumentName.value = '';
-        });
-
-        // Yeni doküman oluştur
-        createDocumentBtn.addEventListener('click', async () => {
-            const docName = newDocumentName.value.trim();
-            
-            if (docName) {
-                try {
-                    const newDoc = {
-                        title: docName,
-                        content: '',
-                        owner: currentUser.uid,
-                        ownerName: currentUser.displayName,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                        lastEditedBy: currentUser.uid,
-                        collaborators: [currentUser.uid]
-                    };
-                    
-                    const docRef = await db.collection('documents').add(newDoc);
-                    newDocumentModal.style.display = 'none';
-                    newDocumentName.value = '';
-                    
-                    // Yeni dokümanı aç
-                    openDocument(docRef.id);
-                    showNotification('Doküman başarıyla oluşturuldu!', 'success');
-                } catch (error) {
-                    console.error('Doküman oluşturma hatası:', error);
-                    showNotification('Doküman oluşturulamadı. Lütfen tekrar deneyin.', 'error');
-                }
-            } else {
-                showNotification('Lütfen bir doküman adı girin.', 'error');
-                newDocumentName.focus();
-            }
-        });
-
-        // Doküman kaydet
-        saveDocumentBtn.addEventListener('click', async () => {
-            if (currentDocumentId) {
-                try {
-                    await saveDocument(currentDocumentId, documentEditor.value);
-                    showNotification('Doküman başarıyla kaydedildi!', 'success');
-                } catch (error) {
-                    console.error('Doküman kaydetme hatası:', error);
-                    showNotification('Doküman kaydedilemedi. Lütfen tekrar deneyin.', 'error');
-                }
-            }
-        });
-
-        // Dokümanı kapat
-        closeDocumentBtn.addEventListener('click', () => {
-            if (hasUnsavedChanges) {
-                showConfirmModal(
-                    'Kaydedilmemiş Değişiklikler',
-                    'Dokümanda kaydedilmemiş değişiklikleriniz var. Kapatmak istediğinizden emin misiniz?',
-                    () => {
-                        closeCurrentDocument();
-                    }
-                );
-            } else {
-                closeCurrentDocument();
-            }
-        });
-
-        // Odak modu
-        focusModeBtn.addEventListener('click', () => {
-            isFocusMode = !isFocusMode;
-            document.body.classList.toggle('focus-mode', isFocusMode);
-            
-            if (isFocusMode) {
-                focusModeBtn.innerHTML = '<i class="fas fa-compress"></i> Normal Mod';
-                showNotification('Odak modu etkinleştirildi', 'success');
-            } else {
-                focusModeBtn.innerHTML = '<i class="fas fa-expand"></i> Odak Modu';
-                showNotification('Normal moda dönüldü', 'success');
-            }
-        });
-
-        // Escape tuşu ile odak modundan çık
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && isFocusMode) {
-                isFocusMode = false;
-                document.body.classList.remove('focus-mode');
-                focusModeBtn.innerHTML = '<i class="fas fa-expand"></i> Odak Modu';
-                showNotification('Normal moda dönüldü', 'success');
-            }
-        });
-
-        // Ayarlar
-        settingsBtn.addEventListener('click', () => {
-            autoSaveToggle.checked = userSettings.autoSave;
-            editorFontSize.value = userSettings.editorFontSize;
-            
-            // Aktif arka planı seç
-            document.querySelectorAll('.background-option').forEach(option => {
-                option.classList.remove('active');
-                if (option.getAttribute('data-bg') === userSettings.background) {
-                    option.classList.add('active');
-                }
-            });
-            
-            settingsModal.style.display = 'flex';
-        });
-
-        closeSettingsModal.addEventListener('click', () => {
-            settingsModal.style.display = 'none';
-        });
-
-        closeSettingsBtn.addEventListener('click', () => {
-            settingsModal.style.display = 'none';
-        });
-
-        saveSettingsBtn.addEventListener('click', async () => {
-            userSettings.autoSave = autoSaveToggle.checked;
-            userSettings.editorFontSize = editorFontSize.value;
-            
-            // Aktif arka planı al
-            const activeBg = document.querySelector('.background-option.active');
-            if (activeBg) {
-                userSettings.background = activeBg.getAttribute('data-bg');
-                applyBackground(userSettings.background);
-            }
-            
-            // Editör ayarlarını güncelle
-            if (documentEditor) {
-                documentEditor.style.fontSize = userSettings.editorFontSize;
-            }
-            
-            // Ayarları Firestore'a kaydet
-            if (currentUser) {
-                try {
-                    await db.collection('userSettings').doc(currentUser.uid).set(userSettings, { merge: true });
-                    showNotification('Ayarlar kaydedildi', 'success');
-                    settingsModal.style.display = 'none';
-                } catch (error) {
-                    console.error('Ayarlar kaydetme hatası:', error);
-                    showNotification('Ayarlar kaydedilemedi', 'error');
-                }
-            }
-        });
-
-        // Arka plan seçimi
-        document.querySelectorAll('.background-option').forEach(option => {
-            option.addEventListener('click', () => {
-                document.querySelectorAll('.background-option').forEach(opt => {
-                    opt.classList.remove('active');
-                });
-                option.classList.add('active');
-            });
-        });
-
-        // Arka plan uygula
-        function applyBackground(bgId) {
-            const bgClass = `bg-${bgId}`;
-            document.body.className = document.body.className.replace(/\bbg-\d\b/, '');
-            document.body.classList.add(bgClass);
         }
 
-        // Onay modalını kapat
-        closeConfirmModal.addEventListener('click', () => {
-            confirmModal.style.display = 'none';
-        });
-
-        confirmCancel.addEventListener('click', () => {
-            confirmModal.style.display = 'none';
-        });
-
-        // Hata göster
-        function showError(message) {
-            authError.textContent = message;
-            authError.style.display = 'block';
-            
-            setTimeout(() => {
-                authError.style.display = 'none';
-            }, 5000);
-        }
-
-        // Bildirim göster
-        function showNotification(message, type = 'success') {
-            notificationText.textContent = message;
-            notification.className = `notification ${type}`;
-            
-            const icon = notification.querySelector('i');
-            if (type === 'success') {
-                icon.className = 'fas fa-check-circle';
-            } else if (type === 'error') {
-                icon.className = 'fas fa-exclamation-circle';
-            }
-            
-            notification.classList.add('show');
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
-        }
-
-        // Onay modalını göster
-        function showConfirmModal(title, message, confirmCallback) {
-            confirmModalTitle.textContent = title;
-            confirmModalMessage.textContent = message;
-            confirmModal.style.display = 'flex';
-            
-            confirmAction.onclick = () => {
-                confirmModal.style.display = 'none';
-                confirmCallback();
-            };
-        }
-
-        // Splash ekranını gizle ve auth ekranını göster
-        function showAuth() {
-            splashScreen.style.opacity = '0';
-            splashScreen.style.visibility = 'hidden';
-            authContainer.style.display = 'flex';
-            appContainer.style.display = 'none';
-        }
-
-        // Uygulama ekranını göster
+        // Uygulamayı göster
         function showApp() {
-            authContainer.style.display = 'none';
-            appContainer.style.display = 'flex';
-            
-            // Kullanıcı bilgilerini ayarla
-            if (currentUser) {
+            const splashScreen = getElement('splashScreen');
+            const authContainer = getElement('authContainer');
+            const appContainer = getElement('appContainer');
+            const userAvatar = getElement('userAvatar');
+            const userName = getElement('userName');
+
+            if (splashScreen) splashScreen.style.display = 'none';
+            if (authContainer) authContainer.style.display = 'none';
+            if (appContainer) appContainer.style.display = 'flex';
+
+            if (currentUser && userAvatar && userName) {
                 userAvatar.textContent = currentUser.displayName.charAt(0).toUpperCase();
                 userName.textContent = currentUser.displayName;
             }
-            
-            // Dokümanları dinlemeye başla
-            setupRealtimeListeners();
         }
 
-        // Gerçek zamanlı dinleyicileri kur
-        function setupRealtimeListeners() {
-            // Dokümanları dinle
+        // Auth ekranını göster
+        function showAuth() {
+            const splashScreen = getElement('splashScreen');
+            const authContainer = getElement('authContainer');
+            const appContainer = getElement('appContainer');
+
+            if (splashScreen) splashScreen.style.display = 'none';
+            if (authContainer) {
+                authContainer.style.display = 'flex';
+                authContainer.style.opacity = '1';
+            }
+            if (appContainer) appContainer.style.display = 'none';
+
+            currentUser = null;
+            documents = [];
+            currentDocumentId = null;
+        }
+
+        // Dokümanları yükle
+        function loadDocuments() {
+            if (!currentUser) return;
+
+            const documentsList = getElement('documentsList');
+            if (!documentsList) return;
+
+            // Loading state
+            documentsList.innerHTML = `
+                <div style="text-align: center; padding: 20px; color: var(--text-light);">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <div style="margin-top: 10px;">Dokümanlar yükleniyor...</div>
+                </div>
+            `;
+
             db.collection('documents')
                 .where('collaborators', 'array-contains', currentUser.uid)
                 .orderBy('updatedAt', 'desc')
                 .onSnapshot(snapshot => {
                     documents = [];
                     documentsList.innerHTML = '';
-                    
+
                     snapshot.forEach(doc => {
-                        const document = doc.data();
-                        document.id = doc.id;
-                        documents.push(document);
-                        
-                        // Dokümanları listele
-                        const docElement = document.createElement('li');
-                        docElement.className = 'document-item';
-                        if (document.id === currentDocumentId) {
-                            docElement.classList.add('active');
-                        }
-                        
-                        const updatedDate = document.updatedAt ? document.updatedAt.toDate() : new Date();
-                        const formattedDate = updatedDate.toLocaleDateString('tr-TR');
-                        
-                        docElement.innerHTML = `
-                            <div class="document-info">
-                                <div class="document-name">${document.title}</div>
-                                <div class="document-meta">
-                                    <span>${formattedDate}</span>
-                                </div>
-                            </div>
-                        `;
+                        const documentData = doc.data();
+                        documentData.id = doc.id;
+                        documents.push(documentData);
+
+                        const docElement = createDocumentElement(documentData);
                         documentsList.appendChild(docElement);
-                        
-                        // Doküman öğesine tıklama
-                        docElement.addEventListener('click', () => {
-                            openDocument(document.id);
-                        });
                     });
-                    
-                    // Eğer hiç doküman yoksa boş durum göster
+
                     if (snapshot.empty) {
                         documentsList.innerHTML = `
-                            <div style="padding: 20px; color: var(--text-light); text-align: center;">
+                            <div style="text-align: center; padding: 40px; color: var(--text-light);">
                                 <i class="fas fa-folder-open" style="font-size: 2rem; margin-bottom: 10px;"></i>
-                                <p>Henüz dokümanınız yok</p>
+                                <div>Henüz dokümanınız yok</div>
                             </div>
                         `;
                     }
+
+                    updateStats();
                 }, error => {
-                    console.error('Dokümanlar dinleme hatası:', error);
+                    console.error('Doküman yükleme hatası:', error);
+                    showNotification('Dokümanlar yüklenirken hata oluştu', 'error');
                 });
+        }
+
+        // Doküman elementi oluştur
+        function createDocumentElement(doc) {
+            const li = document.createElement('li');
+            li.className = 'document-item';
+            if (doc.id === currentDocumentId) {
+                li.classList.add('active');
+            }
+
+            const updatedAt = doc.updatedAt ? doc.updatedAt.toDate() : new Date();
+            const dateStr = updatedAt.toLocaleDateString('tr-TR');
+            const timeStr = updatedAt.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+
+            li.innerHTML = `
+                <div class="document-icon">
+                    <i class="fas fa-file"></i>
+                </div>
+                <div class="document-info">
+                    <div class="document-name">${doc.title}</div>
+                    <div class="document-meta">${dateStr} ${timeStr}</div>
+                </div>
+            `;
+
+            li.addEventListener('click', () => openDocument(doc.id));
+            return li;
+        }
+
+        // İstatistikleri güncelle
+        function updateStats() {
+            const totalDocumentsElem = getElement('totalDocuments');
+            const totalWordsElem = getElement('totalWords');
+            const totalCharsElem = getElement('totalChars');
+
+            if (totalDocumentsElem) totalDocumentsElem.textContent = documents.length;
+
+            let totalWords = 0;
+            let totalChars = 0;
+            documents.forEach(doc => {
+                if (doc.content) {
+                    const words = doc.content.split(/\s+/).filter(word => word.length > 0).length;
+                    totalWords += words;
+                    totalChars += doc.content.length;
+                }
+            });
+
+            if (totalWordsElem) totalWordsElem.textContent = totalWords;
+            if (totalCharsElem) totalCharsElem.textContent = totalChars;
         }
 
         // Doküman aç
         function openDocument(docId) {
-            // Eğer zaten açık bir doküman varsa ve kaydedilmemiş değişiklikler varsa onay iste
             if (currentDocumentId && hasUnsavedChanges) {
                 showConfirmModal(
                     'Kaydedilmemiş Değişiklikler',
                     'Mevcut dokümanda kaydedilmemiş değişiklikleriniz var. Yine de başka bir dokümana geçmek istiyor musunuz?',
-                    () => {
-                        actuallyOpenDocument(docId);
-                    }
+                    () => actuallyOpenDocument(docId)
                 );
                 return;
             }
-            
             actuallyOpenDocument(docId);
         }
 
-        // Doküman açma işlemi (iç fonksiyon)
+        // Doküman açma işlemi
         function actuallyOpenDocument(docId) {
             const doc = documents.find(d => d.id === docId);
-            if (doc) {
-                currentDocumentId = docId;
-                currentDocumentTitle.innerHTML = `<i class="fas fa-file"></i> ${doc.title}`;
-                
-                // Firestore'dan doküman içeriğini getir
-                db.collection('documents').doc(docId).get()
-                    .then((docSnapshot) => {
-                        if (docSnapshot.exists) {
-                            const docData = docSnapshot.data();
-                            documentEditor.value = docData.content;
-                            lastSavedContent = docData.content;
-                            hasUnsavedChanges = false;
-                            
-                            // Editörü göster, placeholder'ı gizle
-                            editorPlaceholder.style.display = 'none';
-                            editorContainer.style.display = 'flex';
-                            closeDocumentBtn.style.display = 'flex';
-                            saveDocumentBtn.style.display = 'flex';
-                            focusModeBtn.style.display = 'flex';
-                            
-                            // Aktif dokümanı vurgula
-                            document.querySelectorAll('.document-item').forEach(item => {
-                                item.classList.remove('active');
-                            });
-                            
-                            const activeDocElement = document.querySelector(`.document-item[data-id="${docId}"]`);
-                            if (activeDocElement) {
-                                activeDocElement.classList.add('active');
-                            }
-                            
-                            // Kelime ve karakter sayısını güncelle
-                            updateEditorStats();
-                            
-                            // Gerçek zamanlı düzenleme için dinleyici başlat
-                            setupRealtimeEditing(docId);
-                        }
-                    })
-                    .catch((error) => {
-                        console.error('Doküman açma hatası:', error);
-                        showNotification('Doküman açılamadı', 'error');
-                    });
-            }
-        }
+            if (!doc) return;
 
-        // Doküman kaydet
-        async function saveDocument(docId, content) {
-            try {
-                await db.collection('documents').doc(docId).update({
-                    content: content,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                    lastEditedBy: currentUser.uid
-                });
-                
-                lastSavedContent = content;
-                hasUnsavedChanges = false;
-                updateAutoSaveStatus(true);
-                
-                return true;
-            } catch (error) {
-                console.error('Doküman kaydetme hatası:', error);
-                updateAutoSaveStatus(false, true);
-                return false;
+            const editorPlaceholder = getElement('editorPlaceholder');
+            const editorContainer = getElement('editorContainer');
+            const currentDocumentTitle = getElement('currentDocumentTitle');
+            const documentEditor = getElement('documentEditor');
+            const closeDocumentBtn = getElement('closeDocumentBtn');
+            const saveDocumentBtn = getElement('saveDocumentBtn');
+            const focusModeBtn = getElement('focusModeBtn');
+
+            if (editorPlaceholder) editorPlaceholder.style.display = 'none';
+            if (editorContainer) editorContainer.style.display = 'flex';
+            if (currentDocumentTitle) {
+                currentDocumentTitle.innerHTML = `<i class="fas fa-file"></i><span>${doc.title}</span>`;
             }
+            if (documentEditor) documentEditor.value = doc.content || '';
+            if (closeDocumentBtn) closeDocumentBtn.style.display = 'flex';
+            if (saveDocumentBtn) saveDocumentBtn.style.display = 'flex';
+            if (focusModeBtn) focusModeBtn.style.display = 'flex';
+
+            currentDocumentId = docId;
+            lastSavedContent = doc.content || '';
+            hasUnsavedChanges = false;
+
+            updateEditorStats();
+            updateDocumentItems();
+
+            // Gerçek zamanlı dinleyiciyi başlat
+            setupRealtimeListener(docId);
         }
 
         // Editör istatistiklerini güncelle
         function updateEditorStats() {
-            const text = documentEditor.value;
-            const words = text.trim() ? text.trim().split(/\s+/).length : 0;
-            const characters = text.length;
-            const lines = text.split('\n').length;
-            
-            wordCount.textContent = words;
-            charCount.textContent = characters;
-            lineCount.textContent = lines;
+            const documentEditor = getElement('documentEditor');
+            const wordCount = getElement('wordCount');
+            const charCount = getElement('charCount');
+            const lineCount = getElement('lineCount');
+
+            if (!documentEditor) return;
+
+            const content = documentEditor.value;
+            const words = content.split(/\s+/).filter(word => word.length > 0).length;
+            const chars = content.length;
+            const lines = content.split('\n').length;
+
+            if (wordCount) wordCount.textContent = words;
+            if (charCount) charCount.textContent = chars;
+            if (lineCount) lineCount.textContent = lines;
         }
 
-        // Otomatik kaydetme durumunu güncelle
-        function updateAutoSaveStatus(saved = true, error = false) {
-            const icon = autoSaveStatus.querySelector('i');
-            const text = autoSaveStatus.querySelector('span');
-            
-            if (error) {
-                icon.className = 'fas fa-exclamation-circle';
-                icon.style.color = '#EF476F';
-                text.textContent = 'Kaydetme hatası';
-            } else if (saved) {
-                icon.className = 'fas fa-check-circle';
-                icon.style.color = '#4ECDC4';
-                text.textContent = 'Otomatik kaydedildi';
-            } else {
-                icon.className = 'fas fa-sync-alt fa-spin';
-                icon.style.color = '#FFD166';
-                text.textContent = 'Kaydediliyor...';
+        // Doküman item'larını güncelle
+        function updateDocumentItems() {
+            const documentItems = document.querySelectorAll('.document-item');
+            documentItems.forEach(item => {
+                item.classList.remove('active');
+            });
+
+            const activeItem = document.querySelector(`.document-item[data-id="${currentDocumentId}"]`);
+            if (activeItem) {
+                activeItem.classList.add('active');
             }
         }
 
-        // Mevcut dokümanı kapat
-        function closeCurrentDocument() {
-            if (currentDocumentId) {
-                currentDocumentId = null;
-                currentDocumentTitle.innerHTML = '<i class="fas fa-file"></i> Doküman Seçin';
-                documentEditor.value = '';
-                lastSavedContent = '';
-                hasUnsavedChanges = false;
-                
-                editorContainer.style.display = 'none';
-                editorPlaceholder.style.display = 'flex';
-                closeDocumentBtn.style.display = 'none';
-                saveDocumentBtn.style.display = 'none';
-                focusModeBtn.style.display = 'none';
-                
-                // Aktif doküman vurgusunu kaldır
-                document.querySelectorAll('.document-item').forEach(item => {
-                    item.classList.remove('active');
+        // Gerçek zamanlı dinleyici
+        function setupRealtimeListener(docId) {
+            return db.collection('documents').doc(docId)
+                .onSnapshot(docSnapshot => {
+                    if (!docSnapshot.exists) return;
+
+                    const docData = docSnapshot.data();
+                    const documentEditor = getElement('documentEditor');
+
+                    if (docData.lastEditedBy !== currentUser.uid && documentEditor) {
+                        documentEditor.value = docData.content || '';
+                        lastSavedContent = docData.content || '';
+                        hasUnsavedChanges = false;
+                        updateEditorStats();
+                        updateAutoSaveStatus(true);
+                    }
+                }, error => {
+                    console.error('Realtime listener error:', error);
                 });
-                
-                // Odak modundan çık
+        }
+
+        // Editör input handler
+        function handleEditorInput() {
+            const documentEditor = getElement('documentEditor');
+            if (!documentEditor || !currentDocumentId) return;
+
+            hasUnsavedChanges = documentEditor.value !== lastSavedContent;
+            updateEditorStats();
+            updateAutoSaveStatus(false);
+
+            if (autoSaveEnabled && hasUnsavedChanges) {
+                clearTimeout(autoSaveTimeout);
+                autoSaveTimeout = setTimeout(() => {
+                    saveCurrentDocument();
+                }, autoSaveInterval);
+            }
+        }
+
+        // Otomatik kaydetme durumu
+        function updateAutoSaveStatus(saved = true, error = false) {
+            const autoSaveStatus = getElement('autoSaveStatus');
+            if (!autoSaveStatus) return;
+
+            const icon = autoSaveStatus.querySelector('i');
+            const text = autoSaveStatus.querySelector('span');
+
+            if (error) {
+                icon.className = 'fas fa-exclamation-circle';
+                icon.style.color = 'var(--danger)';
+                if (text) text.textContent = 'Kaydetme hatası';
+            } else if (saved) {
+                icon.className = 'fas fa-check-circle';
+                icon.style.color = 'var(--success)';
+                if (text) text.textContent = 'Otomatik kaydedildi';
+            } else {
+                icon.className = 'fas fa-sync-alt fa-spin';
+                icon.style.color = 'var(--warning)';
+                if (text) text.textContent = 'Kaydediliyor...';
+            }
+        }
+
+        // Mevcut dokümanı kaydet
+        async function saveCurrentDocument() {
+            if (!currentDocumentId) return;
+
+            const documentEditor = getElement('documentEditor');
+            if (!documentEditor) return;
+
+            try {
+                await db.collection('documents').doc(currentDocumentId).update({
+                    content: documentEditor.value,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    lastEditedBy: currentUser.uid
+                });
+
+                lastSavedContent = documentEditor.value;
+                hasUnsavedChanges = false;
+                updateAutoSaveStatus(true);
+                return true;
+            } catch (error) {
+                console.error('Doküman kaydetme hatası:', error);
+                updateAutoSaveStatus(false, true);
+                showNotification('Doküman kaydedilemedi', 'error');
+                return false;
+            }
+        }
+
+        // Dokümanı kapat
+        function closeCurrentDocument() {
+            if (hasUnsavedChanges) {
+                showConfirmModal(
+                    'Kaydedilmemiş Değişiklikler',
+                    'Dokümanda kaydedilmemiş değişiklikleriniz var. Kapatmak istediğinizden emin misiniz?',
+                    actuallyCloseCurrentDocument
+                );
+            } else {
+                actuallyCloseCurrentDocument();
+            }
+        }
+
+        // Doküman kapatma işlemi
+        function actuallyCloseCurrentDocument() {
+            const editorPlaceholder = getElement('editorPlaceholder');
+            const editorContainer = getElement('editorContainer');
+            const currentDocumentTitle = getElement('currentDocumentTitle');
+            const closeDocumentBtn = getElement('closeDocumentBtn');
+            const saveDocumentBtn = getElement('saveDocumentBtn');
+            const focusModeBtn = getElement('focusModeBtn');
+
+            if (editorPlaceholder) editorPlaceholder.style.display = 'flex';
+            if (editorContainer) editorContainer.style.display = 'none';
+            if (currentDocumentTitle) {
+                currentDocumentTitle.innerHTML = `<i class="fas fa-file"></i><span>Doküman Seçin</span>`;
+            }
+            if (closeDocumentBtn) closeDocumentBtn.style.display = 'none';
+            if (saveDocumentBtn) saveDocumentBtn.style.display = 'none';
+            if (focusModeBtn) focusModeBtn.style.display = 'none';
+
+            currentDocumentId = null;
+            hasUnsavedChanges = false;
+            lastSavedContent = '';
+
+            if (isFocusMode) {
+                toggleFocusMode();
+            }
+        }
+
+        // Odak modu
+        function toggleFocusMode() {
+            isFocusMode = !isFocusMode;
+            document.body.classList.toggle('focus-mode', isFocusMode);
+
+            const focusModeBtn = getElement('focusModeBtn');
+            if (focusModeBtn) {
                 if (isFocusMode) {
-                    isFocusMode = false;
-                    document.body.classList.remove('focus-mode');
+                    focusModeBtn.innerHTML = '<i class="fas fa-compress"></i><span>Normal Mod</span>';
+                    showNotification('Odak modu etkinleştirildi', 'success');
+                } else {
+                    focusModeBtn.innerHTML = '<i class="fas fa-expand"></i><span>Odak Modu</span>';
+                    showNotification('Normal moda dönüldü', 'success');
                 }
             }
         }
 
-        // Gerçek zamanlı düzenleme için dinleyici kur
-        function setupRealtimeEditing(docId) {
-            // Doküman içeriğini gerçek zamanlı dinle
-            db.collection('documents').doc(docId)
-                .onSnapshot(docSnapshot => {
-                    if (docSnapshot.exists) {
-                        const docData = docSnapshot.data();
-                        
-                        // Sadece başka bir kullanıcı değiştirdiyse içeriği güncelle
-                        if (docData.lastEditedBy !== currentUser.uid) {
-                            documentEditor.value = docData.content;
-                            lastSavedContent = docData.content;
-                            hasUnsavedChanges = false;
-                            updateEditorStats();
-                            updateAutoSaveStatus(true);
-                        }
-                    }
-                }, error => {
-                    console.error('Gerçek zamanlı düzenleme hatası:', error);
-                });
-            
-            // Doküman içeriği değiştiğinde otomatik kaydet
-            documentEditor.addEventListener('input', () => {
-                if (currentDocumentId === docId) {
-                    hasUnsavedChanges = (documentEditor.value !== lastSavedContent);
-                    updateEditorStats();
-                    
-                    // Otomatik kaydetme durumunu güncelle
-                    updateAutoSaveStatus(false);
-                    
-                    // Otomatik kaydetme zamanlayıcısını sıfırla
-                    if (autoSaveEnabled) {
-                        clearTimeout(autoSaveTimeout);
-                        autoSaveTimeout = setTimeout(() => {
-                            if (hasUnsavedChanges) {
-                                saveDocument(docId, documentEditor.value);
-                            }
-                        }, autoSaveInterval);
-                    }
+        // Yeni doküman modalını aç
+        function openNewDocumentModal() {
+            const newDocumentModal = getElement('newDocumentModal');
+            const newDocumentName = getElement('newDocumentName');
+            if (newDocumentModal) newDocumentModal.style.display = 'flex';
+            if (newDocumentName) {
+                newDocumentName.value = '';
+                newDocumentName.focus();
+            }
+        }
+
+        // Yeni doküman modalını kapat
+        function closeNewDocumentModalFunc() {
+            const newDocumentModal = getElement('newDocumentModal');
+            if (newDocumentModal) newDocumentModal.style.display = 'none';
+        }
+
+        // Yeni doküman oluştur
+        async function createNewDocument() {
+            const newDocumentName = getElement('newDocumentName');
+            if (!newDocumentName) return;
+
+            const docName = newDocumentName.value.trim();
+            if (!docName) {
+                showNotification('Lütfen bir doküman adı girin', 'error');
+                return;
+            }
+
+            try {
+                const newDoc = {
+                    title: docName,
+                    content: '',
+                    owner: currentUser.uid,
+                    ownerName: currentUser.displayName,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    lastEditedBy: currentUser.uid,
+                    collaborators: [currentUser.uid]
+                };
+
+                const docRef = await db.collection('documents').add(newDoc);
+                closeNewDocumentModalFunc();
+                showNotification('Doküman başarıyla oluşturuldu!', 'success');
+
+                // Yeni dokümanı aç
+                openDocument(docRef.id);
+            } catch (error) {
+                console.error('Doküman oluşturma hatası:', error);
+                showNotification('Doküman oluşturulamadı', 'error');
+            }
+        }
+
+        // Ayarları aç
+        function openSettings() {
+            const settingsModal = getElement('settingsModal');
+            const autoSaveToggle = getElement('autoSaveToggle');
+            const editorFontSize = getElement('editorFontSize');
+            const backgroundOptions = document.querySelectorAll('.background-option');
+
+            if (settingsModal) settingsModal.style.display = 'flex';
+            if (autoSaveToggle) autoSaveToggle.checked = userSettings.autoSave;
+            if (editorFontSize) editorFontSize.value = userSettings.editorFontSize;
+
+            // Arka plan seçeneklerini güncelle
+            backgroundOptions.forEach(option => {
+                option.classList.remove('active');
+                if (option.getAttribute('data-bg') === userSettings.background) {
+                    option.classList.add('active');
                 }
             });
         }
 
-        // Kullanıcı ayarlarını yükle
-        async function loadUserSettings() {
+        // Ayarlar modalını kapat
+        function closeSettingsModalFunc() {
+            const settingsModal = getElement('settingsModal');
+            if (settingsModal) settingsModal.style.display = 'none';
+        }
+
+        // Ayarları kaydet
+        async function saveSettings() {
+            const autoSaveToggle = getElement('autoSaveToggle');
+            const editorFontSize = getElement('editorFontSize');
+            const activeBackground = document.querySelector('.background-option.active');
+
+            if (autoSaveToggle) userSettings.autoSave = autoSaveToggle.checked;
+            if (editorFontSize) userSettings.editorFontSize = editorFontSize.value;
+            if (activeBackground) {
+                userSettings.background = activeBackground.getAttribute('data-bg');
+                applyBackground(userSettings.background);
+                localStorage.setItem('background', userSettings.background);
+            }
+
+            // Editör ayarlarını uygula
+            const documentEditor = getElement('documentEditor');
+            if (documentEditor) {
+                documentEditor.style.fontSize = userSettings.editorFontSize;
+            }
+
+            autoSaveEnabled = userSettings.autoSave;
+
+            // Firestore'a kaydet
             if (currentUser) {
                 try {
-                    const settingsDoc = await db.collection('userSettings').doc(currentUser.uid).get();
-                    if (settingsDoc.exists) {
-                        userSettings = { ...userSettings, ...settingsDoc.data() };
-                        
-                        // Ayarları uygula
-                        if (documentEditor) {
-                            documentEditor.style.fontSize = userSettings.editorFontSize;
-                        }
-                        autoSaveEnabled = userSettings.autoSave;
-                        applyBackground(userSettings.background);
-                    }
+                    await db.collection('userSettings').doc(currentUser.uid).set(userSettings, { merge: true });
+                    showNotification('Ayarlar kaydedildi', 'success');
+                    closeSettingsModalFunc();
                 } catch (error) {
-                    console.error('Ayarlar yükleme hatası:', error);
+                    console.error('Ayarlar kaydetme hatası:', error);
+                    showNotification('Ayarlar kaydedilemedi', 'error');
                 }
+            }
+        }
+
+        // Arka plan uygula
+        function applyBackground(bgId) {
+            document.body.className = document.body.className.replace(/\bbg-\d\b/, '');
+            document.body.classList.add(`bg-${bgId}`);
+        }
+
+        // Kullanıcı ayarlarını yükle
+        async function loadUserSettings() {
+            if (!currentUser) return;
+
+            try {
+                const settingsDoc = await db.collection('userSettings').doc(currentUser.uid).get();
+                if (settingsDoc.exists) {
+                    userSettings = { ...userSettings, ...settingsDoc.data() };
+
+                    // Ayarları uygula
+                    const documentEditor = getElement('documentEditor');
+                    if (documentEditor) {
+                        documentEditor.style.fontSize = userSettings.editorFontSize;
+                    }
+                    autoSaveEnabled = userSettings.autoSave;
+                    applyBackground(userSettings.background);
+                }
+            } catch (error) {
+                console.error('Ayarlar yükleme hatası:', error);
+            }
+        }
+
+        // Form işlemleri
+        function showRegisterForm(e) {
+            e.preventDefault();
+            const loginForm = getElement('loginForm');
+            const registerForm = getElement('registerForm');
+            const authError = getElement('authError');
+
+            if (loginForm) loginForm.style.display = 'none';
+            if (registerForm) registerForm.style.display = 'block';
+            if (authError) authError.style.display = 'none';
+        }
+
+        function showLoginForm(e) {
+            e.preventDefault();
+            const loginForm = getElement('loginForm');
+            const registerForm = getElement('registerForm');
+            const authError = getElement('authError');
+
+            if (registerForm) registerForm.style.display = 'none';
+            if (loginForm) loginForm.style.display = 'block';
+            if (authError) authError.style.display = 'none';
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            const username = getElement('loginUsername')?.value;
+            const password = getElement('loginPassword')?.value;
+            const authError = getElement('authError');
+
+            if (!username || !password) {
+                showAuthError('Lütfen tüm alanları doldurun');
+                return;
+            }
+
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(username + '@metinpro.com', password);
+                // Başarılı giriş handleAuthStateChange'de işlenecek
+            } catch (error) {
+                console.error('Giriş hatası:', error);
+                showAuthError('Giriş başarısız. Kullanıcı adı veya şifre hatalı.');
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+            const username = getElement('registerUsername')?.value;
+            const password = getElement('registerPassword')?.value;
+            const confirmPassword = getElement('confirmPassword')?.value;
+            const authError = getElement('authError');
+
+            if (!username || !password || !confirmPassword) {
+                showAuthError('Lütfen tüm alanları doldurun');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showAuthError('Şifreler eşleşmiyor');
+                return;
+            }
+
+            if (password.length < 6) {
+                showAuthError('Şifre en az 6 karakter olmalıdır');
+                return;
+            }
+
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(username + '@metinpro.com', password);
+                await userCredential.user.updateProfile({ displayName: username });
+
+                // Kullanıcıyı veritabanına kaydet
+                await db.collection('users').doc(userCredential.user.uid).set({
+                    displayName: username,
+                    email: userCredential.user.email,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // Varsayılan ayarları kaydet
+                await db.collection('userSettings').doc(userCredential.user.uid).set({
+                    ...userSettings,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // Başarılı kayıt handleAuthStateChange'de işlenecek
+            } catch (error) {
+                console.error('Kayıt hatası:', error);
+                if (error.code === 'auth/email-already-in-use') {
+                    showAuthError('Bu kullanıcı adı zaten kullanılıyor');
+                } else {
+                    showAuthError('Kayıt işlemi başarısız. Lütfen tekrar deneyin.');
+                }
+            }
+        }
+
+        function showAuthError(message) {
+            const authError = getElement('authError');
+            if (authError) {
+                authError.textContent = message;
+                authError.style.display = 'block';
+            }
+        }
+
+        // Çıkış işlemi
+        async function logout() {
+            try {
+                await auth.signOut();
+                showNotification('Başarıyla çıkış yapıldı', 'success');
+            } catch (error) {
+                console.error('Çıkış hatası:', error);
+                showNotification('Çıkış yapılırken hata oluştu', 'error');
+            }
+        }
+
+        // Dokümanları yenile
+        function refreshDocuments() {
+            loadDocuments();
+            showNotification('Dokümanlar yenilendi', 'success');
+        }
+
+        // Onay modalı
+        function showConfirmModal(title, message, confirmCallback) {
+            const confirmModal = getElement('confirmModal');
+            const confirmModalTitle = getElement('confirmModalTitle');
+            const confirmModalMessage = getElement('confirmModalMessage');
+            const confirmAction = getElement('confirmAction');
+
+            if (confirmModalTitle) confirmModalTitle.textContent = title;
+            if (confirmModalMessage) confirmModalMessage.textContent = message;
+            if (confirmModal) confirmModal.style.display = 'flex';
+
+            if (confirmAction) {
+                confirmAction.onclick = () => {
+                    closeConfirmModalFunc();
+                    confirmCallback();
+                };
+            }
+        }
+
+        function closeConfirmModalFunc() {
+            const confirmModal = getElement('confirmModal');
+            if (confirmModal) confirmModal.style.display = 'none';
+        }
+
+        // Bildirim göster
+        function showNotification(message, type = 'success') {
+            const notification = getElement('notification');
+            const notificationText = getElement('notificationText');
+
+            if (!notification || !notificationText) return;
+
+            notificationText.textContent = message;
+            notification.className = `notification ${type}`;
+
+            const icon = notification.querySelector('i');
+            if (icon) {
+                if (type === 'success') {
+                    icon.className = 'fas fa-check-circle';
+                } else if (type === 'error') {
+                    icon.className = 'fas fa-exclamation-circle';
+                } else if (type === 'warning') {
+                    icon.className = 'fas fa-exclamation-triangle';
+                }
+            }
+
+            notification.classList.add('show');
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Klavye kısayolları
+        function handleKeyboardShortcuts(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                saveCurrentDocument();
+                showNotification('Doküman kaydedildi', 'success');
+            }
+
+            if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+                e.preventDefault();
+                openNewDocumentModal();
+            }
+
+            if (e.key === 'Escape') {
+                if (isFocusMode) {
+                    toggleFocusMode();
+                }
+                closeConfirmModalFunc();
+                closeSettingsModalFunc();
+                closeNewDocumentModalFunc();
             }
         }
 
         // Sayfa yüklendiğinde
         window.addEventListener('load', () => {
-            // Tema ayarını yükle
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark') {
-                document.body.classList.add('dark-mode');
-                const icon = themeToggle.querySelector('i');
-                icon.classList.remove('fa-moon');
-                icon.classList.add('fa-sun');
-            }
-            
-            // Splash ekranını 3 saniye göster, sonra auth ekranına geç
+            // Splash screen'i 3 saniye göster
             setTimeout(() => {
-                splashScreen.style.opacity = '0';
-                splashScreen.style.visibility = 'hidden';
-                
-                // Firebase auth state değişikliğini dinle
-                auth.onAuthStateChanged(async (user) => {
-                    if (user) {
-                        currentUser = {
-                            uid: user.uid,
-                            displayName: user.displayName || user.email.split('@')[0],
-                            email: user.email
-                        };
-                        
-                        // Kullanıcı ayarlarını yükle
-                        await loadUserSettings();
-                        
-                        showApp();
-                    } else {
-                        showAuth();
-                    }
-                });
+                const splashScreen = getElement('splashScreen');
+                if (splashScreen) {
+                    splashScreen.style.opacity = '0';
+                    setTimeout(() => {
+                        splashScreen.style.display = 'none';
+                    }, 800);
+                }
+                initializeApp();
             }, 3000);
         });
 
-        // Sayfadan ayrılırken kaydedilmemiş değişiklikler için uyarı göster
+        // Sayfadan ayrılırken uyarı
         window.addEventListener('beforeunload', (e) => {
             if (hasUnsavedChanges) {
                 e.preventDefault();
                 e.returnValue = 'Kaydedilmemiş değişiklikleriniz var. Sayfadan ayrılmak istediğinizden emin misiniz?';
-                return e.returnValue;
-            }
-        });
-
-        // Klavye kısayolları
-        document.addEventListener('keydown', (e) => {
-            // Ctrl+S veya Cmd+S - Kaydet
-            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-                e.preventDefault();
-                if (currentDocumentId) {
-                    saveDocument(currentDocumentId, documentEditor.value);
-                    showNotification('Doküman kaydedildi', 'success');
-                }
-            }
-            
-            // Ctrl+N veya Cmd+N - Yeni doküman
-            if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
-                e.preventDefault();
-                newDocumentModal.style.display = 'flex';
-                newDocumentName.focus();
-            }
-            
-            // Escape - Odak modundan çık
-            if (e.key === 'Escape' && isFocusMode) {
-                e.preventDefault();
-                isFocusMode = false;
-                document.body.classList.remove('focus-mode');
-                focusModeBtn.innerHTML = '<i class="fas fa-expand"></i> Odak Modu';
-                showNotification('Normal moda dönüldü', 'success');
             }
         });
     </script>
