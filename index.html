@@ -2604,7 +2604,23 @@
 
         // Firebase'i başlat
         firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
+        
+// Authentication state
+let currentUser = null;
+
+firebase.auth().onAuthStateChanged(async (user) => {
+    currentUser = user;
+    if (user) {
+        console.log('User signed in:', user.uid);
+        if (typeof setupRealtimeListeners === 'function') {
+            try { setupRealtimeListeners(); } catch(e) { console.error('setupRealtimeListeners error:', e); }
+        }
+    } else {
+        console.log('No user signed in');
+        try { if (typeof showNotification === 'function') showNotification('Lütfen giriş yapın', 'info'); } catch(e){}
+    }
+});
+const auth = firebase.auth();
         const db = firebase.firestore();
 
         // DOM elementleri - Tüm elementleri kontrol ederek tanımla
@@ -3474,7 +3490,9 @@
 
         // Gerçek zamanlı dinleyicileri kur
         function setupRealtimeListeners() {
-            // Online kullanıcıları dinle
+            
+    if (!currentUser) { console.warn('setupRealtimeListeners called before auth.'); return; }
+// Online kullanıcıları dinle
             unsubscribeOnlineUsers = db.collection('onlineUsers')
                 .orderBy('lastSeen', 'desc')
                 .onSnapshot(snapshot => {
@@ -3525,19 +3543,19 @@
                     if (documentsList) documentsList.innerHTML = '';
                     
                     snapshot.forEach(doc => {
-                        const docData = doc.data();
-                        docData.id = doc.id;
-                        documents.push(docData);
+                        const document = doc.data();
+                        document.id = doc.id;
+                        documents.push(document);
                         
                         // Dokümanları listele
                         if (documentsList) {
                             const docElement = document.createElement('li');
                             docElement.className = 'document-item slide-in-up';
-                            if (docData.id === currentDocumentId) {
+                            if (document.id === currentDocumentId) {
                                 docElement.classList.add('active');
                             }
                             
-                            const updatedDate = docData.updatedAt ? docData.updatedAt.toDate() : new Date();
+                            const updatedDate = document.updatedAt ? document.updatedAt.toDate() : new Date();
                             const formattedDate = updatedDate.toLocaleDateString('tr-TR');
                             const formattedTime = updatedDate.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
                             
@@ -3545,22 +3563,22 @@
                                 <div class="document-info">
                                     <div class="document-name">${document.title}</div>
                                     <div class="document-meta">
-                                        <span>${docData.ownerName}</span>
+                                        <span>${document.ownerName}</span>
                                         <span style="margin: 0 5px;">•</span>
                                         <span>${formattedDate} ${formattedTime}</span>
                                     </div>
                                     <div class="document-tags">
-                                        ${docData.tags && docData.tags.map(tag => `<div class="tag">${tag}</div>`).join('') || ''}
+                                        ${document.tags && document.tags.map(tag => `<div class="tag">${tag}</div>`).join('') || ''}
                                     </div>
                                 </div>
                                 <div class="document-actions">
-                                    <button class="share-doc" data-id="${docData.id}" title="Paylaş">
+                                    <button class="share-doc" data-id="${document.id}" title="Paylaş">
                                         <i class="fas fa-share-alt"></i>
                                     </button>
-                                    <button class="edit-doc" data-id="${docData.id}" title="Düzenle">
+                                    <button class="edit-doc" data-id="${document.id}" title="Düzenle">
                                         <i class="fas fa-edit"></i>
                                     </button>
-                                    <button class="delete-doc" data-id="${docData.id}" title="Sil">
+                                    <button class="delete-doc" data-id="${document.id}" title="Sil">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
@@ -3570,24 +3588,24 @@
                             // Doküman düzenleme butonuna tıklama
                             docElement.querySelector('.edit-doc').addEventListener('click', (e) => {
                                 e.stopPropagation();
-                                openDocument(docData.id);
+                                openDocument(document.id);
                             });
                             
                             // Doküman paylaşma butonuna tıklama
                             docElement.querySelector('.share-doc').addEventListener('click', (e) => {
                                 e.stopPropagation();
-                                shareDocument(docData.id);
+                                shareDocument(document.id);
                             });
                             
                             // Doküman silme butonuna tıklama
                             docElement.querySelector('.delete-doc').addEventListener('click', (e) => {
                                 e.stopPropagation();
-                                deleteDocument(docData.id);
+                                deleteDocument(document.id);
                             });
                             
                             // Doküman öğesine tıklama
                             docElement.addEventListener('click', () => {
-                                openDocument(docData.id);
+                                openDocument(document.id);
                             });
                         }
                     });
@@ -3809,7 +3827,9 @@
 
         // Gerçek zamanlı düzenleme için dinleyici kur
         function setupRealtimeEditing(docId) {
-            // Doküman içeriğini gerçek zamanlı dinle
+            
+    if (!currentUser) { console.warn('setupRealtimeEditing called before auth'); return; }
+// Doküman içeriğini gerçek zamanlı dinle
             editingUsers[docId] = db.collection('documents').doc(docId)
                 .onSnapshot(docSnapshot => {
                     if (docSnapshot.exists) {
@@ -3856,7 +3876,17 @@
 
         // Doküman kaydet
         async function saveDocument(docId, content) {
-            try {
+            
+    if (!currentUser) { showNotification('Lütfen önce giriş yapın', 'error'); return false; }
+    try {
+        const snap = await db.collection('documents').doc(docId).get();
+        if (!snap.exists) { showNotification('Doküman bulunamadı', 'error'); return false; }
+        const data = snap.data();
+        const ownerId = data.owner || data.ownerId || data.ownerUid;
+        const collab = data.collaborators || [];
+        if (!(ownerId === currentUser.uid || (Array.isArray(collab) && collab.includes(currentUser.uid)))) { showNotification('Bu dokümana düzenleme izniniz yok', 'error'); return false; }
+    } catch (permErr) { console.error('Permission check failed:', permErr); showNotification('İzin kontrolü yapılamadı', 'error'); return false; }
+try {
                 // Versiyon geçmişi oluştur
                 await createVersionHistory(docId, content);
                 
@@ -3881,7 +3911,9 @@
 
         // Versiyon geçmişi oluştur
         async function createVersionHistory(docId, content) {
-            try {
+            
+    if (!currentUser) { console.warn('No user for createVersionHistory'); return; }
+try {
                 const versionDoc = {
                     content: content,
                     savedBy: currentUser.uid,
@@ -3974,7 +4006,9 @@
 
         // Doküman paylaş
         async function shareDocument(docId) {
-            const doc = documents.find(d => d.id === docId);
+            
+    if (!currentUser) { showNotification('Lütfen giriş yapın', 'error'); return; }
+const doc = documents.find(d => d.id === docId);
             if (doc) {
                 const email = prompt('Paylaşmak istediğiniz kullanıcının e-posta adresini girin:');
                 if (email) {
