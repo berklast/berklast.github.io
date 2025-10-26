@@ -2604,39 +2604,32 @@
 
         // Firebase'i başlat
         firebase.initializeApp(firebaseConfig);
-        
+// --- PATCH: global currentUser tanımı ---
+if (typeof window.currentUser === 'undefined') {
+  window.currentUser = null;
+}
 
-// --- Auth state (single canonical handler) ---
-if (typeof currentUser === 'undefined') { currentUser = null; }
-firebase.auth().onAuthStateChanged(function(user) {
-    currentUser = user;
-    if (user) {
-        console.log('User signed in:', user.uid);
-        if (typeof setupRealtimeListeners === 'function') {
-            try { setupRealtimeListeners(); } catch(e) { console.error('setupRealtimeListeners error:', e); }
-        }
+// Single onAuthStateChanged handler (will set window.currentUser)
+if (typeof firebase !== 'undefined' && firebase.auth) {
+  firebase.auth().onAuthStateChanged(function(user) {
+    window.currentUser = user || null;
+    if (window.currentUser) {
+      console.log('User signed in:', window.currentUser.uid);
+      if (typeof setupRealtimeListeners === 'function') {
+        try { setupRealtimeListeners(); } catch(e) { console.error('setupRealtimeListeners error:', e); }
+      }
     } else {
-        console.log('No user signed in');
-        try { if (typeof showNotification === 'function') showNotification('Lütfen giriş yapın', 'info'); } catch(e) {}
+      console.log('No user signed in');
+      try { if (typeof showNotification === 'function') showNotification('Lütfen giriş yapın', 'info'); } catch(e) {}
     }
-});
-// --- end auth state ---
-// Authentication state
-let currentUser = null;
+  });
+}
+// --- end patch ---
 
-firebase.auth().onAuthStateChanged(async (user) => {
-    currentUser = user;
-    if (user) {
-        console.log('User signed in:', user.uid);
-        if (typeof setupRealtimeListeners === 'function') {
-            try { setupRealtimeListeners(); } catch(e) { console.error('setupRealtimeListeners error:', e); }
-        }
-    } else {
-        console.log('No user signed in');
-        try { if (typeof showNotification === 'function') showNotification('Lütfen giriş yapın', 'info'); } catch(e){}
-    }
-});
-const auth = firebase.auth();
+/* currentUser_alias_added */
+if (typeof currentUser === 'undefined') { var currentUser = window.currentUser; }
+
+        const auth = firebase.auth();
         const db = firebase.firestore();
 
         // DOM elementleri - Tüm elementleri kontrol ederek tanımla
@@ -3506,9 +3499,7 @@ const auth = firebase.auth();
 
         // Gerçek zamanlı dinleyicileri kur
         function setupRealtimeListeners() {
-            
-    if (!currentUser) { console.warn('setupRealtimeListeners called before auth.'); return; }
-// Online kullanıcıları dinle
+            // Online kullanıcıları dinle
             unsubscribeOnlineUsers = db.collection('onlineUsers')
                 .orderBy('lastSeen', 'desc')
                 .onSnapshot(snapshot => {
@@ -3843,9 +3834,7 @@ const auth = firebase.auth();
 
         // Gerçek zamanlı düzenleme için dinleyici kur
         function setupRealtimeEditing(docId) {
-            
-    if (!currentUser) { console.warn('setupRealtimeEditing called before auth'); return; }
-// Doküman içeriğini gerçek zamanlı dinle
+            // Doküman içeriğini gerçek zamanlı dinle
             editingUsers[docId] = db.collection('documents').doc(docId)
                 .onSnapshot(docSnapshot => {
                     if (docSnapshot.exists) {
@@ -3892,17 +3881,7 @@ const auth = firebase.auth();
 
         // Doküman kaydet
         async function saveDocument(docId, content) {
-            
-    if (!currentUser) { showNotification('Lütfen önce giriş yapın', 'error'); return false; }
-    try {
-        const snap = await db.collection('documents').doc(docId).get();
-        if (!snap.exists) { showNotification('Doküman bulunamadı', 'error'); return false; }
-        const data = snap.data();
-        const ownerId = data.owner || data.ownerId || data.ownerUid;
-        const collab = data.collaborators || [];
-        if (!(ownerId === currentUser.uid || (Array.isArray(collab) && collab.includes(currentUser.uid)))) { showNotification('Bu dokümana düzenleme izniniz yok', 'error'); return false; }
-    } catch (permErr) { console.error('Permission check failed:', permErr); showNotification('İzin kontrolü yapılamadı', 'error'); return false; }
-try {
+            try {
                 // Versiyon geçmişi oluştur
                 await createVersionHistory(docId, content);
                 
@@ -3927,9 +3906,7 @@ try {
 
         // Versiyon geçmişi oluştur
         async function createVersionHistory(docId, content) {
-            
-    if (!currentUser) { console.warn('No user for createVersionHistory'); return; }
-try {
+            try {
                 const versionDoc = {
                     content: content,
                     savedBy: currentUser.uid,
@@ -4022,9 +3999,7 @@ try {
 
         // Doküman paylaş
         async function shareDocument(docId) {
-            
-    if (!currentUser) { showNotification('Lütfen giriş yapın', 'error'); return; }
-const doc = documents.find(d => d.id === docId);
+            const doc = documents.find(d => d.id === docId);
             if (doc) {
                 const email = prompt('Paylaşmak istediğiniz kullanıcının e-posta adresini girin:');
                 if (email) {
