@@ -2613,12 +2613,7 @@ if (typeof window.currentUser === 'undefined') {
 if (typeof firebase !== 'undefined' && firebase.auth) {
   firebase.auth().onAuthStateChanged(function(user) {
     window.currentUser = user || null;
-    if (window.currentUser) {
-      console.log('User signed in:', window.currentUser.uid);
-      if (typeof setupRealtimeListeners === 'function') {
-        try { setupRealtimeListeners(); } catch(e) { console.error('setupRealtimeListeners error:', e); }
-      }
-    } else {
+    if (window.currentUser) { console.log('User signed in:', window.currentUser.uid); try { if (typeof setupRealtimeListeners === 'function') { setupRealtimeListeners(); } } catch(e) { console.error('setupRealtimeListeners error:', e); } } else {
       console.log('No user signed in');
       try { if (typeof showNotification === 'function') showNotification('Lütfen giriş yapın', 'info'); } catch(e) {}
     }
@@ -3499,8 +3494,11 @@ if (typeof currentUser === 'undefined') { var currentUser = window.currentUser; 
 
         // Gerçek zamanlı dinleyicileri kur
         function setupRealtimeListeners() {
-            // Online kullanıcıları dinle
-            unsubscribeOnlineUsers = db.collection('onlineUsers')
+            
+    if (!window.currentUser) { console.warn('setupRealtimeListeners skipped: no user'); return; }
+// Online kullanıcıları dinle
+            try {
+unsubscribeOnlineUsers = db.collection('onlineUsers')
                 .orderBy('lastSeen', 'desc')
                 .onSnapshot(snapshot => {
                     onlineUsersList = [];
@@ -3539,7 +3537,13 @@ if (typeof currentUser === 'undefined') { var currentUser = window.currentUser; 
                     }
                 }, error => {
                     console.error('Online kullanıcılar dinleme hatası:', error);
-                });
+                if (error && error.code && error.code === 'permission-denied') { try { if (typeof showNotification === 'function') showNotification('Online kullanıcıları görüntüleme izniniz yok', 'error'); } catch(e){} }
+});
+
+} catch(err) {
+    console.error('Online kullanıcılar listen setup failed:', err);
+    try { if (typeof showNotification === 'function') showNotification('Online kullanıcıları alınamadı: izin yok', 'error'); } catch(e){}
+}
             
             // Dokümanları dinle
             unsubscribeDocuments = db.collection('documents')
@@ -3550,19 +3554,19 @@ if (typeof currentUser === 'undefined') { var currentUser = window.currentUser; 
                     if (documentsList) documentsList.innerHTML = '';
                     
                     snapshot.forEach(doc => {
-                        const document = doc.data();
-                        document.id = doc.id;
-                        documents.push(document);
+                        const docData = doc.data();
+                        docData.id = doc.id;
+                        documents.push(docData);
                         
                         // Dokümanları listele
                         if (documentsList) {
                             const docElement = document.createElement('li');
                             docElement.className = 'document-item slide-in-up';
-                            if (document.id === currentDocumentId) {
+                            if (docData.id === currentDocumentId) {
                                 docElement.classList.add('active');
                             }
                             
-                            const updatedDate = document.updatedAt ? document.updatedAt.toDate() : new Date();
+                            const updatedDate = docData.updatedAt ? docData.updatedAt.toDate() : new Date();
                             const formattedDate = updatedDate.toLocaleDateString('tr-TR');
                             const formattedTime = updatedDate.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
                             
@@ -3570,22 +3574,22 @@ if (typeof currentUser === 'undefined') { var currentUser = window.currentUser; 
                                 <div class="document-info">
                                     <div class="document-name">${document.title}</div>
                                     <div class="document-meta">
-                                        <span>${document.ownerName}</span>
+                                        <span>${docData.ownerName}</span>
                                         <span style="margin: 0 5px;">•</span>
                                         <span>${formattedDate} ${formattedTime}</span>
                                     </div>
                                     <div class="document-tags">
-                                        ${document.tags && document.tags.map(tag => `<div class="tag">${tag}</div>`).join('') || ''}
+                                        ${docData.tags && docData.tags.map(tag => `<div class="tag">${tag}</div>`).join('') || ''}
                                     </div>
                                 </div>
                                 <div class="document-actions">
-                                    <button class="share-doc" data-id="${document.id}" title="Paylaş">
+                                    <button class="share-doc" data-id="${docData.id}" title="Paylaş">
                                         <i class="fas fa-share-alt"></i>
                                     </button>
-                                    <button class="edit-doc" data-id="${document.id}" title="Düzenle">
+                                    <button class="edit-doc" data-id="${docData.id}" title="Düzenle">
                                         <i class="fas fa-edit"></i>
                                     </button>
-                                    <button class="delete-doc" data-id="${document.id}" title="Sil">
+                                    <button class="delete-doc" data-id="${docData.id}" title="Sil">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
@@ -3595,24 +3599,24 @@ if (typeof currentUser === 'undefined') { var currentUser = window.currentUser; 
                             // Doküman düzenleme butonuna tıklama
                             docElement.querySelector('.edit-doc').addEventListener('click', (e) => {
                                 e.stopPropagation();
-                                openDocument(document.id);
+                                openDocument(docData.id);
                             });
                             
                             // Doküman paylaşma butonuna tıklama
                             docElement.querySelector('.share-doc').addEventListener('click', (e) => {
                                 e.stopPropagation();
-                                shareDocument(document.id);
+                                shareDocument(docData.id);
                             });
                             
                             // Doküman silme butonuna tıklama
                             docElement.querySelector('.delete-doc').addEventListener('click', (e) => {
                                 e.stopPropagation();
-                                deleteDocument(document.id);
+                                deleteDocument(docData.id);
                             });
                             
                             // Doküman öğesine tıklama
                             docElement.addEventListener('click', () => {
-                                openDocument(document.id);
+                                openDocument(docData.id);
                             });
                         }
                     });
