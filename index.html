@@ -2605,6 +2605,22 @@
         // Firebase'i başlat
         firebase.initializeApp(firebaseConfig);
         
+
+// --- Auth state (single canonical handler) ---
+if (typeof currentUser === 'undefined') { currentUser = null; }
+firebase.auth().onAuthStateChanged(function(user) {
+    currentUser = user;
+    if (user) {
+        console.log('User signed in:', user.uid);
+        if (typeof setupRealtimeListeners === 'function') {
+            try { setupRealtimeListeners(); } catch(e) { console.error('setupRealtimeListeners error:', e); }
+        }
+    } else {
+        console.log('No user signed in');
+        try { if (typeof showNotification === 'function') showNotification('Lütfen giriş yapın', 'info'); } catch(e) {}
+    }
+});
+// --- end auth state ---
 // Authentication state
 let currentUser = null;
 
@@ -2705,7 +2721,7 @@ const auth = firebase.auth();
         const searchDocBtn = document.getElementById('searchDocBtn');
 
         // Değişkenler
-        let currentUser = null;
+        /* duplicate currentUser declaration removed */
         let currentDocumentId = null;
         let documents = [];
         let onlineUsersList = [];
