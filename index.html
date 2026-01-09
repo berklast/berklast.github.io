@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Bedava Yapay Zeka (WebLLM)</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div>
+        <h1>⚡ Bedava Yapay Zeka</h1>
+        <p class="sub">GitHub Pages + WebLLM (model tarayıcıda çalışır)</p>
+      </div>
+
+      <div class="badge" id="gpuBadge">Kontrol ediliyor…</div>
+    </header>
+
+    <section class="panel">
+      <div class="row">
+        <label>
+          Model
+          <select id="modelSelect">
+            <option value="Llama-3.2-1B-Instruct-q4f16_1-MLC">Llama 3.2 1B Instruct (hafif)</option>
+            <option value="Llama-3.2-3B-Instruct-q4f16_1-MLC">Llama 3.2 3B Instruct (daha iyi)</option>
+          </select>
+        </label>
+
+        <label>
+          Sıcaklık (yaratıcılık)
+          <input id="temp" type="range" min="0" max="1.2" step="0.1" value="0.7" />
+          <span id="tempVal">0.7</span>
+        </label>
+
+        <button id="loadBtn">Modeli Yükle</button>
+        <button id="clearBtn" class="ghost">Sohbeti Temizle</button>
+      </div>
+
+      <div class="progressWrap">
+        <div class="progress">
+          <div class="bar" id="bar"></div>
+        </div>
+        <div class="status" id="status">Hazır.</div>
+      </div>
+    </section>
+
+    <main class="chat" id="chat"></main>
+
+    <footer class="composer">
+      <textarea id="input" rows="2" placeholder="Mesaj yaz… (Enter = gönder, Shift+Enter = alt satır)"></textarea>
+      <button id="sendBtn" disabled>Gönder</button>
+    </footer>
+  </div>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
