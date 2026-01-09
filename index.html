@@ -1,149 +1,984 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AI Chat</title>
-  <link rel="stylesheet" href="./styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grok AI Sohbet - Firebase + X AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <style>
+        :root {
+            --primary: #00acee; /* X/Grok mavisi */
+            --secondary: #1DA1F2;
+            --dark: #0f1419;
+            --light: #ffffff;
+            --gray: #536471;
+            --bg-color: #000000;
+            --card-bg: #16181c;
+            --font-family: 'Segoe UI', system-ui;
+            --border-radius: 16px;
+        }
+
+        .light-theme {
+            --bg-color: #f5f8fa;
+            --card-bg: #ffffff;
+            --dark: #0f1419;
+            --light: #0f1419;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background: var(--bg-color);
+            color: var(--light);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* AUTH EKRANI */
+        .auth-container {
+            display: flex;
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #000000 0%, #1a1a2e 100%);
+        }
+
+        .auth-box {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: var(--border-radius);
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 20px 60px rgba(0, 172, 238, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 15px;
+            background: transparent;
+            border: 1px solid var(--gray);
+            color: var(--light);
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .auth-tab.active {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--light);
+            font-weight: 600;
+        }
+
+        .auth-input {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--gray);
+            border-radius: 10px;
+            color: var(--light);
+            font-size: 16px;
+        }
+
+        .auth-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 172, 238, 0.2);
+        }
+
+        .auth-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .auth-btn:hover {
+            background: var(--secondary);
+        }
+
+        /* ANA UYGULAMA */
+        .app-container {
+            display: none;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: var(--card-bg);
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+        }
+
+        .user-info {
+            padding: 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 15px;
+        }
+
+        .chat-history {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .chat-history-item {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+        }
+
+        .chat-history-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .chat-history-item.active {
+            border-left-color: var(--primary);
+            background: rgba(0, 172, 238, 0.1);
+        }
+
+        .main-content {
+            margin-left: 300px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            padding: 20px 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--card-bg);
+        }
+
+        .api-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 16px;
+            background: rgba(0, 172, 238, 0.1);
+            border-radius: 20px;
+            font-size: 14px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4ade80;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .message {
+            display: flex;
+            gap: 15px;
+            max-width: 80%;
+        }
+
+        .message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .user .message-avatar {
+            background: var(--primary);
+        }
+
+        .ai .message-avatar {
+            background: #ff6b6b;
+        }
+
+        .message-content {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .user .message-content {
+            background: var(--primary);
+        }
+
+        /* ANİMASYONLAR */
+        .thinking-animation {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            background: rgba(0, 172, 238, 0.1);
+            border-radius: var(--border-radius);
+            margin: 20px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .thinking-dots {
+            display: flex;
+            gap: 6px;
+        }
+
+        .thinking-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--primary);
+            animation: bounce 1.4s infinite ease-in-out;
+        }
+
+        .thinking-dot:nth-child(2) { animation-delay: 0.2s; }
+        .thinking-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes bounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-15px); }
+        }
+
+        .writing-animation {
+            display: flex;
+            gap: 4px;
+            padding: 10px 0;
+        }
+
+        .writing-bar {
+            width: 4px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 2px;
+            animation: write 1.2s infinite ease-in-out;
+        }
+
+        .writing-bar:nth-child(2) { animation-delay: 0.2s; }
+        .writing-bar:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes write {
+            0%, 60%, 100% { height: 20px; }
+            30% { height: 35px; }
+        }
+
+        /* APİ AYARLARI */
+        .api-config-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .api-config-box {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 500px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* ÖZELLEŞTİRME PANELİ */
+        .customize-panel {
+            position: fixed;
+            right: -300px;
+            top: 0;
+            width: 300px;
+            height: 100vh;
+            background: var(--card-bg);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            transition: right 0.3s;
+            z-index: 100;
+        }
+
+        .customize-panel.open {
+            right: 0;
+        }
+
+        .theme-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .theme-color {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+        }
+
+        .theme-color.active {
+            border-color: white;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: 200px;
+                position: relative;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .message {
+                max-width: 95%;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="app">
-    <aside class="sidebar">
-      <div class="brand">
-        <div class="logo">AI</div>
-        <div>
-          <div class="title">AI Chat</div>
-          <div class="sub">Firebase + GitHub Pages</div>
+    <!-- AUTH EKRANI -->
+    <div class="auth-container" id="authScreen">
+        <div class="auth-box">
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="showAuthForm('login')">Giriş Yap</button>
+                <button class="auth-tab" onclick="showAuthForm('register')">Kayıt Ol</button>
+                <button class="auth-tab" onclick="showAuthForm('phone')">Telefon</button>
+            </div>
+
+            <!-- EMAİL GİRİŞ -->
+            <div class="auth-form active" id="loginForm">
+                <h2>Hoş Geldiniz</h2>
+                <p style="color: var(--gray); margin: 10px 0 30px 0;">Grok AI'ye erişmek için giriş yapın</p>
+                
+                <div class="input-group">
+                    <label>E-posta</label>
+                    <input type="email" id="loginEmail" class="auth-input" placeholder="ornek@email.com">
+                </div>
+                
+                <div class="input-group">
+                    <label>Şifre</label>
+                    <input type="password" id="loginPassword" class="auth-input" placeholder="••••••••">
+                </div>
+                
+                <button class="auth-btn" onclick="loginEmail()">Giriş Yap</button>
+            </div>
+
+            <!-- KAYIT FORMU -->
+            <div class="auth-form" id="registerForm">
+                <h2>Yeni Hesap Oluştur</h2>
+                
+                <div class="input-group">
+                    <label>E-posta</label>
+                    <input type="email" id="registerEmail" class="auth-input">
+                </div>
+                
+                <div class="input-group">
+                    <label>Şifre (min. 6 karakter)</label>
+                    <input type="password" id="registerPassword" class="auth-input">
+                </div>
+                
+                <div class="input-group">
+                    <label>Şifre Tekrar</label>
+                    <input type="password" id="registerPasswordConfirm" class="auth-input">
+                </div>
+                
+                <button class="auth-btn" onclick="registerEmail()">Hesap Oluştur</button>
+            </div>
+
+            <!-- TELEFON DOĞRULAMA -->
+            <div class="auth-form" id="phoneForm">
+                <h2>Telefon ile Giriş</h2>
+                <p style="color: var(--gray); margin-bottom: 20px;">Telefonunuza doğrulama kodu gönderilecek</p>
+                
+                <div class="input-group">
+                    <label>Telefon Numarası</label>
+                    <input type="tel" id="phoneNumber" class="auth-input" placeholder="+90 5xx xxx xx xx">
+                </div>
+                
+                <div class="input-group" id="codeSection" style="display: none;">
+                    <label>Doğrulama Kodu</label>
+                    <input type="text" id="verificationCode" class="auth-input" placeholder="6 haneli kod">
+                </div>
+                
+                <button class="auth-btn" id="phoneBtn" onclick="startPhoneAuth()">Kodu Gönder</button>
+            </div>
         </div>
-      </div>
-
-      <div class="authbox" id="authBox">
-        <div class="tabs">
-          <button class="tab active" id="tabLogin">Giriş</button>
-          <button class="tab" id="tabRegister">Kayıt</button>
-        </div>
-
-        <form class="form" id="loginForm">
-          <label>E-posta</label>
-          <input id="loginEmail" type="email" placeholder="ornek@mail.com" required>
-          <label>Şifre</label>
-          <input id="loginPass" type="password" placeholder="••••••••" required>
-          <button class="btn primary" type="submit">Giriş Yap</button>
-          <button class="btn ghost" type="button" id="forgotBtn">Şifremi unuttum</button>
-          <div class="hint" id="loginHint"></div>
-        </form>
-
-        <form class="form hidden" id="registerForm">
-          <label>E-posta</label>
-          <input id="regEmail" type="email" placeholder="ornek@mail.com" required>
-          <label>Şifre</label>
-          <input id="regPass" type="password" placeholder="En az 6 karakter" minlength="6" required>
-          <label>Şifre (tekrar)</label>
-          <input id="regPass2" type="password" placeholder="••••••••" minlength="6" required>
-          <button class="btn primary" type="submit">Kayıt Ol</button>
-          <div class="hint" id="regHint"></div>
-        </form>
-      </div>
-
-      <div class="verify hidden" id="verifyBox">
-        <div class="verifyTitle">E-postanı doğrula</div>
-        <div class="verifyText">
-          Doğrulama linki mailine gitti. Linke tıkladıktan sonra aşağıdan kontrol et.
-        </div>
-        <div class="row">
-          <button class="btn" id="resendBtn">Tekrar gönder</button>
-          <button class="btn primary" id="checkedBtn">Doğruladım</button>
-        </div>
-        <div class="hint" id="verifyHint"></div>
-      </div>
-
-      <div class="panel hidden" id="appPanel">
-        <div class="userRow">
-          <div class="userChip" id="userChip">—</div>
-          <div class="userActions">
-            <button class="iconBtn" id="settingsBtn" title="Ayarlar">⚙</button>
-            <button class="iconBtn" id="logoutBtn" title="Çıkış">⎋</button>
-          </div>
-        </div>
-
-        <button class="btn primary full" id="newChatBtn">+ Yeni sohbet</button>
-
-        <div class="sectionTitle">Sohbetler</div>
-        <div class="chatList" id="chatList"></div>
-      </div>
-
-      <div class="footerNote">
-        Not: OpenAI API tarayıcıdan direkt çağrıda CORS çıkabilir; bu kurulum Worker proxy ile çözülür. :contentReference[oaicite:2]{index=2}
-      </div>
-    </aside>
-
-    <main class="main">
-      <header class="topbar">
-        <div class="topLeft">
-          <div class="bigTitle" id="chatTitle">Giriş yap</div>
-          <div class="smallSub" id="chatSub">Sohbetlerini kaydet, eski sohbetlere dön.</div>
-        </div>
-        <div class="topRight">
-          <span class="pill" id="modelPill">Model: —</span>
-        </div>
-      </header>
-
-      <section class="messages" id="messages">
-        <div class="emptyState" id="emptyState">
-          <div class="emptyCard">
-            <div class="emptyTitle">AI Chat hazır</div>
-            <div class="emptyText">Giriş yap → yeni sohbet oluştur → yazmaya başla.</div>
-          </div>
-        </div>
-      </section>
-
-      <footer class="composerWrap">
-        <div class="composer">
-          <textarea id="prompt" placeholder="Mesaj yaz… (Enter gönder, Shift+Enter alt satır)" rows="1"></textarea>
-          <button class="sendBtn" id="sendBtn">Gönder</button>
-        </div>
-        <div class="tinyHint" id="tinyHint"></div>
-      </footer>
-    </main>
-  </div>
-
-  <!-- Settings Modal -->
-  <div class="modal hidden" id="modal">
-    <div class="modalCard">
-      <div class="modalHead">
-        <div>
-          <div class="modalTitle">Ayarlar</div>
-          <div class="modalSub">Tek API key sende kalsın diye Worker (proxy) kullanıyoruz.</div>
-        </div>
-        <button class="iconBtn" id="closeModal">✕</button>
-      </div>
-
-      <div class="form">
-        <label>Gateway (Worker) URL</label>
-        <input id="gatewayUrl" type="text" placeholder="https://xxxx.workers.dev">
-
-        <label>Gateway Token (opsiyonel ama önerilir)</label>
-        <input id="gatewayToken" type="password" placeholder="Worker APP_TOKEN">
-
-        <label>Model</label>
-        <input id="model" type="text" placeholder="gpt-4o-mini">
-
-        <label>Temperature</label>
-        <input id="temp" type="number" min="0" max="2" step="0.1" value="0.7">
-
-        <label>System Prompt</label>
-        <textarea id="systemPrompt" rows="3" placeholder="Örn: Türkçe kısa cevap ver."></textarea>
-
-        <div class="row">
-          <button class="btn" id="resetSettings">Sıfırla</button>
-          <button class="btn primary" id="saveSettings">Kaydet</button>
-        </div>
-
-        <div class="hint" id="settingsHint"></div>
-      </div>
     </div>
-  </div>
 
-  <script type="module" src="./app.js"></script>
+    <!-- ANA UYGULAMA -->
+    <div class="app-container" id="appScreen">
+        <!-- SİDEBAR -->
+        <div class="sidebar">
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h3 id="userEmail"></h3>
+                <button class="auth-btn" style="margin-top: 15px;" onclick="logout()">Çıkış Yap</button>
+            </div>
+
+            <div class="chat-history">
+                <h4>Sohbet Geçmişi</h4>
+                <div id="chatHistoryList">
+                    <!-- Dinamik olarak eklenecek -->
+                </div>
+            </div>
+
+            <div style="padding: 20px;">
+                <button class="auth-btn" onclick="openCustomize()">
+                    <i class="fas fa-palette"></i> Özelleştir
+                </button>
+                <button class="auth-btn" style="margin-top: 10px; background: var(--gray);" onclick="openApiConfig()">
+                    <i class="fas fa-key"></i> API Ayarları
+                </button>
+            </div>
+        </div>
+
+        <!-- ANA İÇERİK -->
+        <div class="main-content">
+            <div class="chat-header">
+                <div>
+                    <h1><i class="fas fa-robot"></i> Grok AI Asistan</h1>
+                    <p style="color: var(--gray); font-size: 14px;">Her konuda akıllı sohbet</p>
+                </div>
+                
+                <div class="api-status">
+                    <div class="status-dot"></div>
+                    <span id="apiStatusText">Grok API Aktif</span>
+                </div>
+            </div>
+
+            <!-- SOHBET MESAJLARI -->
+            <div class="chat-messages" id="chatMessages">
+                <!-- Mesajlar buraya eklenecek -->
+                <div class="message ai">
+                    <div class="message-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="message-content">
+                        Merhaba! Ben Grok AI asistanıyım. Size nasıl yardımcı olabilirim?
+                        <div style="font-size: 12px; color: var(--gray); margin-top: 10px;">Bugün: <span id="currentDate"></span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- DÜŞÜNME ANİMASYONU -->
+            <div class="thinking-animation" id="thinkingAnimation" style="display: none;">
+                <div>
+                    <i class="fas fa-brain" style="color: var(--primary); font-size: 24px;"></i>
+                </div>
+                <div>
+                    <div style="font-weight: 600; margin-bottom: 5px;">Derin Düşünüyor</div>
+                    <div class="thinking-dots">
+                        <div class="thinking-dot"></div>
+                        <div class="thinking-dot"></div>
+                        <div class="thinking-dot"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- YAZMA ANİMASYONU -->
+            <div class="thinking-animation" id="writingAnimation" style="display: none;">
+                <div>
+                    <i class="fas fa-keyboard" style="color: var(--primary); font-size: 24px;"></i>
+                </div>
+                <div>
+                    <div style="font-weight: 600; margin-bottom: 5px;">Yazıyor</div>
+                    <div class="writing-animation">
+                        <div class="writing-bar"></div>
+                        <div class="writing-bar"></div>
+                        <div class="writing-bar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MESAJ GİRİŞ -->
+            <div style="padding: 20px 30px; border-top: 1px solid rgba(255, 255, 255, 0.1);">
+                <div style="display: flex; gap: 10px;">
+                    <textarea id="messageInput" placeholder="Grok AI'ye sorunuzu yazın... (Enter ile gönder)" 
+                              style="flex: 1; padding: 15px; background: var(--card-bg); border: 1px solid var(--gray); border-radius: 10px; color: white; font-size: 16px; resize: none; min-height: 60px;"></textarea>
+                    <button id="sendButton" style="width: 60px; height: 60px; background: var(--primary); border: none; border-radius: 10px; color: white; font-size: 20px; cursor: pointer;">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button class="auth-btn" style="background: transparent; border: 1px solid var(--gray);" onclick="clearChat()">
+                        <i class="fas fa-trash"></i> Temizle
+                    </button>
+                    <button class="auth-btn" style="background: transparent; border: 1px solid var(--gray);" onclick="newChat()">
+                        <i class="fas fa-plus"></i> Yeni Sohbet
+                    </button>
+                    <button class="auth-btn" style="background: transparent; border: 1px solid var(--gray);" onclick="deepThinkingMode()">
+                        <i class="fas fa-brain"></i> Derin Düşün
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ÖZELLEŞTİRME PANELİ -->
+        <div class="customize-panel" id="customizePanel">
+            <h3><i class="fas fa-palette"></i> Özelleştirme</h3>
+            
+            <div style="margin: 25px 0;">
+                <label>Tema Seç</label>
+                <div class="theme-options">
+                    <div class="theme-color active" style="background: #000000;" onclick="changeTheme('dark')"></div>
+                    <div class="theme-color" style="background: #1a1a2e;" onclick="changeTheme('blue-dark')"></div>
+                    <div class="theme-color" style="background: #0f172a;" onclick="changeTheme('navy')"></div>
+                    <div class="theme-color" style="background: #f5f8fa;" onclick="changeTheme('light')"></div>
+                    <div class="theme-color" style="background: #ffffff;" onclick="changeTheme('white')"></div>
+                    <div class="theme-color" style="background: #15202b;" onclick="changeTheme('twitter')"></div>
+                </div>
+            </div>
+            
+            <div style="margin: 25px 0;">
+                <label>Ana Renk</label>
+                <input type="color" id="primaryColor" value="#00acee" onchange="changePrimaryColor(this.value)" style="width: 100%; height: 40px; margin-top: 10px;">
+            </div>
+            
+            <button class="auth-btn" onclick="closeCustomize()">Kapat</button>
+        </div>
+    </div>
+
+    <!-- APİ KONFİG MODALI -->
+    <div class="api-config-modal" id="apiConfigModal">
+        <div class="api-config-box">
+            <h2><i class="fas fa-key"></i> API Konfigürasyonu</h2>
+            
+            <div class="input-group">
+                <label>Grok/X AI API Anahtarı</label>
+                <input type="password" id="grokApiKey" class="auth-input" placeholder="sk-xxxxxxxxxxxxxxxx">
+                <p style="font-size: 12px; color: var(--gray); margin-top: 5px;">API anahtarınızı <a href="https://platform.x.ai/" target="_blank" style="color: var(--primary);">X AI platformundan</a> alabilirsiniz</p>
+            </div>
+            
+            <div class="input-group">
+                <label>API Endpoint (Opsiyonel)</label>
+                <input type="text" id="apiEndpoint" class="auth-input" value="https://api.x.ai/v1/chat/completions" placeholder="API endpoint URL">
+            </div>
+            
+            <div style="display: flex; gap: 10px; margin-top: 20px;">
+                <button class="auth-btn" onclick="saveApiConfig()">Kaydet</button>
+                <button class="auth-btn" style="background: var(--gray);" onclick="closeApiConfig()">Kapat</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase konfigürasyonu (SENİN BİLGİLERİNLE)
+        const firebaseConfig = {
+            apiKey: "AIzaSyBuLkEI4HXOtl6RTGNRXadflBu6YGsX9F8",
+            authDomain: "skylanda-211e2.firebaseapp.com",
+            projectId: "skylanda-211e2",
+            storageBucket: "skylanda-211e2.firebasestorage.app",
+            messagingSenderId: "225103922974",
+            appId: "1:225103922974:web:c3761c5ce3201c8a466b0f",
+            measurementId: "G-DJMF29LBWL"
+        };
+
+        // Firebase başlatma
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Kullanıcı durumu kontrolü
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                showApp(user);
+                loadUserChats(user.uid);
+            } else {
+                showAuth();
+            }
+        });
+
+        // Giriş yapma fonksiyonları
+        function showAuthForm(formType) {
+            document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+            
+            document.getElementById(formType + 'Form').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function loginEmail() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            auth.signInWithEmailAndPassword(email, password)
+                .then(() => console.log('Giriş başarılı'))
+                .catch(error => alert('Hata: ' + error.message));
+        }
+
+        function registerEmail() {
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirm = document.getElementById('registerPasswordConfirm').value;
+            
+            if (password !== confirm) {
+                alert('Şifreler eşleşmiyor!');
+                return;
+            }
+            
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Kullanıcı profilini Firestore'a kaydet
+                    db.collection('users').doc(userCredential.user.uid).set({
+                        email: email,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    alert('Kayıt başarılı! Hoş geldiniz.');
+                })
+                .catch(error => alert('Hata: ' + error.message));
+        }
+
+        // TELEFON DOĞRULAMA
+        let confirmationResult;
+        function startPhoneAuth() {
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const appVerifier = new firebase.auth.RecaptchaVerifier('phoneBtn', {
+                'size': 'invisible'
+            });
+            
+            auth.signInWithPhoneNumber(phoneNumber, appVerifier)
+                .then(result => {
+                    confirmationResult = result;
+                    document.getElementById('codeSection').style.display = 'block';
+                    document.getElementById('phoneBtn').innerText = 'Kodu Doğrula';
+                    document.getElementById('phoneBtn').onclick = verifyCode;
+                })
+                .catch(error => alert('Hata: ' + error.message));
+        }
+
+        function verifyCode() {
+            const code = document.getElementById('verificationCode').value;
+            confirmationResult.confirm(code)
+                .then(() => console.log('Telefon doğrulama başarılı'))
+                .catch(error => alert('Hata: ' + error.message));
+        }
+
+        // UYGULAMA GÖSTERME
+        function showApp(user) {
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('appScreen').style.display = 'flex';
+            document.getElementById('userEmail').textContent = user.email;
+            
+            // Tarihi göster
+            document.getElementById('currentDate').textContent = new Date().toLocaleDateString('tr-TR');
+        }
+
+        function showAuth() {
+            document.getElementById('authScreen').style.display = 'flex';
+            document.getElementById('appScreen').style.display = 'none';
+        }
+
+        // ÇIKIŞ
+        function logout() {
+            auth.signOut();
+        }
+
+        // GROK API İLE SOHBET
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            if (!message) return;
+            
+            // Kullanıcı mesajını göster
+            addMessage('user', message);
+            input.value = '';
+            
+            // Animasyonları göster
+            showThinking();
+            
+            try {
+                // Grok API çağrısı (gerçek API anahtarınızla değiştirin)
+                const apiKey = localStorage.getItem('grok_api_key') || '';
+                const endpoint = localStorage.getItem('api_endpoint') || 'https://api.x.ai/v1/chat/completions';
+                
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: 'grok-beta',
+                        messages: [{ role: 'user', content: message }],
+                        temperature: 0.7
+                    })
+                });
+                
+                const data = await response.json();
+                hideThinking();
+                showWriting();
+                
+                setTimeout(() => {
+                    hideWriting();
+                    const aiResponse = data.choices?.[0]?.message?.content || 
+                                     "Üzgünüm, bir yanıt oluşturamadım. API anahtarınızı kontrol edin.";
+                    addMessage('ai', aiResponse);
+                    
+                    // Firestore'a kaydet
+                    saveChatToFirestore(message, aiResponse);
+                }, 1000);
+                
+            } catch (error) {
+                hideThinking();
+                addMessage('ai', 'API bağlantı hatası. Lütfen API ayarlarını kontrol edin.');
+            }
+        }
+
+        // MESAJ EKLEME
+        function addMessage(sender, text) {
+            const container = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            messageDiv.innerHTML = `
+                <div class="message-avatar">
+                    <i class="fas fa-${sender === 'user' ? 'user' : 'robot'}"></i>
+                </div>
+                <div class="message-content">
+                    ${text.replace(/\n/g, '<br>')}
+                    <div style="font-size: 12px; color: var(--gray); margin-top: 10px;">
+                        ${new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                </div>
+            `;
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // ANİMASYONLAR
+        function showThinking() {
+            document.getElementById('thinkingAnimation').style.display = 'flex';
+        }
+        
+        function hideThinking() {
+            document.getElementById('thinkingAnimation').style.display = 'none';
+        }
+        
+        function showWriting() {
+            document.getElementById('writingAnimation').style.display = 'flex';
+        }
+        
+        function hideWriting() {
+            document.getElementById('writingAnimation').style.display = 'none';
+        }
+
+        // APİ AYARLARI
+        function openApiConfig() {
+            document.getElementById('apiConfigModal').style.display = 'flex';
+        }
+        
+        function closeApiConfig() {
+            document.getElementById('apiConfigModal').style.display = 'none';
+        }
+        
+        function saveApiConfig() {
+            const apiKey = document.getElementById('grokApiKey').value;
+            const endpoint = document.getElementById('apiEndpoint').value;
+            
+            localStorage.setItem('grok_api_key', apiKey);
+            localStorage.setItem('api_endpoint', endpoint);
+            
+            document.getElementById('apiStatusText').textContent = 'API Kaydedildi';
+            closeApiConfig();
+            alert('API ayarları kaydedildi!');
+        }
+
+        // FİRESTORE İŞLEMLERİ
+        function saveChatToFirestore(userMessage, aiResponse) {
+            const user = auth.currentUser;
+            if (!user) return;
+            
+            const chatRef = db.collection('users').doc(user.uid).collection('chats').doc();
+            
+            chatRef.set({
+                userMessage,
+                aiResponse,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                chatId: chatRef.id
+            });
+            
+            // Sohbet geçmişini yenile
+            loadUserChats(user.uid);
+        }
+
+        async function loadUserChats(userId) {
+            const chatsRef = db.collection('users').doc(userId).collection('chats')
+                .orderBy('timestamp', 'desc')
+                .limit(20);
+            
+            const snapshot = await chatsRef.get();
+            const historyList = document.getElementById('chatHistoryList');
+            historyList.innerHTML = '<h4>Sohbet Geçmişi</h4>';
+            
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                const item = document.createElement('div');
+                item.className = 'chat-history-item';
+                item.innerHTML = `
+                    <div style="font-weight: 600;">${data.userMessage.substring(0, 30)}${data.userMessage.length > 30 ? '...' : ''}</div>
+                    <div style="font-size: 12px; color: var(--gray);">
+                        ${data.timestamp?.toDate().toLocaleDateString('tr-TR')}
+                    </div>
+                `;
+                item.onclick = () => loadChat(doc.id);
+                historyList.appendChild(item);
+            });
+        }
+
+        // ÖZELLEŞTİRME
+        function openCustomize() {
+            document.getElementById('customizePanel').classList.add('open');
+        }
+        
+        function closeCustomize() {
+            document.getElementById('customizePanel').classList.remove('open');
+        }
+        
+        function changeTheme(theme) {
+            document.querySelectorAll('.theme-color').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (theme === 'light') {
+                document.documentElement.classList.add('light-theme');
+            } else {
+                document.documentElement.classList.remove('light-theme');
+            }
+        }
+        
+        function changePrimaryColor(color) {
+            document.documentElement.style.setProperty('--primary', color);
+            document.documentElement.style.setProperty('--secondary', color);
+        }
+
+        // DİĞER FONKSİYONLAR
+        function clearChat() {
+            if (confirm('Sohbet geçmişini temizlemek istiyor musunuz?')) {
+                document.getElementById('chatMessages').innerHTML = `
+                    <div class="message ai">
+                        <div class="message-avatar">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="message-content">
+                            Sohbet temizlendi! Size nasıl yardımcı olabilirim?
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        function newChat() {
+            clearChat();
+        }
+        
+        function deepThinkingMode() {
+            document.getElementById('messageInput').value = "Bu konu hakkında derinlemesine düşünür müsün?";
+        }
+
+        // EVENT LISTENERS
+        document.getElementById('sendButton').addEventListener('click', sendMessage);
+        document.getElementById('messageInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // Demo API anahtarı (kendi anahtarınızla değiştirin)
+        if (!localStorage.getItem('grok_api_key')) {
+            localStorage.setItem('grok_api_key', 'demo-key-buraya-gercek-anahtar-girin');
+        }
+    </script>
 </body>
 </html>
