@@ -1,632 +1,703 @@
-// ===== Firebase CDN (kurulumsuz) =====
-// Firebase CDN module import formatı (alternate setup) Firebase docs'ta var. :contentReference[oaicite:5]{index=5}
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+// ========================
+// AI Chat v2 (Firebase + GitHub Pages + Worker Gateway)
+// - Email/Pass Auth + Email verification
+// - Firestore: sohbet listesi + mesajlar
+// - OpenAI çağrısı: Cloudflare Worker (CORS ve key gizleme)
+// ========================
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
 import {
   getAuth,
   onAuthStateChanged,
-  createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   sendEmailVerification,
   sendPasswordResetEmail,
   signOut,
   reload
-} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+} from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
 
 import {
   getFirestore,
   doc,
   setDoc,
   getDoc,
-  collection,
   addDoc,
-  getDocs,
+  collection,
   query,
   orderBy,
   limit,
-  updateDoc,
-  deleteDoc,
+  onSnapshot,
   serverTimestamp
-} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+} from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
 
-// ========= 1) Firebase config (BURAYI DOLDUR) =========
+// ✅ Senin Firebase config (değişirse burayı güncelle)
 const firebaseConfig = {
-  apiKey: "FIREBASE_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "SENDER_ID",
-  appId: "APP_ID"
+  apiKey: "AIzaSyBuLkEI4HXOtl6RTGNRXadflBu6YGsX9F8",
+  authDomain: "skylanda-211e2.firebaseapp.com",
+  projectId: "skylanda-211e2",
+  storageBucket: "skylanda-211e2.firebasestorage.app",
+  messagingSenderId: "225103922974",
+  appId: "1:225103922974:web:c3761c5ce3201c8a466b0f",
+  measurementId: "G-DJMF29LBWL"
 };
 
-// ========= App init =========
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// ========= UI helpers =========
-const $ = (sel) => document.querySelector(sel);
+// ========================
+// SADECE SEN + 1 ARKADAŞ (isteğe bağlı kilit)
+// (E-posta adreslerini buraya yaz)
+// ========================
+const ALLOWED_EMAILS = [
+  "SENIN_MAILIN@gmail.com",
+  "ARKADASIN_MAILI@gmail.com"
+];
 
-function toast(msg, ms = 2400) {
-  const el = $("#toast");
-  el.textContent = msg;
-  el.classList.remove("hidden");
-  clearTimeout(toast._t);
-  toast._t = setTimeout(() => el.classList.add("hidden"), ms);
-}
+// ========================
+// Settings (localStorage)
+// ========================
+const DEFAULTS = {
+  gatewayUrl: "",      // Worker URL
+  gatewayToken: "",    // Worker APP_TOKEN
+  model: "gpt-4o-mini",
+  temperature: 0.7,
+  systemPrompt: "Türkçe cevap ver. Kısa ve net ol."
+};
 
-function escapeHtml(s) {
-  return s.replace(/[&<>"']/g, (c) => ({
-    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
-  }[c]));
+function loadSettings(){
+  try{
+    const raw = localStorage.getItem("ai_settings_v2");
+    return raw ? { ...DEFAULTS, ...JSON.parse(raw) } : { ...DEFAULTS };
+  }catch{
+    return { ...DEFAULTS };
+  }
 }
-
-function autoGrowTextarea(el) {
-  el.style.height = "auto";
-  el.style.height = Math.min(el.scrollHeight, 160) + "px";
-}
-
-// ========= Local settings (API key vs) =========
-const LS_KEY = "ai_chat_settings_v1";
-function loadSettings() {
-  const raw = localStorage.getItem(LS_KEY);
-  const base = {
-    apiKey: "",
-    apiUrl: "https://api.openai.com/v1/chat/completions",
-    model: "gpt-5.2",
-    temperature: 0.7,
-    systemPrompt: ""
-  };
-  if (!raw) return base;
-  try { return { ...base, ...JSON.parse(raw) }; } catch { return base; }
-}
-function saveSettings(s) {
-  localStorage.setItem(LS_KEY, JSON.stringify(s));
+function saveSettings(s){
+  localStorage.setItem("ai_settings_v2", JSON.stringify(s));
 }
 
 let settings = loadSettings();
 
-// ========= State =========
-let currentUser = null;
-let activeConvId = null;
-let aborter = null;
+// ========================
+// UI refs
+// ========================
+const $ = (id) => document.getElementById(id);
 
-// ========= Views =========
-const authView = $("#authView");
-const mainView = $("#mainView");
-const verifyBox = $("#verifyBox");
+const tabLogin = $("tabLogin");
+const tabRegister = $("tabRegister");
+const loginForm = $("loginForm");
+const registerForm = $("registerForm");
+const loginHint = $("loginHint");
+const regHint = $("regHint");
 
-function showAuth() {
-  authView.classList.remove("hidden");
-  mainView.classList.add("hidden");
+const loginEmail = $("loginEmail");
+const loginPass = $("loginPass");
+const regEmail = $("regEmail");
+const regPass = $("regPass");
+const regPass2 = $("regPass2");
+const forgotBtn = $("forgotBtn");
+
+const authBox = $("authBox");
+const verifyBox = $("verifyBox");
+const verifyHint = $("verifyHint");
+const resendBtn = $("resendBtn");
+const checkedBtn = $("checkedBtn");
+
+const appPanel = $("appPanel");
+const userChip = $("userChip");
+const logoutBtn = $("logoutBtn");
+const newChatBtn = $("newChatBtn");
+const chatList = $("chatList");
+
+const messagesEl = $("messages");
+const emptyState = $("emptyState");
+
+const promptEl = $("prompt");
+const sendBtn = $("sendBtn");
+const tinyHint = $("tinyHint");
+const chatTitle = $("chatTitle");
+const chatSub = $("chatSub");
+const modelPill = $("modelPill");
+
+// modal
+const modal = $("modal");
+const settingsBtn = $("settingsBtn");
+const closeModal = $("closeModal");
+const gatewayUrlEl = $("gatewayUrl");
+const gatewayTokenEl = $("gatewayToken");
+const modelEl = $("model");
+const tempEl = $("temp");
+const systemPromptEl = $("systemPrompt");
+const resetSettingsBtn = $("resetSettings");
+const saveSettingsBtn = $("saveSettings");
+const settingsHint = $("settingsHint");
+
+// ========================
+// Helpers
+// ========================
+function setHint(el, msg, isError=false){
+  el.textContent = msg || "";
+  el.style.color = isError ? "#ffb4b4" : "var(--muted)";
 }
-function showMain() {
-  authView.classList.add("hidden");
-  mainView.classList.remove("hidden");
+
+function allowedEmail(email){
+  if (!email) return false;
+  // allowlist boşsa herkes girer (istersen bunu kaldır)
+  const list = ALLOWED_EMAILS.filter(x => x.includes("@"));
+  if (list.length === 0) return true;
+  return list.includes(email.toLowerCase());
 }
 
-function setModelLabel() {
-  $("#modelLabel").textContent = `Model: ${settings.model || "—"}`;
-}
-
-// ========= Auth tabs =========
-$("#tabLogin").onclick = () => {
-  $("#tabLogin").classList.add("active");
-  $("#tabRegister").classList.remove("active");
-  $("#loginForm").classList.remove("hidden");
-  $("#registerForm").classList.add("hidden");
-};
-
-$("#tabRegister").onclick = () => {
-  $("#tabRegister").classList.add("active");
-  $("#tabLogin").classList.remove("active");
-  $("#registerForm").classList.remove("hidden");
-  $("#loginForm").classList.add("hidden");
-};
-
-// ========= Register / Login =========
-$("#btnRegister").onclick = async () => {
-  const email = $("#regEmail").value.trim();
-  const p1 = $("#regPass").value;
-  const p2 = $("#regPass2").value;
-  if (!email || !p1) return toast("Email ve şifre lazım.");
-  if (p1.length < 6) return toast("Şifre en az 6 karakter olmalı.");
-  if (p1 !== p2) return toast("Şifreler aynı değil.");
-
-  try {
-    const cred = await createUserWithEmailAndPassword(auth, email, p1);
-
-    // Email verification (Firebase resmi örnek) :contentReference[oaicite:6]{index=6}
-    await sendEmailVerification(cred.user, {
-      url: window.location.origin, // verify sonrası geri dönsün
-      handleCodeInApp: false
-    });
-
-    toast("Doğrulama maili gönderildi.");
-    verifyBox.classList.remove("hidden");
-  } catch (e) {
-    toast(e.message || "Kayıt hatası.");
+function formatTime(ts){
+  try{
+    const d = ts?.toDate ? ts.toDate() : new Date();
+    return d.toLocaleString("tr-TR", { hour:"2-digit", minute:"2-digit" });
+  }catch{
+    return "";
   }
-};
+}
 
-$("#btnLogin").onclick = async () => {
-  const email = $("#loginEmail").value.trim();
-  const pass = $("#loginPass").value;
-  if (!email || !pass) return toast("Email ve şifre lazım.");
+function autosizeTextarea(){
+  promptEl.style.height = "auto";
+  promptEl.style.height = Math.min(promptEl.scrollHeight, 180) + "px";
+}
+promptEl.addEventListener("input", autosizeTextarea);
 
-  try {
+// ========================
+// Tabs
+// ========================
+tabLogin.addEventListener("click", () => {
+  tabLogin.classList.add("active");
+  tabRegister.classList.remove("active");
+  loginForm.classList.remove("hidden");
+  registerForm.classList.add("hidden");
+});
+
+tabRegister.addEventListener("click", () => {
+  tabRegister.classList.add("active");
+  tabLogin.classList.remove("active");
+  registerForm.classList.remove("hidden");
+  loginForm.classList.add("hidden");
+});
+
+// ========================
+// Auth actions
+// ========================
+loginForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  setHint(loginHint, "");
+  const email = loginEmail.value.trim().toLowerCase();
+  const pass = loginPass.value;
+
+  if (!allowedEmail(email)){
+    setHint(loginHint, "Bu site özel. Bu e-posta izinli değil.", true);
+    return;
+  }
+
+  try{
     await signInWithEmailAndPassword(auth, email, pass);
-  } catch (e) {
-    toast(e.message || "Giriş hatası.");
-  }
-};
-
-$("#btnForgot").onclick = async () => {
-  const email = $("#loginEmail").value.trim();
-  if (!email) return toast("Önce email yaz.");
-  try {
-    await sendPasswordResetEmail(auth, email);
-    toast("Şifre sıfırlama maili gönderildi.");
-  } catch (e) {
-    toast(e.message || "Gönderilemedi.");
-  }
-};
-
-$("#btnResendVerify").onclick = async () => {
-  try {
-    if (!auth.currentUser) return;
-    await sendEmailVerification(auth.currentUser, { url: window.location.origin });
-    toast("Tekrar gönderildi.");
-  } catch (e) {
-    toast(e.message || "Gönderilemedi.");
-  }
-};
-
-$("#btnIverif").onclick = async () => {
-  try {
-    if (!auth.currentUser) return;
-    await reload(auth.currentUser);
-    if (auth.currentUser.emailVerified) {
-      toast("Doğrulandı ✅");
-      verifyBox.classList.add("hidden");
-      await afterLoginReady();
-    } else {
-      toast("Hâlâ doğrulanmamış görünüyor. Maildeki linke tıkla.");
-    }
-  } catch (e) {
-    toast("Kontrol edemedim.");
-  }
-};
-
-$("#btnLogoutFromVerify").onclick = async () => {
-  await signOut(auth);
-};
-
-// ========= Main buttons =========
-$("#btnLogout").onclick = async () => { await signOut(auth); };
-
-$("#btnNewChat").onclick = async () => { await createConversationAndOpen(); };
-
-$("#btnSettings").onclick = () => openSettings();
-$("#btnCloseSettings").onclick = () => closeSettings();
-$("#modalBackdrop").onclick = () => closeSettings();
-
-$("#btnSaveSettings").onclick = () => {
-  settings.apiKey = $("#apiKey").value.trim();
-  settings.apiUrl = $("#apiUrl").value.trim();
-  settings.model = $("#model").value.trim();
-  settings.temperature = Number($("#temp").value || 0.7);
-  settings.systemPrompt = $("#systemPrompt").value;
-  saveSettings(settings);
-  setModelLabel();
-  toast("Kaydedildi.");
-  closeSettings();
-};
-
-$("#btnClearLocal").onclick = () => {
-  settings.apiKey = "";
-  saveSettings(settings);
-  $("#apiKey").value = "";
-  toast("Bu cihazdaki key silindi.");
-};
-
-function openSettings() {
-  $("#apiKey").value = settings.apiKey || "";
-  $("#apiUrl").value = settings.apiUrl || "";
-  $("#model").value = settings.model || "";
-  $("#temp").value = String(settings.temperature ?? 0.7);
-  $("#systemPrompt").value = settings.systemPrompt || "";
-
-  $("#modalBackdrop").classList.remove("hidden");
-  $("#settingsModal").classList.remove("hidden");
-}
-function closeSettings() {
-  $("#modalBackdrop").classList.add("hidden");
-  $("#settingsModal").classList.add("hidden");
-}
-
-// ========= Chat input =========
-const input = $("#input");
-input.addEventListener("input", () => autoGrowTextarea(input));
-input.addEventListener("keydown", (e) => {
-  if (e.key === "Enter" && !e.shiftKey) {
-    e.preventDefault();
-    $("#btnSend").click();
+  }catch(err){
+    setHint(loginHint, err?.message || "Giriş hatası", true);
   }
 });
 
-$("#btnSend").onclick = async () => {
-  const text = input.value.trim();
-  if (!text) return;
+registerForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  setHint(regHint, "");
+  const email = regEmail.value.trim().toLowerCase();
+  const pass = regPass.value;
+  const pass2 = regPass2.value;
 
-  if (!activeConvId) {
-    await createConversationAndOpen();
+  if (!allowedEmail(email)){
+    setHint(regHint, "Bu site özel. Bu e-posta izinli değil.", true);
+    return;
   }
-
-  input.value = "";
-  autoGrowTextarea(input);
-
-  await sendMessage(text);
-};
-
-// ========= Firestore paths =========
-function userDocRef(uid) { return doc(db, "users", uid); }
-function convColRef(uid) { return collection(db, "users", uid, "conversations"); }
-function convDocRef(uid, cid) { return doc(db, "users", uid, "conversations", cid); }
-function msgColRef(uid, cid) { return collection(db, "users", uid, "conversations", cid, "messages"); }
-
-// ========= Data ops =========
-async function ensureUserDoc(u) {
-  const ref = userDocRef(u.uid);
-  const snap = await getDoc(ref);
-  if (!snap.exists()) {
-    await setDoc(ref, {
-      email: u.email || "",
-      createdAt: serverTimestamp()
-    });
-  }
-}
-
-async function loadConversations() {
-  const listEl = $("#chatList");
-  listEl.innerHTML = "";
-
-  const q = query(convColRef(currentUser.uid), orderBy("updatedAt", "desc"), limit(50));
-  const snap = await getDocs(q);
-
-  const items = [];
-  snap.forEach(d => items.push({ id: d.id, ...d.data() }));
-
-  if (items.length === 0) {
-    listEl.innerHTML = `<div class="hint">Henüz sohbet yok. “Yeni sohbet”e bas.</div>`;
+  if (pass !== pass2){
+    setHint(regHint, "Şifreler aynı değil.", true);
     return;
   }
 
-  for (const c of items) {
-    const div = document.createElement("div");
-    div.className = "chat-item" + (c.id === activeConvId ? " active" : "");
-    const title = c.title || "Yeni sohbet";
-    const sub = (c.lastPreview || "").slice(0, 60);
-    div.innerHTML = `
-      <div class="t">${escapeHtml(title)}</div>
-      <div class="s">${escapeHtml(sub || "—")}</div>
-    `;
-    div.onclick = () => openConversation(c.id);
-    listEl.appendChild(div);
+  try{
+    const cred = await createUserWithEmailAndPassword(auth, email, pass);
+    await sendEmailVerification(cred.user, { url: window.location.origin });
+    setHint(regHint, "Kayıt tamam. Doğrulama maili gönderildi.");
+  }catch(err){
+    setHint(regHint, err?.message || "Kayıt hatası", true);
   }
+});
+
+forgotBtn.addEventListener("click", async () => {
+  setHint(loginHint, "");
+  const email = loginEmail.value.trim().toLowerCase();
+  if (!email) return setHint(loginHint, "E-posta yaz.", true);
+  try{
+    await sendPasswordResetEmail(auth, email);
+    setHint(loginHint, "Şifre sıfırlama maili gönderildi.");
+  }catch(err){
+    setHint(loginHint, err?.message || "Hata", true);
+  }
+});
+
+logoutBtn.addEventListener("click", async () => {
+  await signOut(auth);
+});
+
+// verify box
+resendBtn.addEventListener("click", async () => {
+  setHint(verifyHint, "");
+  const u = auth.currentUser;
+  if (!u) return;
+  try{
+    await sendEmailVerification(u, { url: window.location.origin });
+    setHint(verifyHint, "Tekrar gönderildi.");
+  }catch(err){
+    setHint(verifyHint, err?.message || "Hata", true);
+  }
+});
+
+checkedBtn.addEventListener("click", async () => {
+  setHint(verifyHint, "");
+  const u = auth.currentUser;
+  if (!u) return;
+  await reload(u);
+  if (u.emailVerified){
+    setHint(verifyHint, "Doğrulandı ✅");
+    // UI refresh
+    renderAuthState(u);
+  }else{
+    setHint(verifyHint, "Hâlâ doğrulanmamış. Maildeki linke tıkla.", true);
+  }
+});
+
+// ========================
+// App state (chat)
+// ========================
+let currentUser = null;
+let unsubChatList = null;
+let unsubMessages = null;
+
+let activeConvId = null;
+let activeConvTitle = "Yeni sohbet";
+
+function convRef(uid, convId){
+  return doc(db, "users", uid, "conversations", convId);
+}
+function msgsCol(uid, convId){
+  return collection(db, "users", uid, "conversations", convId, "messages");
 }
 
-async function createConversationAndOpen() {
-  const ref = await addDoc(convColRef(currentUser.uid), {
-    title: "Yeni sohbet",
-    lastPreview: "",
-    model: settings.model || "",
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp()
-  });
-  await openConversation(ref.id);
+function clearMessages(){
+  messagesEl.innerHTML = "";
+  messagesEl.appendChild(emptyState);
 }
 
-async function openConversation(cid) {
-  activeConvId = cid;
-  await loadConversations();
+function addMessageBubble(role, text, meta=""){
+  emptyState.classList.add("hidden");
 
-  $("#messages").innerHTML = "";
-
-  const q = query(msgColRef(currentUser.uid, cid), orderBy("createdAt", "asc"), limit(200));
-  const snap = await getDocs(q);
-  const msgs = [];
-  snap.forEach(d => msgs.push({ id: d.id, ...d.data() }));
-
-  for (const m of msgs) renderMessage(m.role, m.content || "", m.id);
-
-  scrollToBottom();
-}
-
-function scrollToBottom() {
-  const box = $("#messages");
-  box.scrollTop = box.scrollHeight;
-}
-
-// ========= Render messages =========
-function renderMessage(role, content, id = "") {
-  const box = $("#messages");
   const wrap = document.createElement("div");
   wrap.className = `msg ${role === "user" ? "user" : "assistant"}`;
-  wrap.dataset.mid = id;
 
-  const meta = document.createElement("div");
-  meta.className = "meta";
-  meta.innerHTML = `<span>${role === "user" ? "Sen" : "AI"}</span>`;
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
+  bubble.textContent = text || "";
 
-  if (role !== "user") {
-    const copy = document.createElement("button");
-    copy.className = "copy";
-    copy.textContent = "Kopyala";
-    copy.onclick = async () => {
-      await navigator.clipboard.writeText(content || "");
-      toast("Kopyalandı.");
-    };
-    meta.appendChild(copy);
-  }
+  const metaEl = document.createElement("div");
+  metaEl.className = "meta";
+  metaEl.textContent = meta || "";
 
-  const body = document.createElement("div");
-  body.className = "body";
-  body.innerHTML = formatText(content);
+  const col = document.createElement("div");
+  col.appendChild(bubble);
+  if (meta) col.appendChild(metaEl);
 
-  wrap.appendChild(meta);
-  wrap.appendChild(body);
-  box.appendChild(wrap);
-  scrollToBottom();
+  wrap.appendChild(col);
+  messagesEl.appendChild(wrap);
 
-  return wrap;
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+  return { bubble };
 }
 
-function updateMessage(mid, newContent) {
-  const el = document.querySelector(`.msg[data-mid="${mid}"] .body`);
-  if (el) el.innerHTML = formatText(newContent);
-}
-
-function formatText(t) {
-  // Basit: HTML escape + \n -> <br>
-  return escapeHtml(t).replace(/\n/g, "<br>");
-}
-
-function renderThinkingBubble() {
-  const box = $("#messages");
+function addTypingBubble(){
   const wrap = document.createElement("div");
   wrap.className = "msg assistant";
-  wrap.dataset.thinking = "1";
-  wrap.innerHTML = `
-    <div class="meta"><span>AI</span></div>
-    <div class="body">
-      <span class="thinking"><i></i><i></i><i></i></span>
-    </div>
-  `;
-  box.appendChild(wrap);
-  scrollToBottom();
-  return wrap;
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
+  bubble.innerHTML = `<span class="typing"><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>`;
+  wrap.appendChild(bubble);
+  messagesEl.appendChild(wrap);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+
+  return {
+    setText: (t) => { bubble.textContent = t; messagesEl.scrollTop = messagesEl.scrollHeight; },
+    remove: () => wrap.remove()
+  };
 }
 
-function removeThinkingBubble() {
-  const el = document.querySelector(`.msg[data-thinking="1"]`);
-  if (el) el.remove();
+function renderChatHeader(){
+  chatTitle.textContent = activeConvId ? activeConvTitle : "Giriş yap";
+  chatSub.textContent = activeConvId ? "Enter: gönder • Shift+Enter: alt satır" : "Sohbetlerini kaydet, eski sohbetlere dön.";
+  modelPill.textContent = `Model: ${settings.model || "—"}`;
 }
 
-// ========= AI call (OpenAI uyumlu Chat Completions) =========
-// Chat Completions + stream paramı OpenAI dokümanında var. :contentReference[oaicite:7]{index=7}
-async function callChatCompletionsStream({ apiKey, url, model, messages, temperature, signal, onDelta }) {
-  const res = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${apiKey}`
-    },
-    body: JSON.stringify({
-      model,
-      messages,
-      temperature,
-      stream: true
-    }),
-    signal
+async function createNewChat(){
+  if (!currentUser) return;
+  const uid = currentUser.uid;
+
+  const title = "Yeni sohbet";
+  const conv = await addDoc(collection(db, "users", uid, "conversations"), {
+    title,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+    lastMessage: ""
   });
 
-  if (!res.ok) {
-    const errText = await res.text().catch(() => "");
-    throw new Error(`API hata: ${res.status} ${errText}`.slice(0, 300));
-  }
-
-  const reader = res.body.getReader();
-  const decoder = new TextDecoder("utf-8");
-  let buf = "";
-
-  while (true) {
-    const { value, done } = await reader.read();
-    if (done) break;
-    buf += decoder.decode(value, { stream: true });
-
-    const lines = buf.split("\n");
-    buf = lines.pop() || "";
-
-    for (let line of lines) {
-      line = line.trim();
-      if (!line.startsWith("data:")) continue;
-
-      const data = line.slice(5).trim();
-      if (data === "[DONE]") return;
-
-      let j;
-      try { j = JSON.parse(data); } catch { continue; }
-
-      const delta = j?.choices?.[0]?.delta?.content;
-      if (delta) onDelta(delta);
-    }
-  }
+  activeConvId = conv.id;
+  activeConvTitle = title;
+  renderChatHeader();
+  await loadConversation(activeConvId);
 }
 
-// ========= Send message flow =========
-async function sendMessage(text) {
-  // Settings check
-  if (!settings.apiKey) {
-    toast("Önce Ayarlar’dan API Key gir.");
-    openSettings();
+newChatBtn.addEventListener("click", createNewChat);
+
+// Chat list listener
+function listenChatList(){
+  if (!currentUser) return;
+  const uid = currentUser.uid;
+
+  if (unsubChatList) unsubChatList();
+
+  const q = query(
+    collection(db, "users", uid, "conversations"),
+    orderBy("updatedAt", "desc"),
+    limit(40)
+  );
+
+  unsubChatList = onSnapshot(q, (snap) => {
+    chatList.innerHTML = "";
+    snap.forEach((d) => {
+      const data = d.data();
+      const item = document.createElement("div");
+      item.className = "chatItem" + (d.id === activeConvId ? " active" : "");
+      item.innerHTML = `
+        <div class="chatItemTitle">${escapeHtml(data.title || "Sohbet")}</div>
+        <div class="chatItemSub">${escapeHtml(data.lastMessage || "")}</div>
+      `;
+      item.addEventListener("click", async () => {
+        activeConvId = d.id;
+        activeConvTitle = data.title || "Sohbet";
+        renderChatHeader();
+        await loadConversation(activeConvId);
+        [...chatList.children].forEach(x => x.classList.remove("active"));
+        item.classList.add("active");
+      });
+      chatList.appendChild(item);
+    });
+  });
+}
+
+function escapeHtml(s){
+  return (s||"").replace(/[&<>"']/g, (c)=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
+  }[c]));
+}
+
+// Messages listener
+async function loadConversation(convId){
+  if (!currentUser || !convId) return;
+  const uid = currentUser.uid;
+
+  if (unsubMessages) unsubMessages();
+
+  clearMessages();
+  renderChatHeader();
+
+  const q = query(msgsCol(uid, convId), orderBy("createdAt", "asc"), limit(200));
+  unsubMessages = onSnapshot(q, (snap) => {
+    // basit render (temiz çizmek yerine incremental istersen söylerim)
+    messagesEl.innerHTML = "";
+    snap.forEach((d) => {
+      const m = d.data();
+      addMessageBubble(m.role, m.text, formatTime(m.createdAt));
+    });
+    if (snap.size === 0) {
+      emptyState.classList.remove("hidden");
+      messagesEl.appendChild(emptyState);
+    } else {
+      emptyState.classList.add("hidden");
+    }
+  });
+}
+
+// ========================
+// Sending messages
+// ========================
+promptEl.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey){
+    e.preventDefault();
+    sendBtn.click();
+  }
+});
+
+sendBtn.addEventListener("click", async () => {
+  tinyHint.textContent = "";
+  if (!currentUser) return;
+
+  if (!currentUser.emailVerified){
+    tinyHint.textContent = "Önce e-postanı doğrula.";
     return;
   }
-  if (!settings.apiUrl) return toast("Endpoint boş olamaz.");
 
-  // 1) Firestore: user msg
-  const uid = currentUser.uid;
-  const cid = activeConvId;
-
-  const userMsgRef = await addDoc(msgColRef(uid, cid), {
-    role: "user",
-    content: text,
-    createdAt: serverTimestamp()
-  });
-
-  renderMessage("user", text, userMsgRef.id);
-
-  // 2) Firestore: assistant placeholder (tek seferlik doc)
-  const assistantRef = await addDoc(msgColRef(uid, cid), {
-    role: "assistant",
-    content: "",
-    createdAt: serverTimestamp()
-  });
-
-  const thinkingEl = renderThinkingBubble();
-
-  // UI Stop
-  $("#btnStop").classList.remove("hidden");
-  aborter = new AbortController();
-
-  // 3) Build messages for API (son 20 mesaj)
-  const recent = await getDocs(query(msgColRef(uid, cid), orderBy("createdAt", "asc"), limit(50)));
-  const msgs = [];
-  recent.forEach(d => {
-    const m = d.data();
-    if (m?.role && typeof m?.content === "string") {
-      msgs.push({ role: m.role, content: m.content });
-    }
-  });
-
-  if (settings.systemPrompt?.trim()) {
-    msgs.unshift({ role: "system", content: settings.systemPrompt.trim() });
+  if (!activeConvId){
+    await createNewChat();
   }
 
-  // 4) Stream call
-  let full = "";
-  let lastSaveAt = 0;
+  const text = promptEl.value.trim();
+  if (!text) return;
 
-  try {
-    await callChatCompletionsStream({
-      apiKey: settings.apiKey,
-      url: settings.apiUrl,
+  if (!settings.gatewayUrl){
+    tinyHint.textContent = "Ayarlar → Gateway (Worker) URL gir.";
+    openModal();
+    return;
+  }
+
+  promptEl.value = "";
+  autosizeTextarea();
+
+  const uid = currentUser.uid;
+  const convId = activeConvId;
+
+  // save user message
+  await addDoc(msgsCol(uid, convId), {
+    role: "user",
+    text,
+    createdAt: serverTimestamp()
+  });
+
+  // update conversation preview
+  await setDoc(convRef(uid, convId), {
+    updatedAt: serverTimestamp(),
+    lastMessage: text.slice(0, 80),
+    title: activeConvTitle || "Sohbet"
+  }, { merge: true });
+
+  // prepare context (last 30 messages)
+  const history = await buildHistory(uid, convId, 30);
+
+  // stream assistant
+  const typing = addTypingBubble();
+  let acc = "";
+
+  try{
+    await callGatewayStream({
+      gatewayUrl: settings.gatewayUrl,
+      gatewayToken: settings.gatewayToken,
       model: settings.model,
-      messages: msgs,
-      temperature: settings.temperature,
-      signal: aborter.signal,
+      temperature: Number(settings.temperature ?? 0.7),
+      systemPrompt: settings.systemPrompt,
+      history,
       onDelta: (chunk) => {
-        full += chunk;
-
-        // düşünme bubble kalksın, gerçek mesaj render edilsin
-        if (thinkingEl) removeThinkingBubble();
-
-        // İlk kez render et
-        const existing = document.querySelector(`.msg[data-mid="${assistantRef.id}"]`);
-        if (!existing) {
-          renderMessage("assistant", full, assistantRef.id);
-        } else {
-          updateMessage(assistantRef.id, full);
-        }
-
-        // Firestore’a her token yazmak pahalı -> throttle (2sn)
-        const now = Date.now();
-        if (now - lastSaveAt > 2000) {
-          lastSaveAt = now;
-          updateDoc(doc(db, "users", uid, "conversations", cid, "messages", assistantRef.id), {
-            content: full
-          }).catch(() => {});
-        }
+        acc += chunk;
+        typing.setText(acc);
       }
     });
 
-    // final save
-    await updateDoc(doc(db, "users", uid, "conversations", cid, "messages", assistantRef.id), {
-      content: full
+    typing.remove();
+    await addDoc(msgsCol(uid, convId), {
+      role: "assistant",
+      text: acc || "(boş)",
+      createdAt: serverTimestamp()
     });
 
-    // conversation metadata update
-    const title = (text || "Yeni sohbet").slice(0, 40);
-    await updateDoc(convDocRef(uid, cid), {
-      title: title,
-      lastPreview: full.slice(0, 80),
+    await setDoc(convRef(uid, convId), {
       updatedAt: serverTimestamp(),
-      model: settings.model || ""
-    });
+      lastMessage: (acc || "").slice(0, 80)
+    }, { merge: true });
 
-    await loadConversations();
-  } catch (e) {
-    removeThinkingBubble();
-    // assistant msg’i sil veya hata yaz
-    await updateDoc(doc(db, "users", uid, "conversations", cid, "messages", assistantRef.id), {
-      content: `⚠️ Hata: ${e.message || e}`
-    }).catch(async () => {
-      // olmazsa sil
-      await deleteDoc(doc(db, "users", uid, "conversations", cid, "messages", assistantRef.id)).catch(() => {});
-    });
-    renderMessage("assistant", `⚠️ Hata: ${e.message || e}`, assistantRef.id);
-  } finally {
-    $("#btnStop").classList.add("hidden");
-    aborter = null;
+  }catch(err){
+    typing.remove();
+    addMessageBubble("assistant", `Hata: ${err?.message || err}`, "");
   }
-}
-
-$("#btnStop").onclick = () => {
-  if (aborter) {
-    aborter.abort();
-    toast("Durduruldu.");
-  }
-};
-
-// ========= Auth state =========
-onAuthStateChanged(auth, async (u) => {
-  currentUser = u;
-
-  if (!u) {
-    showAuth();
-    verifyBox.classList.add("hidden");
-    return;
-  }
-
-  $("#meEmail").textContent = u.email || "—";
-
-  // email verification gate
-  if (!u.emailVerified) {
-    showAuth();
-    verifyBox.classList.remove("hidden");
-    toast("E-postanı doğrulamalısın.");
-    return;
-  }
-
-  await afterLoginReady();
 });
 
-async function afterLoginReady() {
-  showMain();
-  setModelLabel();
+async function buildHistory(uid, convId, maxCount){
+  // Firestore’dan son mesajları çekmek için snapshot yerine basit yol:
+  // burada minimal tutuyoruz: realtime zaten ekranda var.
+  // İstersen daha iyi sorgu yazarım.
+  const q = query(msgsCol(uid, convId), orderBy("createdAt","desc"), limit(maxCount));
+  return new Promise((resolve) => {
+    const unsub = onSnapshot(q, (snap) => {
+      unsub();
+      const arr = [];
+      snap.forEach(d => {
+        const m = d.data();
+        if (m?.role && typeof m.text === "string") arr.push({ role: m.role, content: m.text });
+      });
+      resolve(arr.reverse());
+    });
+  });
+}
 
-  await ensureUserDoc(currentUser);
+// ========================
+// OpenAI Gateway (Worker) streaming
+// Client parses Chat Completions stream chunks: choices[].delta.content :contentReference[oaicite:3]{index=3}
+// ========================
+async function callGatewayStream({
+  gatewayUrl,
+  gatewayToken,
+  model,
+  temperature,
+  systemPrompt,
+  history,
+  onDelta
+}){
+  // messages format for chat/completions
+  const messages = [];
+  if (systemPrompt) messages.push({ role:"system", content: systemPrompt });
+  for (const m of history) messages.push(m);
 
-  // list conversations
-  await loadConversations();
+  const resp = await fetch(gatewayUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(gatewayToken ? { "x-app-token": gatewayToken } : {})
+    },
+    body: JSON.stringify({
+      model,
+      temperature,
+      stream: true,
+      messages
+    })
+  });
 
-  // otomatik ilk chat yoksa oluştur
-  if (!activeConvId) {
-    const snap = await getDocs(query(convColRef(currentUser.uid), orderBy("updatedAt", "desc"), limit(1)));
-    if (snap.empty) {
-      await createConversationAndOpen();
-    } else {
-      const first = snap.docs[0];
-      await openConversation(first.id);
+  if (!resp.ok){
+    const t = await resp.text().catch(()=> "");
+    throw new Error(`Gateway hata (${resp.status}): ${t.slice(0,200)}`);
+  }
+
+  const reader = resp.body.getReader();
+  const decoder = new TextDecoder("utf-8");
+  let buffer = "";
+
+  while(true){
+    const { value, done } = await reader.read();
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream:true });
+
+    // SSE parse
+    let idx;
+    while ((idx = buffer.indexOf("\n\n")) !== -1){
+      const rawEvent = buffer.slice(0, idx);
+      buffer = buffer.slice(idx + 2);
+
+      const lines = rawEvent.split("\n");
+      for (const line of lines){
+        const trimmed = line.trim();
+        if (!trimmed.startsWith("data:")) continue;
+
+        const data = trimmed.slice(5).trim();
+        if (data === "[DONE]") return;
+
+        try{
+          const json = JSON.parse(data);
+          const delta = json?.choices?.[0]?.delta?.content;
+          if (delta) onDelta(delta);
+        }catch{
+          // ignore
+        }
+      }
     }
   }
 }
+
+// ========================
+// Modal (settings)
+// ========================
+function openModal(){
+  gatewayUrlEl.value = settings.gatewayUrl || "";
+  gatewayTokenEl.value = settings.gatewayToken || "";
+  modelEl.value = settings.model || "";
+  tempEl.value = String(settings.temperature ?? 0.7);
+  systemPromptEl.value = settings.systemPrompt || "";
+  setHint(settingsHint, "");
+  modal.classList.remove("hidden");
+}
+
+function closeModalFn(){
+  modal.classList.add("hidden");
+}
+
+settingsBtn?.addEventListener("click", openModal);
+closeModal.addEventListener("click", closeModalFn);
+modal.addEventListener("click", (e) => {
+  if (e.target === modal) closeModalFn();
+});
+
+resetSettingsBtn.addEventListener("click", () => {
+  settings = { ...DEFAULTS };
+  saveSettings(settings);
+  openModal();
+  setHint(settingsHint, "Sıfırlandı.");
+  renderChatHeader();
+});
+
+saveSettingsBtn.addEventListener("click", () => {
+  settings = {
+    gatewayUrl: gatewayUrlEl.value.trim(),
+    gatewayToken: gatewayTokenEl.value.trim(),
+    model: modelEl.value.trim() || DEFAULTS.model,
+    temperature: Number(tempEl.value || DEFAULTS.temperature),
+    systemPrompt: systemPromptEl.value
+  };
+  saveSettings(settings);
+  setHint(settingsHint, "Kaydedildi ✅");
+  renderChatHeader();
+});
+
+// ========================
+// Auth state render
+// ========================
+function renderAuthState(user){
+  const loggedIn = !!user;
+  currentUser = user || null;
+
+  if (!loggedIn){
+    authBox.classList.remove("hidden");
+    verifyBox.classList.add("hidden");
+    appPanel.classList.add("hidden");
+    activeConvId = null;
+    activeConvTitle = "Yeni sohbet";
+    clearMessages();
+    renderChatHeader();
+    return;
+  }
+
+  // allowlist check
+  if (!allowedEmail(user.email?.toLowerCase())){
+    signOut(auth);
+    return;
+  }
+
+  authBox.classList.add("hidden");
+
+  if (!user.emailVerified){
+    verifyBox.classList.remove("hidden");
+    appPanel.classList.add("hidden");
+    userChip.textContent = user.email || "—";
+    clearMessages();
+    renderChatHeader();
+    return;
+  }
+
+  verifyBox.classList.add("hidden");
+  appPanel.classList.remove("hidden");
+  userChip.textContent = user.email || "—";
+
+  listenChatList();
+  renderChatHeader();
+}
+
+onAuthStateChanged(auth, (user) => {
+  renderAuthState(user);
+});
