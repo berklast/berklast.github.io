@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SkyLand 3</title>
+    <meta
+      name="description"
+      content="SkyLand 3 launcher tanitim, hesap yonetimi, giris ve kayit merkezi."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Sora:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <div class="ambient ambient-a"></div>
+      <div class="ambient ambient-b"></div>
+      <div class="grid-glow"></div>
+
+      <header class="topbar">
+        <a class="brand" href="#hero">
+          <span class="brand-mark">
+            <img src="./assets/skyland-logo.png" alt="SkyLand 3" />
+          </span>
+          <span class="brand-copy">
+            <strong>SKYLAND 3</strong>
+            <small>Launcher + Web Hub</small>
+          </span>
+        </a>
+
+        <nav class="topnav">
+          <a href="#features">Ozellikler</a>
+          <a href="#authPanel">Giris</a>
+          <a href="#announcementsSection">Duyurular</a>
+        </nav>
+
+        <div class="top-actions">
+          <button class="ghost-button" id="scrollAuthButton" type="button">Giris Yap</button>
+          <button class="primary-button" id="scrollRegisterButton" type="button">Kayit Ol</button>
+        </div>
+      </header>
+
+      <main class="page-content">
+        <section class="public-view" id="publicView">
+          <section class="hero-grid" id="hero">
+            <article class="hero-copy panel lift">
+              <p class="eyebrow">SkyLand Prime Network</p>
+              <h1>Minecraft icin tek hesapli, modern ve guven veren launcher merkezi</h1>
+              <p class="hero-text">
+                Launcher hesabin sitede de gecerli olsun. Kayit ol, giris yap, sifreni sifirla,
+                profilini yonet ve SkyLand 3 icin tum duyurulari tek panelden takip et.
+              </p>
+
+              <div class="hero-actions">
+                <button class="primary-button" id="heroJoinButton" type="button">Hemen Basla</button>
+                <a class="ghost-button" href="#features">Siteyi Kesfet</a>
+              </div>
+
+              <div class="metric-row">
+                <div class="metric-card">
+                  <span>Hesap sistemi</span>
+                  <strong>Launcher ile ortak</strong>
+                </div>
+                <div class="metric-card">
+                  <span>Guvenceli akis</span>
+                  <strong>Firebase destekli</strong>
+                </div>
+                <div class="metric-card">
+                  <span>Duyuru sahnesi</span>
+                  <strong>Canli donen panel</strong>
+                </div>
+              </div>
+            </article>
+
+            <aside class="hero-stage panel lift">
+              <div class="stage-surface">
+                <div class="stage-badge">Launcher Sahnesi</div>
+                <img class="stage-logo" src="./assets/skyland-logo.png" alt="SkyLand 3 Logo" />
+                <div class="stage-copy">
+                  <h2 id="publicAnnouncementTitle">SkyLand 3 canli duyuru</h2>
+                  <p id="publicAnnouncementBody"></p>
+                </div>
+                <div class="announcement-pills" id="publicAnnouncementPills"></div>
+              </div>
+            </aside>
+          </section>
+
+          <section class="feature-grid" id="features">
+            <article class="feature-card panel">
+              <p class="eyebrow">Tek hesap</p>
+              <h3>Launcher ve web ayni veride</h3>
+              <p>
+                Sitede actigin hesap launcherda da calisir. Launcherda actigin hesap buraya da
+                direkt gelir.
+              </p>
+            </article>
+
+            <article class="feature-card panel">
+              <p class="eyebrow">Guvenlik</p>
+              <h3>Sifre sifirlama ve degistirme hazir</h3>
+              <p>
+                Mail uzerinden sifre sifirlama, hesap icinden sifre degistirme ve mail dogrulama
+                akislari tek yerde.
+              </p>
+            </article>
+
+            <article class="feature-card panel">
+              <p class="eyebrow">Prime arayuz</p>
+              <h3>Duyuru ve profil merkezi</h3>
+              <p>
+                Siteye girdiginde olusturma tarihi, profil bilgileri, duyurular ve ayarlar aninda
+                gorunur.
+              </p>
+            </article>
+          </section>
+
+          <section class="auth-grid">
+            <article class="marketing-stack panel">
+              <p class="eyebrow">SkyLand 3 Web</p>
+              <h2>GitHub Pages icin hazir launcher sitesi</h2>
+              <p class="support-copy">
+                Bu tasarim GitHub Pages uzerinde bedava yayina cikacak sekilde hazirlandi.
+                Firebase ile hesap acma, giris, sifre sifirlama ve profil senkronu hazir.
+              </p>
+
+              <div class="notice-list">
+                <div class="notice-chip">Launcher profilin buradan da yonetilir</div>
+                <div class="notice-chip">Duyurular otomatik degisir</div>
+                <div class="notice-chip">Tum ekranlarda akici ve mobil uyumlu</div>
+              </div>
+            </article>
+
+            <section class="auth-panel panel" id="authPanel">
+              <div class="auth-tabs">
+                <button class="auth-tab active" type="button" data-auth-mode="login">Giris Yap</button>
+                <button class="auth-tab" type="button" data-auth-mode="register">Kayit Ol</button>
+                <button class="auth-tab" type="button" data-auth-mode="reset">Sifreyi Sifirla</button>
+              </div>
+
+              <div class="auth-copy">
+                <p class="eyebrow" id="authModeBadge">Prime giris</p>
+                <h3 id="authModeTitle">SkyLand hesabina giris yap</h3>
+                <p id="authModeDescription">
+                  Launcher hesabinla web paneline gir, duyurulari ve profilini tek ekrandan yonet.
+                </p>
+              </div>
+
+              <div class="banner-message hidden" id="authMessage"></div>
+
+              <form class="auth-form" id="loginForm">
+                <label>
+                  <span>Kullanici adi</span>
+                  <input name="identifier" type="text" autocomplete="username" required />
+                </label>
+                <label>
+                  <span>Sifre</span>
+                  <input name="password" type="password" autocomplete="current-password" required />
+                </label>
+                <div class="form-actions">
+                  <button class="primary-button wide-button" type="submit">Panele Gir</button>
+                  <button class="ghost-button wide-button" id="resendVerificationButton" type="button">
+                    Dogrulama Maili
+                  </button>
+                </div>
+              </form>
+
+              <form class="auth-form hidden" id="registerForm">
+                <label>
+                  <span>Kullanici adi</span>
+                  <input name="username" type="text" autocomplete="username" required />
+                </label>
+                <label>
+                  <span>Gosterilecek ad</span>
+                  <input name="displayName" type="text" autocomplete="nickname" required />
+                </label>
+                <label>
+                  <span>E-posta</span>
+                  <input name="email" type="email" autocomplete="email" required />
+                </label>
+                <label>
+                  <span>Sifre</span>
+                  <input name="password" type="password" autocomplete="new-password" required />
+                </label>
+                <label>
+                  <span>Sifre tekrar</span>
+                  <input name="passwordConfirm" type="password" autocomplete="new-password" required />
+                </label>
+                <button class="primary-button wide-button" type="submit">SkyLand Hesabi Ac</button>
+              </form>
+
+              <form class="auth-form hidden" id="resetForm">
+                <label>
+                  <span>Kullanici adi veya e-posta</span>
+                  <input name="identifier" type="text" autocomplete="username" required />
+                </label>
+                <p class="helper-text">
+                  Kullanici adini yazarsan sistem bagli e-postayi bulup sifirlama baglantisi gonderir.
+                </p>
+                <button class="primary-button wide-button" type="submit">Sifre Sifirlama Maili Gonder</button>
+              </form>
+            </section>
+          </section>
+        </section>
+
+        <section class="private-view hidden" id="privateView">
+          <section class="dashboard-top panel">
+            <div>
+              <p class="eyebrow">SkyLand Control</p>
+              <h2 id="dashboardGreeting">Hos geldin</h2>
+              <p id="dashboardSubtitle">Launcher hesabin web paneline baglandi.</p>
+            </div>
+
+            <div class="account-pill">
+              <div>
+                <strong id="sessionUserLabel">-</strong>
+                <small id="sessionMetaLabel">Hesap baglaniyor...</small>
+              </div>
+              <button class="ghost-button" id="logoutButton" type="button">Cikis Yap</button>
+            </div>
+          </section>
+
+          <section class="dashboard-hero panel" id="announcementsSection">
+            <div class="dashboard-hero-copy">
+              <p class="eyebrow">Canli Duyuru</p>
+              <h2 id="dashboardAnnouncementTitle">SkyLand 3 merkezi</h2>
+              <p id="dashboardAnnouncementBody"></p>
+            </div>
+
+            <div class="dashboard-hero-side">
+              <div class="announcement-orbit"></div>
+              <img src="./assets/skyland-logo.png" alt="SkyLand 3 Logo" class="dashboard-logo" />
+              <div class="announcement-pills compact" id="dashboardAnnouncementPills"></div>
+            </div>
+          </section>
+
+          <section class="dashboard-grid">
+            <article class="overview-column">
+              <div class="overview-cards">
+                <div class="overview-card panel">
+                  <span>Olusturma tarihi</span>
+                  <strong id="profileCreatedAt">-</strong>
+                </div>
+                <div class="overview-card panel">
+                  <span>E-posta</span>
+                  <strong id="profileEmail">-</strong>
+                </div>
+                <div class="overview-card panel">
+                  <span>Durum</span>
+                  <strong id="profileVerified">-</strong>
+                </div>
+              </div>
+
+              <div class="tab-strip">
+                <button class="tab-button active" type="button" data-tab="profile">Profil</button>
+                <button class="tab-button" type="button" data-tab="announcements">Duyurular</button>
+                <button class="tab-button" type="button" data-tab="settings">Ayarlar</button>
+              </div>
+
+              <section class="tab-panel panel active" data-tab-panel="profile">
+                <div class="panel-head">
+                  <div>
+                    <p class="eyebrow">Profil</p>
+                    <h3>Launcher ve web hesap detaylari</h3>
+                  </div>
+                </div>
+
+                <div class="profile-grid">
+                  <div class="profile-card">
+                    <span>Kullanici adi</span>
+                    <strong id="profileUsername">-</strong>
+                  </div>
+                  <div class="profile-card">
+                    <span>Gosterilecek ad</span>
+                    <strong id="profileDisplayName">-</strong>
+                  </div>
+                  <div class="profile-card">
+                    <span>Minecraft nicki</span>
+                    <strong id="profileMcNickname">-</strong>
+                  </div>
+                  <div class="profile-card">
+                    <span>Son guncelleme</span>
+                    <strong id="profileUpdatedAt">-</strong>
+                  </div>
+                </div>
+              </section>
+
+              <section class="tab-panel panel" data-tab-panel="announcements">
+                <div class="panel-head">
+                  <div>
+                    <p class="eyebrow">Duyuru Akisi</p>
+                    <h3>Surekli donen launcher duyurulari</h3>
+                  </div>
+                </div>
+
+                <div class="announcement-list" id="announcementList"></div>
+              </section>
+
+              <section class="tab-panel panel" data-tab-panel="settings">
+                <div class="panel-head">
+                  <div>
+                    <p class="eyebrow">Ayarlar</p>
+                    <h3>Profil ve sifre yonetimi</h3>
+                  </div>
+                </div>
+
+                <div class="banner-message hidden" id="settingsMessage"></div>
+
+                <form class="settings-form" id="profileSettingsForm">
+                  <label>
+                    <span>Kullanici adi</span>
+                    <input name="username" type="text" disabled />
+                  </label>
+                  <label>
+                    <span>Gosterilecek ad</span>
+                    <input name="displayName" type="text" required />
+                  </label>
+                  <label>
+                    <span>Minecraft nicki</span>
+                    <input name="mcNickname" type="text" required />
+                  </label>
+                  <button class="primary-button wide-button" type="submit">Profili Kaydet</button>
+                </form>
+
+                <div class="settings-divider"></div>
+
+                <form class="settings-form" id="passwordChangeForm">
+                  <label>
+                    <span>Mevcut sifre</span>
+                    <input name="currentPassword" type="password" autocomplete="current-password" required />
+                  </label>
+                  <label>
+                    <span>Yeni sifre</span>
+                    <input name="nextPassword" type="password" autocomplete="new-password" required />
+                  </label>
+                  <label>
+                    <span>Yeni sifre tekrar</span>
+                    <input name="nextPasswordConfirm" type="password" autocomplete="new-password" required />
+                  </label>
+                  <button class="ghost-button wide-button" type="submit">Sifreyi Degistir</button>
+                </form>
+              </section>
+            </article>
+
+            <aside class="side-column">
+              <section class="panel spotlight-panel">
+                <p class="eyebrow">Prime Durum</p>
+                <h3>SkyLand 3 neden var?</h3>
+                <p>
+                  Bu launcher bir FPS boost ve insanlara guvenilir sekilde Minecraft oynatmak icin
+                  olusturulmustur. Web paneli de ayni cizgiyi koruyup hesap yonetimini sade hale
+                  getirir.
+                </p>
+              </section>
+
+              <section class="panel support-panel">
+                <p class="eyebrow">Hesap Ozetin</p>
+                <div class="support-stat">
+                  <span>Mail dogrulama</span>
+                  <strong id="verifyStateLabel">-</strong>
+                </div>
+                <div class="support-stat">
+                  <span>Launcher profil durumu</span>
+                  <strong id="profileSyncLabel">Hazir</strong>
+                </div>
+                <div class="support-stat">
+                  <span>Aktif zaman</span>
+                  <strong id="liveClockLabel">-</strong>
+                </div>
+              </section>
+            </aside>
+          </section>
+        </section>
+      </main>
+
+      <div class="toast hidden" id="toast"></div>
+    </div>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
