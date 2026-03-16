@@ -134,15 +134,47 @@ button {
   height: 58px;
   display: grid;
   place-items: center;
+  position: relative;
+  overflow: hidden;
   border-radius: 18px;
   background:
-    radial-gradient(circle at top, rgba(255, 255, 255, 0.18), transparent 50%),
-    linear-gradient(180deg, rgba(86, 242, 196, 0.18), rgba(114, 199, 255, 0.08));
-  border: 1px solid rgba(125, 170, 209, 0.24);
+    radial-gradient(circle at 24% 20%, rgba(255, 255, 255, 0.28), transparent 34%),
+    linear-gradient(145deg, rgba(86, 242, 196, 0.26), rgba(114, 199, 255, 0.12) 52%, rgba(255, 174, 82, 0.22));
+  border: 1px solid rgba(125, 170, 209, 0.3);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 12px 28px rgba(0, 0, 0, 0.24);
 }
 
-.brand-mark img {
-  width: 38px;
+.brand-mark::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: 17px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.1), transparent 34%),
+    linear-gradient(180deg, rgba(6, 13, 24, 0.08), rgba(6, 13, 24, 0.18));
+}
+
+.brand-monogram,
+.stage-monogram,
+.dashboard-monogram {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  font-family: "Sora", sans-serif;
+  font-weight: 800;
+  letter-spacing: -0.08em;
+  color: #f6fbff;
+  text-shadow:
+    0 10px 24px rgba(0, 0, 0, 0.34),
+    0 0 18px rgba(255, 255, 255, 0.08);
+}
+
+.brand-monogram {
+  font-size: 2rem;
+  transform: translateY(-1px);
 }
 
 .brand-copy {
@@ -407,12 +439,44 @@ h4 {
   border: 1px solid rgba(125, 170, 209, 0.16);
 }
 
-.stage-logo,
-.dashboard-logo {
+.stage-monogram,
+.dashboard-monogram {
   justify-self: center;
-  width: min(220px, 48%);
-  filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.28));
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(125, 170, 209, 0.28);
+  background:
+    radial-gradient(circle at 28% 24%, rgba(255, 255, 255, 0.26), transparent 30%),
+    linear-gradient(145deg, rgba(86, 242, 196, 0.22), rgba(114, 199, 255, 0.08) 48%, rgba(255, 174, 82, 0.22));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 18px 30px rgba(0, 0, 0, 0.28);
   animation: levitate 3.6s ease-in-out infinite;
+}
+
+.stage-monogram::before,
+.dashboard-monogram::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.1), transparent 30%),
+    linear-gradient(180deg, rgba(7, 16, 28, 0.02), rgba(7, 16, 28, 0.26));
+}
+
+.stage-monogram {
+  width: min(220px, 48%);
+  aspect-ratio: 1;
+  border-radius: 34px;
+  font-size: clamp(4rem, 9vw, 6.6rem);
+}
+
+.dashboard-monogram {
+  width: 168px;
+  aspect-ratio: 1;
+  border-radius: 32px;
+  font-size: 4.8rem;
 }
 
 .stage-copy h2,
